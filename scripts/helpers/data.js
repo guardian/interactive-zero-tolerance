@@ -12,6 +12,7 @@ function fetchData(callback) {
     gsjson({
         spreadsheetId: config.data.id,
         allWorksheets: true,
+        vertical: true,
         credentials: keys.google
     })
     .then(function(result) {
@@ -24,25 +25,11 @@ function fetchData(callback) {
     });
 }
 
-function sortResults(data) {
-    if (data.length === 0) {
-        data = data[0]
-    } else {
-        data = {
-            'sheet1': data[0],
-            'sheet2': data[1]
-        }
-    }
-
-    return data;
-}
-
 module.exports = function getData() {
     var isDone = false;
 
     fetchData(function(result) {
-        data = result;
-        data = sortResults(data);
+        data = result[0][0];
 
         isDone = true;
     });

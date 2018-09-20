@@ -1,6 +1,6 @@
 {
     "data": {
-        "id": ""
+        "id": "1TRzHpxcy98NyQLwAq27JF-8n5nwormgHpML_lUVh3Oo"
     },
     "local": {
         "url": "http://localhost",
@@ -8,7 +8,7 @@
     },
     "remote": {
         "url": "https://interactive.guim.co.uk",
-        "path": "atoms/2018/01/us-interactive-template",
+        "path": "atoms/2018/10/zero-tolerance",
         "bucket": "gdn-cdn"
     }
 }

@@ -1,1 +1,3 @@
-// JS file that is loaded asynchronously
+var visualisation = require('./modules/visualisation.js');
+
+visualisation.init();

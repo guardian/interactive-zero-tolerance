@@ -49,12 +49,10 @@ module.exports =  {
     },
 
     initSimulation: function() {
-        simulation = d3.forceSimulation()
-            .nodes(data)
-            .alpha(0.05)
-            .force('charge', d3.forceManyBody().strength(-25))
-            .force('x', d3.forceX(width/2).strength(1))
-            .force('y', d3.forceY(height/2).strength(1));
+        simulation = d3.forceSimulation(data)
+            .force('charge', d3.forceManyBody().strength(-1.5))
+            .force('x', d3.forceX(width / 2))
+            .force('y', d3.forceY(height / 2));
 
         simulation.on('tick', this.ticked);
     },
@@ -80,12 +78,12 @@ module.exports =  {
 
         simulation.force('x', d3.forceX(function(d) {
             return centers[d[value]].x;
-        }).strength(1.5))
+        }))
         .force('y', d3.forceY(function(d) {
             return centers[d[value]].y;
-        }).strength(1.5))
+        }));
 
-        simulation.alphaTarget(.08).restart();
+        simulation.alpha(1).restart();
     },
 
     createLabels: function(centers) {
@@ -99,7 +97,6 @@ module.exports =  {
     getCenters: function(sortBy) {
         // we should move this to serverside
         var centers, map;
-        var padding = 100;
 
         var values = _.countBy(data, sortBy);
 
@@ -112,7 +109,7 @@ module.exports =  {
             children: centers
         };
 
-        map = d3.treemap().size([width - padding, height - padding]);
+        map = d3.pack().size([width, height]);
         centers = d3.hierarchy(centers).sum(function(d) { return d.value; });
         map(centers.sum(function(d) {
                 return d.value;
@@ -127,8 +124,8 @@ module.exports =  {
             var zone = centers.children[i];
 
             cleanCenters[zone.data.name] = {
-                x: (zone.x0+(zone.x1-zone.x0)*0.50) + (padding / 2),
-                y: (zone.y0+(zone.y1-zone.y0)*0.50) + (padding / 2)
+                x: zone.x,
+                y: zone.y
             }
         }
 

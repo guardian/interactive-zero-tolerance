@@ -1,4 +1,8 @@
 .uit-body {
+    position: relative;
+    z-index: 2;
+    background-color: $c-white;
+
     p {
         @include bodyCopy();
         padding-bottom: 18px;
@@ -20,4 +24,23 @@
 
 .uit-button {
     @include button($c-white, $c-red);
+}
+
+
+.uit-break-block {
+    margin: 70vh 0;
+
+    .uit-content {
+        position: relative;
+        z-index: 2;
+        padding: 10px;
+        box-sizing: border-box;
+        background-color: $c-white;
+        border-top: 1px solid $c-light-grey;
+        border-left: 1px solid $c-light-grey;
+
+        &:before {
+            display: none;
+        }
+    }
 }

@@ -1,4 +1,7 @@
 .uit-header {
+    position: relative;
+    z-index: 2;
+    background-color: $c-white;
     overflow: auto;
 }
 

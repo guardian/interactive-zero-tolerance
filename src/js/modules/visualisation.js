@@ -76,21 +76,30 @@ module.exports =  {
 
     sortBy: function(value) {
         var centers = this.getCenters(value);
+        this.createLabels(centers);
 
         simulation.force('x', d3.forceX(function(d) {
             return centers[d[value]].x;
-        }).strength(1.2))
+        }).strength(1.5))
         .force('y', d3.forceY(function(d) {
             return centers[d[value]].y;
-        }).strength(1.2))
+        }).strength(1.5))
 
         simulation.alphaTarget(.08).restart();
+    },
+
+    createLabels: function(centers) {
+        $('.uit-canvas__labels').empty();
+
+        for (var i in centers) {
+            $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label\' style=\'top: ' + centers[i].y + 'px; left: ' + centers[i].x + 'px; \'>' + i + '</h3>');
+        }
     },
 
     getCenters: function(sortBy) {
         // we should move this to serverside
         var centers, map;
-        var padding = 300;
+        var padding = 100;
 
         var values = _.countBy(data, sortBy);
 

@@ -1,0 +1,21 @@
+.uit-canvas {
+    position: relative;
+}
+
+.uit-canvas__labels {
+    position: relative;
+    z-index: 5;
+}
+
+.uit-canvas__label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    display: inline-block;
+    background-color: $c-yellow;
+    font-family: 'Guardian Egyptian Web';
+    font-weight: 700;
+    padding: 0 4px;
+    white-space: nowrap;
+}

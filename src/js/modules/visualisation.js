@@ -5,17 +5,19 @@ var d3 = Object.assign(
     require('d3-ease'),
     require('d3-scale'),
     require('d3-force'),
-    require('d3-beeswarm')
+    require('d3-hierarchy')
 )
 
-var ctx;
-var timer;
-var ease = d3.easeCubic;
+var _ = require('underscore');
+
 var data = require('../../../.data/cleanData.json');
 
-var pointHeight = 14;
-var pointWidth = 14;
-var transitionDuration = 500;
+var ctx;
+var width = 800;
+var height = 800;
+var dot = 6;
+var margin = 6;
+var force;
 
 module.exports =  {
     init: function() {
@@ -33,78 +35,66 @@ module.exports =  {
         }.bind(this));
 
         $('.uit-canvas__nationality').click(function() {
-            this.animate(this.nationalityPoints);
+            this.transition('nationality');
         }.bind(this));
     },
 
     setupCanvas: function() {
         var canvas = d3.select('.uit-canvas')
             .append('canvas')
-            .attr('width', 1000)
-            .attr('height', 1000);
+            .attr('width', width)
+            .attr('height', height);
 
         ctx = canvas.node().getContext('2d');
 
-        this.layoutPoints();
+        force = d3.forceSimulation()
+            .nodes(data)
+            .stop();
+
+        this.gridLayout();
         this.draw();
+        this.getCenters('nationality')
     },
 
-    layoutPoints: function() {
-        var pointsPerRow = Math.floor(1000 / pointWidth);
+    gridLayout: function() {
+        var pointsPerRow = Math.floor(width / (dot + margin));
         var numRows = data.length / pointsPerRow;
 
         data.forEach(function(dataPoint, i) {
-            dataPoint.x = pointWidth * (i % pointsPerRow);
-            dataPoint.y = pointHeight * Math.floor(i / pointsPerRow);
+            dataPoint.x = (dot + margin) * (i % pointsPerRow);
+            dataPoint.y = (dot + margin) * Math.floor(i / pointsPerRow);
         });
+
+        console.log(data);
 
         return data;
     },
 
-    randomPoints: function() {
-        data.forEach(function(dataPoint, i) {
-            dataPoint.x = Math.floor(Math.random() * 1000) + 1;
-            dataPoint.y = Math.floor(Math.random() * 1000) + 1;
+    getCenters: function(sortBy) {
+        var centers, map;
+
+        centers = _.uniq(_.pluck(data, sortBy)).map(function (d) {
+            return {name: d, value: 1};
         });
 
-        return data;
-    },
+        centers = {
+            name: 'centers',
+            children: centers
+        };
 
-    nationalityPoints: function() {
-        var x = d3.scaleBand().rangeRound([0, 1000]);
-            x.domain(['Mexico', 'Guatemala', 'Honduras'])
+        map = d3.treemap().size([width, height]);
 
-        function isolate(force, filter) {
-            var initialize = force.initialize;
-            force.initialize = function() { initialize.call(force, data.filter(filter)); };
-            return force;
-        }
+        centers = d3.hierarchy(centers).sum(function(d) { return d.value; });
 
-        var simData = data.slice(0);
+        map(centers.sum(function(d) { return d.value; }));
 
-        var simulation = d3.forceSimulation(simData)
-            .force('y', d3.forceY(500))
-            .force('Mexico', isolate(d3.forceX(-400), function(d) { return d.nationality === 'Mexico'}))
-            .force('Guatemala', isolate(d3.forceX(-200), function(d) { return d.nationality === 'Guatemala'}))
-            .force('Honduras', isolate(d3.forceX(200), function(d) { return d.nationality === 'Honduras'}))
-            .force('charge', d3.forceManyBody().strength(-10));
-
-        for (var i = 0; i < 50; ++i) simulation.tick();
-
-        data.forEach(function(dataPoint, i) {
-            console.log(dataPoint.x);
-            console.log(simData[i].x);
-            dataPoint.x = simData[i].x;
-            dataPoint.y = simData[i].y;
-        });
-
-        return data;
+        return centers;
     },
 
     draw: function() {
         ctx.save();
 
-        ctx.clearRect(0, 0, 1000, 1000);
+        ctx.clearRect(0, 0, width, height);
 
         for (var i = 0; i < data.length; i++) {
             var point = data[i];
@@ -118,39 +108,26 @@ module.exports =  {
         ctx.restore();
     },
 
-    animate: function(generateTarget) {
-        data.forEach(function(dataPoint, i) {
-           dataPoint.sx = dataPoint.x;
-           dataPoint.sy = dataPoint.y; 
-        });
+    transition: function(transitionTo) {
+        var centers = this.getCenters(transitionTo);
+        force.on('tick', this.tick(centers, transitionTo));
+        force.restart();
+    },
 
-        console.log('generating');
-        data = generateTarget();
-        console.log('generated');
+    tick: function(centers, varname) {
+        var foci = {};
 
-        data.forEach(function(dataPoint, i) {
-           dataPoint.tx = dataPoint.x;
-           dataPoint.ty = dataPoint.y; 
-        });
-
-        if (timer !== undefined) {
-            timer.stop();
+        for (var i = 0; i < centers.children.length; i++) {
+            foci[centers.children[i].data.name] = centers.children[i];
         }
 
-        timer = d3.timer(function(elapsed) {
-            console.log('timer');
-            var t = Math.min(1, ease(elapsed / transitionDuration));
+        data.forEach(function(point, i) {
+            var f = foci[data[i][varname]];
+            point.y = ((f.y0 + (f.y1 / 2)) - point.y);
+            point.x = ((f.x0 + (f.x1 / 2)) - point.x);
+        });
 
-            data.forEach(function(dataPoint, i) {
-                dataPoint.x = dataPoint.sx * (1 - t) + dataPoint.tx * t;
-                dataPoint.y = dataPoint.sy * (1 - t) + dataPoint.ty * t;
-            });
 
-            this.draw();
-
-            if (t === 1) {
-                timer.stop();
-            }
-        }.bind(this), transitionDuration)
+        this.draw();
     }
 };

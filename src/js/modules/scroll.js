@@ -1,28 +1,40 @@
-var pageUrl = window.location.href.split('#')[0],
-    shareCopy = 'What a cool article #Article';
+var scrollTop, windowHeight;
 
-module.exports =  {
+module.exports = {
     init: function() {
-        this.setLinks('.uit-share');
+        this.bindings();
+        this.setValues();
+        this.onScroll();
     },
 
-    setLinks: function(parent) {
-        $(parent + ' .uit-share__button--twitter a').attr('href', this.getTwitterLink());
-        $(parent + ' .uit-share__button--facebook a').attr('href', this.getFacebookLink());
-        $(parent + ' .uit-share__button--email a').attr('href', this.getEmailLink());
+    bindings: function() {
+        $(window).scroll(function() {
+            this.onScroll();
+        }.bind(this));
+
+        $(window).resize(function() {
+            this.onScroll();
+            this.setValues();
+        }.bind(this));
     },
 
-    getTwitterLink: function() {
-        return 'https://twitter.com/intent/tweet?text=' + encodeURI(shareCopy) + 
-                '&url=' + encodeURIComponent(pageUrl + '?CMP=share_btn_tw');
+    setValues: function() {
+        windowHeight = $(window).height();
     },
 
-    getFacebookLink: function() {
-        return 'https://www.facebook.com/dialog/share?app_id=180444840287&href=' + encodeURIComponent(pageUrl + '?CMP=share_btn_fb');
-    },
+    onScroll: function() {
+        scrollTop = $(window).scrollTop();
 
-    getEmailLink: function() {
-        return 'mailto:?subject=' + encodeURIComponent(shareCopy) +
-                '&body=' + encodeURIComponent(pageUrl + '?CMP=share_btn_link');
+        $('.uit-break-block').each(function(i, el) {
+            var elTop = $(el).offset().top;
+            var target;
+
+            if (scrollTop + (windowHeight / 10 * 7) > elTop) {
+                target = el;
+            }
+
+            $('.uit-canvas').attr('data-set', $(target).data('set'));
+            $('.uit-canvas').trigger('shift');
+        }.bind(this));
     }
-};
+}

@@ -1,17 +1,13 @@
 var d3 = Object.assign(
     require('d3-selection'),
-    require('d3-array'),
-    require('d3-timer'),
-    require('d3-ease'),
-    require('d3-scale'),
     require('d3-force'),
     require('d3-hierarchy')
 )
 
 var _ = require('underscore');
 var data = require('../../../.data/cleanData.json');
-var width = 800;
-var height = 800;
+var width = $(window).width();
+var height = $(window).height();
 var radius = 2.5;
 var simulation, ctx;
 
@@ -22,9 +18,8 @@ module.exports =  {
     },
 
     bindings: function() {
-        $('.uit-canvas__trigger').click(function(e) {
-            var type = $(e.currentTarget).data('type');
-            this.sortBy(type);
+        $('.uit-canvas').on('shift', function() {
+            this.sortBy($('.uit-canvas').attr('data-set'));
         }.bind(this));
     },
 

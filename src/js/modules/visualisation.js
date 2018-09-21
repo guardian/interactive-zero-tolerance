@@ -9,15 +9,11 @@ var d3 = Object.assign(
 )
 
 var _ = require('underscore');
-
 var data = require('../../../.data/cleanData.json');
-
-var ctx;
 var width = 800;
 var height = 800;
-var dot = 6;
-var margin = 6;
-var force;
+var radius = 2.5;
+var simulation, ctx;
 
 module.exports =  {
     init: function() {
@@ -26,16 +22,9 @@ module.exports =  {
     },
 
     bindings: function() {
-        $('.uit-canvas__trig').click(function() {
-            this.animate(this.randomPoints);
-        }.bind(this));
-
-        $('.uit-canvas__reset').click(function() {
-            this.animate(this.layoutPoints);
-        }.bind(this));
-
-        $('.uit-canvas__nationality').click(function() {
-            this.transition('nationality');
+        $('.uit-canvas__trigger').click(function(e) {
+            var type = $(e.currentTarget).data('type');
+            this.sortBy(type);
         }.bind(this));
     },
 
@@ -47,34 +36,66 @@ module.exports =  {
 
         ctx = canvas.node().getContext('2d');
 
-        force = d3.forceSimulation()
-            .nodes(data)
-            .stop();
-
-        this.gridLayout();
-        this.draw();
-        this.getCenters('nationality')
+        this.getSimulationData();
     },
 
-    gridLayout: function() {
-        var pointsPerRow = Math.floor(width / (dot + margin));
-        var numRows = data.length / pointsPerRow;
+    getSimulationData: function() {
+        for (var i in data) {
+            data[i].x = Math.random() * width; 
+            data[i].y = Math.random() * height;
+        }
 
-        data.forEach(function(dataPoint, i) {
-            dataPoint.x = (dot + margin) * (i % pointsPerRow);
-            dataPoint.y = (dot + margin) * Math.floor(i / pointsPerRow);
-        });
+        this.initSimulation();
+    },
 
-        console.log(data);
+    initSimulation: function() {
+        simulation = d3.forceSimulation()
+            .nodes(data)
+            .alpha(0.05)
+            .force('charge', d3.forceManyBody().strength(-25))
+            .force('x', d3.forceX(width/2).strength(1))
+            .force('y', d3.forceY(height/2).strength(1));
 
-        return data;
+        simulation.on('tick', this.ticked);
+    },
+
+    ticked: function() {
+        ctx.clearRect(0, 0, width, height);
+        ctx.save();
+
+        data.forEach(function(d) {
+            ctx.beginPath();
+            ctx.moveTo(d.x + radius, d.y);
+            ctx.arc(d.x, d.y, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#c70000';
+            ctx.fill();
+        }.bind(this));
+
+        ctx.restore();
+    },
+
+    sortBy: function(value) {
+        var centers = this.getCenters(value);
+
+        simulation.force('x', d3.forceX(function(d) {
+            return centers[d[value]].x;
+        }).strength(1.2))
+        .force('y', d3.forceY(function(d) {
+            return centers[d[value]].y;
+        }).strength(1.2))
+
+        simulation.alphaTarget(.08).restart();
     },
 
     getCenters: function(sortBy) {
+        // we should move this to serverside
         var centers, map;
+        var padding = 300;
 
-        centers = _.uniq(_.pluck(data, sortBy)).map(function (d) {
-            return {name: d, value: 1};
+        var values = _.countBy(data, sortBy);
+
+        centers = _.map(_.countBy(data, sortBy), function (value, key) {
+            return {name: key, value: value};
         });
 
         centers = {
@@ -82,52 +103,26 @@ module.exports =  {
             children: centers
         };
 
-        map = d3.treemap().size([width, height]);
-
+        map = d3.treemap().size([width - padding, height - padding]);
         centers = d3.hierarchy(centers).sum(function(d) { return d.value; });
+        map(centers.sum(function(d) {
+                return d.value;
+            }).sort(function(a,b) {
+                return b.value - a.value;
+            })
+        );
 
-        map(centers.sum(function(d) { return d.value; }));
+        var cleanCenters = {};
 
-        return centers;
-    },
+        for (var i in centers.children) {
+            var zone = centers.children[i];
 
-    draw: function() {
-        ctx.save();
-
-        ctx.clearRect(0, 0, width, height);
-
-        for (var i = 0; i < data.length; i++) {
-            var point = data[i];
-
-            ctx.beginPath();
-            ctx.arc(point.x + 5, point.y + 5, 4, 0, 2 * Math.PI);
-            ctx.fillStyle = '#c70000';
-            ctx.fill();
+            cleanCenters[zone.data.name] = {
+                x: (zone.x0+(zone.x1-zone.x0)*0.50) + (padding / 2),
+                y: (zone.y0+(zone.y1-zone.y0)*0.50) + (padding / 2)
+            }
         }
 
-        ctx.restore();
+        return cleanCenters;
     },
-
-    transition: function(transitionTo) {
-        var centers = this.getCenters(transitionTo);
-        force.on('tick', this.tick(centers, transitionTo));
-        force.restart();
-    },
-
-    tick: function(centers, varname) {
-        var foci = {};
-
-        for (var i = 0; i < centers.children.length; i++) {
-            foci[centers.children[i].data.name] = centers.children[i];
-        }
-
-        data.forEach(function(point, i) {
-            var f = foci[data[i][varname]];
-            point.y = ((f.y0 + (f.y1 / 2)) - point.y);
-            point.x = ((f.x0 + (f.x1 / 2)) - point.x);
-        });
-
-
-        this.draw();
-    }
 };

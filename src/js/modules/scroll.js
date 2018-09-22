@@ -25,16 +25,21 @@ module.exports = {
     onScroll: function() {
         scrollTop = $(window).scrollTop();
 
+        var target;
+
         $('.uit-break-block').each(function(i, el) {
             var elTop = $(el).offset().top;
-            var target;
 
             if (scrollTop + (windowHeight / 10 * 7) > elTop) {
                 target = el;
             }
+        }.bind(this));
 
+        if (target == undefined) {
+            $('.uit-canvas').trigger('reset');
+        } else {
             $('.uit-canvas').attr('data-set', $(target).data('set'));
             $('.uit-canvas').trigger('shift');
-        }.bind(this));
+        }
     }
 }

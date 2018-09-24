@@ -29,6 +29,7 @@
 
 .uit-break-block {
     margin: 70vh 0;
+    @include bodyCopy();
 
     .uit-content {
         position: relative;

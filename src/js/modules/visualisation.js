@@ -165,7 +165,9 @@ module.exports =  {
 
         packedData.forEach(function(d) {
             if (d.depth === 1) {
-                $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label\' style=\'top: ' + d.y + 'px; left: ' + d.x + 'px; \'>' + d.id + '(' + d.value + ')' + '</h3>');
+                console.log(d);
+                console.log(d.r);
+                $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label\' style=\'top: ' + Math.floor(d.y - d.r - 14) + 'px; left: ' + d.x + 'px; \'>' + d.id + '(' + d.value + ')' + '</h3>');
             }
         })
     }

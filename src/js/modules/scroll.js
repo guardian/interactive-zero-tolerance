@@ -1,4 +1,4 @@
-var scrollTop, windowHeight;
+var scrollTop, windowHeight, currentTarget;
 
 module.exports = {
     init: function() {
@@ -38,8 +38,11 @@ module.exports = {
         if (target == undefined) {
             $('.uit-canvas').trigger('reset');
         } else {
-            $('.uit-canvas').attr('data-set', $(target).data('set'));
-            $('.uit-canvas').trigger('shift');
+            if (target !== currentTarget) {
+                $('.uit-canvas').attr('data-set', $(target).data('set'));
+                $('.uit-canvas').trigger('shift');
+                currentTarget = target;
+            }
         }
     }
 }

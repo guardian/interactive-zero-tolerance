@@ -38,8 +38,6 @@ module.exports = {
 
         target = target == undefined ? 'default' : $(target).data('set');
 
-        console.log(target);
-
         if (target !== currentTarget) {
             $('.uit-canvas').attr('data-set', target);
             $('.uit-canvas').trigger('shift');

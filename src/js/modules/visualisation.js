@@ -19,9 +19,7 @@ module.exports =  {
     init: function() {
         if (window.$) {
             this.readyToInit();
-            console.log('ready');
         } else {
-            console.log('trying');
             setTimeout(function() { this.init() }.bind(this), 50);
         }
     },

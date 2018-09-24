@@ -36,14 +36,12 @@ module.exports = {
             }
         }.bind(this));
 
-        if (target == undefined) {
-            $('.uit-canvas').trigger('reset');
-        } else {
-            if (target !== currentTarget) {
-                $('.uit-canvas').attr('data-set', $(target).data('set'));
-                $('.uit-canvas').trigger('shift');
-                currentTarget = target;
-            }
+        target = target == undefined ? 'default' : $(target).data('set');
+
+        if (target !== currentTarget) {
+            $('.uit-canvas').attr('data-set', target);
+            $('.uit-canvas').trigger('shift');
+            currentTarget = target;
         }
     },
 

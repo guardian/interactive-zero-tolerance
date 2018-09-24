@@ -7,31 +7,31 @@ var d3 = Object.assign(
 )
 
 var _ = require('underscore');
+
 var data = require('../../../.data/cleanData.json');
 var width;
 var height;
 var radius = 2.5;
+var ctx;
 var ease = d3.easeCubicOut;
-var simulation, ctx;
-var transitionDuration = 800;
 var timer;
 
 module.exports =  {
     init: function() {
         this.setupCanvas();
         this.bindings();
-        this.calculatePositions('nationality');
+        this.calculatePositions();
     },
 
     bindings: function() {
         $('.uit-canvas').on('shift', function() {
-            this.calculatePositions($('.uit-canvas').attr('data-set'));
+            this.calculatePositions();
         }.bind(this));
 
         $('.uit-canvas').on('reset', function() {
             $('.uit-canvas__labels').empty();
             this.setupCanvas();
-            this.calculatePositions($('.uit-canvas').attr('data-set'));
+            this.calculatePositions();
         }.bind(this));
     },
 
@@ -49,7 +49,9 @@ module.exports =  {
         ctx = canvas.node().getContext('2d');
     },
 
-    calculatePositions: function(sortBy) {
+    calculatePositions: function() {
+        var sortBy = $('.uit-canvas').attr('data-set');
+
         for (var i in data) {
             if (!data[i][sortBy]) {
                 data[i][sortBy] = 'unknown';
@@ -87,7 +89,11 @@ module.exports =  {
         pack(root);
 
         this.animate(root.leaves());
-        this.createLabels(root.descendants());
+        if (sortBy == 'default') {
+            $('.uit-canvas__labels').empty();
+        } else {
+            this.createLabels(root.descendants());
+        }
     },
 
     animate: function(positionedData) {
@@ -103,7 +109,7 @@ module.exports =  {
         }
 
         timer = d3.timer(function(elapsed) {
-            var t = Math.min(1, ease(elapsed / transitionDuration));
+            var t = Math.min(1, ease(elapsed / 800));
             data.forEach(function(dataPoint, i) {
                 dataPoint.x = dataPoint.sx * (1 - t) + dataPoint.tx * t;
                 dataPoint.y = dataPoint.sy * (1 - t) + dataPoint.ty * t;

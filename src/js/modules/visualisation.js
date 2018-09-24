@@ -30,11 +30,6 @@ module.exports =  {
         $('.uit-canvas').on('reset', function() {
             $('.uit-canvas__labels').empty();
         }.bind(this));
-
-        $(window).resize(function() {
-            $('.uit-canvas').empty();
-            this.setupCanvas();
-        }.bind(this));
     },
 
     setupCanvas: function() {

@@ -26,11 +26,38 @@
     -webkit-font-smoothing: subpixel-antialiased;
     transform: scale(1.0, 1.0) translate(-50%, -50%);
     display: inline-block;
-    background-color: $c-yellow;
-    font-family: 'Guardian Egyptian Web';
-    font-size: 16px;
-    font-weight: 700;
-    padding: 0 4px;
+    font-size: 14px;
+    line-height: 1.4;
     white-space: nowrap;
     animation: fadeIn 0.8s ease-in;
+
+    &--large {
+        font-size: 20px;
+        text-align: center;
+
+        .uit-canvas__label-descriptor {
+            display: block;
+        }
+
+        .uit-canvas__label-value {
+            font-size: 28px;
+        }
+    }
+}
+
+.uit-canvas__label-descriptor {
+    background-color: $c-yellow;
+    color: $c-black;
+    font-family: 'Guardian Egyptian Web';
+    font-weight: 700;
+    padding: 2px 4px;
+    white-space: nowrap;
+}
+
+.uit-canvas__label-value {
+    background-color: $c-white;
+    color: $c-red;
+    font-family: 'Guardian Figures';
+    padding: 2px 4px;
+    white-space: nowrap;
 }

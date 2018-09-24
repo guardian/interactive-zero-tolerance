@@ -62,7 +62,7 @@ module.exports =  {
         if (width > 768) {
             radius = 2.5;
             nodePadding = 4;
-            groupPadding = 30;
+            groupPadding = 50;
         } else {
             radius = 1.5;
             nodePadding = 2;
@@ -164,8 +164,11 @@ module.exports =  {
         $('.uit-canvas__labels').empty();
 
         packedData.forEach(function(d) {
+            var large = d.value > 80;
+            var top = large ? d.y : Math.floor(d.y - d.r - 14);
+ 
             if (d.depth === 1) {
-                $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label\' style=\'top: ' + Math.floor(d.y - d.r - 14) + 'px; left: ' + Math.floor(d.x) + 'px; \'>' + d.id + ' (' + d.value + ')' + '</h3>');
+                $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(d.x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + d.id + '</span><span class=\'uit-canvas__label-value\'>' + d.value + '</span><h3>');
             }
         })
     }

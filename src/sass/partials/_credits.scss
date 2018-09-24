@@ -1,0 +1,25 @@
+.uit-credits {
+    font-family: 'Guardian Sans Web';
+    color: $c-dark-grey;
+    background-color: $c-white;
+    position: relative;
+    z-index: 2;
+}
+
+.uit-credits__title {
+    font-family: 'Guardian Sans Web';
+    font-size: 20px;
+    margin: 0;
+    margin-bottom: 6px;
+}
+
+.uit-credits__section {
+    font-size: 16px;
+    line-height: 1.4;
+    margin: 0;
+    padding-bottom: 12px;
+
+    strong {
+        display: block;
+    }
+}

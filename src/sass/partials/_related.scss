@@ -1,5 +1,7 @@
 .uit-related {
     position: relative;
+    z-index: 2;
+    background-color: $c-white;
 }
 
 .uit-related__header {
@@ -64,6 +66,7 @@
     color: $c-black;
     border-top: 1px solid $c-red;
     width: calc(50% - 10px);
+    margin-bottom: 12px;
 
     @include mq(tablet) {
         width: calc(25% - 15px);

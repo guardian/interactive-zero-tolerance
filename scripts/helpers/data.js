@@ -26,22 +26,11 @@ function fetchData(callback) {
     });
 }
 
-function convertSectionsToHTML(data) {
-    for (var i in data) {
-        if (i !== 'headline' && i !== 'standfirst') {
-            data[i] = markdown.toHTML(data[i]);
-        }
-    }
-
-    return data;
-}
-
 module.exports = function getData() {
     var isDone = false;
 
     fetchData(function(result) {
         data = result[0][0];
-        data = convertSectionsToHTML(data);
 
         isDone = true;
     });

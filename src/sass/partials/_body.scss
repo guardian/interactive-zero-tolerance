@@ -5,7 +5,8 @@
 
     p {
         @include bodyCopy();
-        padding-bottom: 18px;
+        padding-top: 6px;
+        padding-bottom: 12px;
         margin: 0;
     }
 }

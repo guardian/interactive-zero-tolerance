@@ -58,25 +58,30 @@ module.exports =  {
 
             data[i].value = 1;
             data[i].padding = 2;
+            data[i].id = data[i].caseNumber;
+            data[i].parentId = data[i][sortBy];
         }
 
         var upperLevels = [{
-            caseNumber: 'cases',
-            sortBy: null
+            id: 'cases',
+            parentId: null
         }];
 
         var middleLevels = _.map(_.countBy(data, sortBy), function (value, key) {
-            return {caseNumber: key, sortBy: 'cases'};
+            return level = {
+                id: key,
+                parentId: 'cases'
+            }
         });
 
         upperLevels = upperLevels.concat(middleLevels);
-        upperLevels = upperLevels.concat(data);
+
+        var levels = upperLevels.concat(data);
 
         var root = d3.stratify()
-            .id(function(d) { return d.caseNumber; })
-            .parentId(function(d) { return d[sortBy] })(upperLevels)
+            (levels)
             .sum(function(d) { return d.value; })
-            .sort(function(a, b) { return b.value - a.value; });
+            .sort(function(a, b) { return b.value - a.value; });;
 
         var pack = d3.pack()
             .size([width, height])

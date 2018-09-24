@@ -22,7 +22,7 @@ module.exports = {
             }
 
             var compiledJS = buf.toString();
-                compiledJS = compiledJS.replace(/\{\{ path \}\}/g, absolutePath).replace(/\{\{path\}\}/g, absolutePath)
+                compiledJS = compiledJS.replace(/\{\{ path \}\}/g, absolutePath).replace(/\{\{path\}\}/g, absolutePath);
 
             if (isDeploy) {
                 compiledJS = UglifyJS.minify(compiledJS).code;

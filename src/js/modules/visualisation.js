@@ -1,6 +1,5 @@
 var d3 = Object.assign(
     require('d3-selection'),
-    require('d3-force'),
     require('d3-hierarchy'),
     require('d3-timer'),
     require('d3-ease')
@@ -63,11 +62,11 @@ module.exports =  {
 
         var upperLevels = [{
             caseNumber: 'cases',
-            [sortBy]: null
+            sortBy: null
         }];
 
         var middleLevels = _.map(_.countBy(data, sortBy), function (value, key) {
-            return {caseNumber: key, [sortBy]: 'cases'};
+            return {caseNumber: key, sortBy: 'cases'};
         });
 
         upperLevels = upperLevels.concat(middleLevels);

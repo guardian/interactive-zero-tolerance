@@ -15,7 +15,8 @@ var centers;
 module.exports =  {
     init: function() {
         this.setupCanvas();
-        this.bindings();
+        //this.bindings();
+        this.getCenters('nationality');
     },
 
     bindings: function() {
@@ -46,50 +47,20 @@ module.exports =  {
             .attr('height', height);
 
         ctx = canvas.node().getContext('2d');
-
-        this.getSimulationData();
     },
 
-    getSimulationData: function() {
-        for (var i in data) {
-            data[i].x = Math.random() * width; 
-            data[i].y = Math.random() * height;
-        }
-
-        this.initSimulation();
-    },
-
-    initSimulation: function() {
-        simulation = d3.forceSimulation(data)
-            .force('charge', d3.forceManyBody().strength(-1.5))
-            .force('x', d3.forceX(width / 2))
-            .force('y', d3.forceY(height / 2));
-
-        simulation.on('tick', this.ticked);
-    },
-
-    ticked: function() {
+    ticked: function(packedData) {
         ctx.clearRect(0, 0, width, height);
         ctx.save();
 
-        console.log(typeof centers);
-        if (typeof centers == 'object') {
-            for (var i in centers) {
-                var d = centers[i];
+        packedData.forEach(function(d) {
+            if (d.depth === 2) {
                 ctx.beginPath();
                 ctx.moveTo(d.x + d.r, d.y);
                 ctx.arc(d.x, d.y, d.r, 0, 2 * Math.PI);
-                ctx.fillStyle = '#999999';
+                ctx.fillStyle = '#c70000';
                 ctx.fill();
             }
-        }
-
-        data.forEach(function(d) {
-            ctx.beginPath();
-            ctx.moveTo(d.x + radius, d.y);
-            ctx.arc(d.x, d.y, radius, 0, 2 * Math.PI);
-            ctx.fillStyle = '#c70000';
-            ctx.fill();
         }.bind(this));
 
         ctx.restore();
@@ -109,49 +80,51 @@ module.exports =  {
         simulation.alpha(1).restart();
     },
 
-    createLabels: function(centers) {
+    createLabels: function(packedData) {
         $('.uit-canvas__labels').empty();
 
-        for (var i in centers) {
-            $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label\' style=\'top: ' + centers[i].y + 'px; left: ' + centers[i].x + 'px; \'>' + i + '(' + centers[i].value + ')' + '</h3>');
-        }
+        packedData.forEach(function(d) {
+            if (d.depth === 1) {
+                $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label\' style=\'top: ' + d.y + 'px; left: ' + d.x + 'px; \'>' + d.id + '(' + d.value + ')' + '</h3>');
+            }
+        })
     },
 
     getCenters: function(sortBy) {
-        // we should move this to serverside
-        var values = _.countBy(data, sortBy);
-
-        centers = _.map(_.countBy(data, sortBy), function (value, key) {
-            return {name: key, value: value};
-        });
-
-        centers = {
-            name: 'centers',
-            children: centers
-        };
-
-        var map = d3.pack().size([width, height]).padding(10);
-        centers = d3.hierarchy(centers).sum(function(d) { return d.value; });
-        map(centers.sum(function(d) {
-                return d.value;
-            }).sort(function(a,b) {
-                return b.value - a.value;
-            })
-        );
-
-        var cleanCenters = {};
-
-        for (var i in centers.children) {
-            var zone = centers.children[i];
-
-            cleanCenters[zone.data.name] = {
-                x: zone.x,
-                y: zone.y,
-                r: zone.r,
-                value: zone.value
+        for (var i in data) {
+            if (!data[i][sortBy]) {
+                data[i][sortBy] = 'unknown';
             }
+            data[i].value = 1;
+            data[i].r = 3;
         }
 
-        return cleanCenters;
+        var upperLevels = [{
+            caseNumber: 'cases',
+            [sortBy]: null
+        }];
+
+        var middleLevels = _.map(_.countBy(data, sortBy), function (value, key) {
+            return {caseNumber: key, [sortBy]: 'cases'};
+        });
+
+        upperLevels = upperLevels.concat(middleLevels);
+        upperLevels = upperLevels.concat(data);
+
+
+        var root = d3.stratify()
+            .id(function(d) { return d.caseNumber; })
+            .parentId(function(d) { return d[sortBy] })(upperLevels)
+            .sum(function(d) { return d.value; })
+            .sort(function(a, b) { return b.value - a.value; });
+
+        var pack = d3.pack()
+            .size([width, height])
+            .padding(3);
+
+        pack(root);
+
+        this.ticked(root.descendants());
+        this.createLabels(root.descendants());
     },
 };

@@ -10,7 +10,7 @@ var _ = require('underscore');
 var data = require('../../../.data/cleanData.json');
 var width;
 var height;
-var radius = 2.5;
+var radius, nodePadding, groupPadding;
 var ctx;
 var ease = d3.easeCubicOut;
 var timer;
@@ -19,6 +19,7 @@ module.exports =  {
     init: function() {
         this.setupCanvas();
         this.bindings();
+        this.setSizing();
         this.calculatePositions();
     },
 
@@ -30,6 +31,7 @@ module.exports =  {
         $('.uit-canvas').on('reset', function() {
             $('.uit-canvas__labels').empty();
             this.setupCanvas();
+            this.setSizing();
             this.calculatePositions();
         }.bind(this));
     },
@@ -48,6 +50,18 @@ module.exports =  {
         ctx = canvas.node().getContext('2d');
     },
 
+    setSizing: function() {
+        if (width > 768) {
+            radius = 2.5;
+            nodePadding = 4;
+            groupPadding = 30;
+        } else {
+            radius = 1.5;
+            nodePadding = 2;
+            groupPadding = 25;
+        }
+    },
+
     calculatePositions: function() {
         var sortBy = $('.uit-canvas').attr('data-set');
 
@@ -57,8 +71,7 @@ module.exports =  {
             }
 
             data[i].value = 1;
-            data[i].padding = 2;
-            data[i].id = data[i].caseNumber;
+            data[i].id = data[i].caseNumber; // do this serverside
             data[i].parentId = data[i][sortBy];
         }
 
@@ -87,7 +100,7 @@ module.exports =  {
             .size([width, height])
             .radius(function(){ return radius })
             .padding(function(d) {
-                return d.depth == 1 ? 3 : 30;
+                return d.depth == 1 ? nodePadding : groupPadding;
             });
 
         pack(root);
@@ -102,8 +115,8 @@ module.exports =  {
 
     animate: function(positionedData) {
         positionedData.forEach(function(positionedDataPoint, i) {
-            data[i].sx = data[i].x || height / 2;
-            data[i].sy = data[i].y || width / 2; 
+            data[i].sx = data[i].x || width / 2;
+            data[i].sy = data[i].y || height / 2; 
             data[i].tx = positionedDataPoint.x;
             data[i].ty = positionedDataPoint.y; 
         });

@@ -1,7 +1,9 @@
 var d3 = Object.assign(
     require('d3-selection'),
     require('d3-force'),
-    require('d3-hierarchy')
+    require('d3-hierarchy'),
+    require('d3-timer'),
+    require('d3-ease')
 )
 
 var _ = require('underscore');
@@ -9,8 +11,9 @@ var data = require('../../../.data/cleanData.json');
 var width;
 var height;
 var radius = 2.5;
+var ease = d3.easeCubic;
 var simulation, ctx;
-var centers;
+var transitionDuration = 800;
 
 module.exports =  {
     init: function() {
@@ -53,7 +56,7 @@ module.exports =  {
             }
 
             data[i].value = 1;
-            data[i].r = 3;
+            data[i].r = 3.5;
         }
 
         var upperLevels = [{
@@ -80,22 +83,41 @@ module.exports =  {
 
         pack(root);
 
-        this.drawNodes(root.descendants());
+        this.animate(root.leaves());
         this.createLabels(root.descendants());
     },
 
-    drawNodes: function(packedData) {
+    animate: function(positionedData) {
+        positionedData.forEach(function(positionedDataPoint, i) {
+           data[i].sx = data[i].x || height / 2;
+           data[i].sy = data[i].y || width / 2; 
+           data[i].tx = positionedDataPoint.x;
+           data[i].ty = positionedDataPoint.y; 
+        });
+
+        timer = d3.timer(function(elapsed) {
+            var t = Math.min(1, ease(elapsed / transitionDuration));
+            data.forEach(function(dataPoint, i) {
+                dataPoint.x = dataPoint.sx * (1 - t) + dataPoint.tx * t;
+                dataPoint.y = dataPoint.sy * (1 - t) + dataPoint.ty * t;
+            });
+            this.draw();
+            if (t === 1) {
+                timer.stop();
+            }
+        }.bind(this), transitionDuration)
+    },
+
+    draw: function() {
         ctx.clearRect(0, 0, width, height);
         ctx.save();
 
-        packedData.forEach(function(d) {
-            if (d.depth === 2) {
-                ctx.beginPath();
-                ctx.moveTo(d.x + d.r, d.y);
-                ctx.arc(d.x, d.y, d.r, 0, 2 * Math.PI);
-                ctx.fillStyle = '#c70000';
-                ctx.fill();
-            }
+        data.forEach(function(d) {
+            ctx.beginPath();
+            ctx.moveTo(d.x + d.r, d.y);
+            ctx.arc(d.x, d.y, d.r, 0, 2 * Math.PI);
+            ctx.fillStyle = '#c70000';
+            ctx.fill();
         }.bind(this));
 
         ctx.restore();

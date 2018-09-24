@@ -1,4 +1,4 @@
-var scrollTop, windowHeight;
+var scrollTop, windowHeight, currentTarget;
 
 module.exports = {
     init: function() {
@@ -30,7 +30,7 @@ module.exports = {
         $('.uit-break-block').each(function(i, el) {
             var elTop = $(el).offset().top;
 
-            if (scrollTop + (windowHeight / 10 * 7) > elTop) {
+            if (scrollTop + (windowHeight / 10 * 9) > elTop) {
                 target = el;
             }
         }.bind(this));
@@ -38,8 +38,11 @@ module.exports = {
         if (target == undefined) {
             $('.uit-canvas').trigger('reset');
         } else {
-            $('.uit-canvas').attr('data-set', $(target).data('set'));
-            $('.uit-canvas').trigger('shift');
+            if (target !== currentTarget) {
+                $('.uit-canvas').attr('data-set', $(target).data('set'));
+                $('.uit-canvas').trigger('shift');
+                currentTarget = target;
+            }
         }
     }
 }

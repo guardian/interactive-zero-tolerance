@@ -1,7 +1,9 @@
 var d3 = Object.assign(
     require('d3-selection'),
     require('d3-force'),
-    require('d3-hierarchy')
+    require('d3-hierarchy'),
+    require('d3-timer'),
+    require('d3-ease')
 )
 
 var _ = require('underscore');
@@ -9,30 +11,25 @@ var data = require('../../../.data/cleanData.json');
 var width;
 var height;
 var radius = 2.5;
+var ease = d3.easeCubicOut;
 var simulation, ctx;
-var centers;
+var transitionDuration = 800;
+var timer;
 
 module.exports =  {
     init: function() {
         this.setupCanvas();
         this.bindings();
+        this.calculatePositions('nationality');
     },
 
     bindings: function() {
         $('.uit-canvas').on('shift', function() {
-            this.sortBy($('.uit-canvas').attr('data-set'));
+            this.calculatePositions($('.uit-canvas').attr('data-set'));
         }.bind(this));
 
         $('.uit-canvas').on('reset', function() {
             $('.uit-canvas__labels').empty();
-            simulation.force('charge', d3.forceManyBody().strength(-1.5))
-                .force('x', d3.forceX(width / 2))
-                .force('y', d3.forceY(height / 2));
-        }.bind(this));
-
-        $(window).resize(function() {
-            $('.uit-canvas').empty();
-            this.setupCanvas();
         }.bind(this));
     },
 
@@ -46,43 +43,78 @@ module.exports =  {
             .attr('height', height);
 
         ctx = canvas.node().getContext('2d');
-
-        this.getSimulationData();
     },
 
-    getSimulationData: function() {
+    calculatePositions: function(sortBy) {
+
         for (var i in data) {
-            data[i].x = Math.random() * width; 
-            data[i].y = Math.random() * height;
+            if (!data[i][sortBy]) {
+                data[i][sortBy] = 'unknown';
+            }
+
+            data[i].value = 1;
+            data[i].padding = 2;
         }
 
-        this.initSimulation();
+        var upperLevels = [{
+            caseNumber: 'cases',
+            [sortBy]: null
+        }];
+
+        var middleLevels = _.map(_.countBy(data, sortBy), function (value, key) {
+            return {caseNumber: key, [sortBy]: 'cases'};
+        });
+
+        upperLevels = upperLevels.concat(middleLevels);
+        upperLevels = upperLevels.concat(data);
+
+        var root = d3.stratify()
+            .id(function(d) { return d.caseNumber; })
+            .parentId(function(d) { return d[sortBy] })(upperLevels)
+            .sum(function(d) { return d.value; })
+            .sort(function(a, b) { return b.value - a.value; });
+
+        var pack = d3.pack()
+            .size([width, height])
+            .radius(function(){ return radius })
+            .padding(function(d) {
+                return d.depth == 1 ? 3 : 30;
+            });
+
+        pack(root);
+
+        this.animate(root.leaves());
+        this.createLabels(root.descendants());
     },
 
-    initSimulation: function() {
-        simulation = d3.forceSimulation(data)
-            .force('charge', d3.forceManyBody().strength(-1.5))
-            .force('x', d3.forceX(width / 2))
-            .force('y', d3.forceY(height / 2));
+    animate: function(positionedData) {
+        positionedData.forEach(function(positionedDataPoint, i) {
+            data[i].sx = data[i].x || height / 2;
+            data[i].sy = data[i].y || width / 2; 
+            data[i].tx = positionedDataPoint.x;
+            data[i].ty = positionedDataPoint.y; 
+        });
 
-        simulation.on('tick', this.ticked);
+        if (timer !== undefined) {
+            timer.stop();
+        }
+
+        timer = d3.timer(function(elapsed) {
+            var t = Math.min(1, ease(elapsed / transitionDuration));
+            data.forEach(function(dataPoint, i) {
+                dataPoint.x = dataPoint.sx * (1 - t) + dataPoint.tx * t;
+                dataPoint.y = dataPoint.sy * (1 - t) + dataPoint.ty * t;
+            });
+            this.draw();
+            if (t === 1) {
+                timer.stop();
+            }
+        }.bind(this), 0);
     },
 
-    ticked: function() {
+    draw: function() {
         ctx.clearRect(0, 0, width, height);
         ctx.save();
-
-        console.log(typeof centers);
-        if (typeof centers == 'object') {
-            for (var i in centers) {
-                var d = centers[i];
-                ctx.beginPath();
-                ctx.moveTo(d.x + d.r, d.y);
-                ctx.arc(d.x, d.y, d.r, 0, 2 * Math.PI);
-                ctx.fillStyle = '#999999';
-                ctx.fill();
-            }
-        }
 
         data.forEach(function(d) {
             ctx.beginPath();
@@ -95,63 +127,13 @@ module.exports =  {
         ctx.restore();
     },
 
-    sortBy: function(value) {
-        centers = this.getCenters(value);
-        this.createLabels(centers);
-
-        simulation.force('x', d3.forceX(function(d) {
-            return centers[d[value]].x;
-        }))
-        .force('y', d3.forceY(function(d) {
-            return centers[d[value]].y;
-        }));
-
-        simulation.alpha(1).restart();
-    },
-
-    createLabels: function(centers) {
+    createLabels: function(packedData) {
         $('.uit-canvas__labels').empty();
 
-        for (var i in centers) {
-            $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label\' style=\'top: ' + centers[i].y + 'px; left: ' + centers[i].x + 'px; \'>' + i + '(' + centers[i].value + ')' + '</h3>');
-        }
-    },
-
-    getCenters: function(sortBy) {
-        // we should move this to serverside
-        var values = _.countBy(data, sortBy);
-
-        centers = _.map(_.countBy(data, sortBy), function (value, key) {
-            return {name: key, value: value};
-        });
-
-        centers = {
-            name: 'centers',
-            children: centers
-        };
-
-        var map = d3.pack().size([width, height]).padding(10);
-        centers = d3.hierarchy(centers).sum(function(d) { return d.value; });
-        map(centers.sum(function(d) {
-                return d.value;
-            }).sort(function(a,b) {
-                return b.value - a.value;
-            })
-        );
-
-        var cleanCenters = {};
-
-        for (var i in centers.children) {
-            var zone = centers.children[i];
-
-            cleanCenters[zone.data.name] = {
-                x: zone.x,
-                y: zone.y,
-                r: zone.r,
-                value: zone.value
+        packedData.forEach(function(d) {
+            if (d.depth === 1) {
+                $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label\' style=\'top: ' + d.y + 'px; left: ' + d.x + 'px; \'>' + d.id + '(' + d.value + ')' + '</h3>');
             }
-        }
-
-        return cleanCenters;
-    },
+        })
+    }
 };

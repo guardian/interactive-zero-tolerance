@@ -54,8 +54,9 @@ function cherryPickFields() {
 
     for (var i in data) {
         newData.push({
-            caseNumber: data[i].caseNumber,
+            id: data[i].caseNumber,
             nationality: data[i].nationality,
+            plea: data[i].plea,
             court: data[i].court
         })
     }

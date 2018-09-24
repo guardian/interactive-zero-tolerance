@@ -11,9 +11,10 @@ var data = require('../../../.data/cleanData.json');
 var width;
 var height;
 var radius = 2.5;
-var ease = d3.easeCubic;
+var ease = d3.easeCubicOut;
 var simulation, ctx;
 var transitionDuration = 800;
+var timer;
 
 module.exports =  {
     init: function() {
@@ -45,6 +46,7 @@ module.exports =  {
     },
 
     calculatePositions: function(sortBy) {
+
         for (var i in data) {
             if (!data[i][sortBy]) {
                 data[i][sortBy] = 'unknown';
@@ -76,7 +78,7 @@ module.exports =  {
             .size([width, height])
             .radius(function(){ return radius })
             .padding(function(d) {
-                return d.depth == 1 ? 3 : 16;
+                return d.depth == 1 ? 3 : 30;
             });
 
         pack(root);
@@ -93,6 +95,10 @@ module.exports =  {
             data[i].ty = positionedDataPoint.y; 
         });
 
+        if (timer !== undefined) {
+            timer.stop();
+        }
+
         timer = d3.timer(function(elapsed) {
             var t = Math.min(1, ease(elapsed / transitionDuration));
             data.forEach(function(dataPoint, i) {
@@ -103,7 +109,7 @@ module.exports =  {
             if (t === 1) {
                 timer.stop();
             }
-        }.bind(this), transitionDuration)
+        }.bind(this), 0);
     },
 
     draw: function() {

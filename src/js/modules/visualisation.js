@@ -51,7 +51,7 @@ module.exports =  {
             }
 
             data[i].value = 1;
-            data[i].r = 3.5;
+            data[i].padding = 2;
         }
 
         var upperLevels = [{
@@ -74,7 +74,10 @@ module.exports =  {
 
         var pack = d3.pack()
             .size([width, height])
-            .padding(3);
+            .radius(function(){ return radius })
+            .padding(function(d) {
+                return d.depth == 1 ? 3 : 16;
+            });
 
         pack(root);
 
@@ -84,10 +87,10 @@ module.exports =  {
 
     animate: function(positionedData) {
         positionedData.forEach(function(positionedDataPoint, i) {
-           data[i].sx = data[i].x || height / 2;
-           data[i].sy = data[i].y || width / 2; 
-           data[i].tx = positionedDataPoint.x;
-           data[i].ty = positionedDataPoint.y; 
+            data[i].sx = data[i].x || height / 2;
+            data[i].sy = data[i].y || width / 2; 
+            data[i].tx = positionedDataPoint.x;
+            data[i].ty = positionedDataPoint.y; 
         });
 
         timer = d3.timer(function(elapsed) {
@@ -109,8 +112,8 @@ module.exports =  {
 
         data.forEach(function(d) {
             ctx.beginPath();
-            ctx.moveTo(d.x + d.r, d.y);
-            ctx.arc(d.x, d.y, d.r, 0, 2 * Math.PI);
+            ctx.moveTo(d.x + radius, d.y);
+            ctx.arc(d.x, d.y, radius, 0, 2 * Math.PI);
             ctx.fillStyle = '#c70000';
             ctx.fill();
         }.bind(this));

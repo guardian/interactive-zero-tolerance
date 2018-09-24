@@ -21,6 +21,8 @@
     @include banding($c-yellow);
     font-size: 28px;
     font-weight: bold;
+    margin: 0;
+    margin-bottom: 4px;
 }
 
 .uit-button {
@@ -30,7 +32,13 @@
 
 .uit-break-block {
     margin: 70vh 0;
-    @include bodyCopy();
+
+    p {
+        @include bodyCopy();
+        padding-top: 0;
+        padding-bottom: 12px;
+        margin: 0;
+    }
 
     .uit-content {
         position: relative;

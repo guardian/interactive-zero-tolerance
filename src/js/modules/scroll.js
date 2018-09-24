@@ -31,7 +31,7 @@ module.exports = {
         $('.uit-break-block').each(function(i, el) {
             var elTop = $(el).offset().top;
 
-            if (scrollTop + (windowHeight / 10 * 9) > elTop) {
+            if (scrollTop + (windowHeight / 10 * 8) > elTop) {
                 target = el;
             }
         }.bind(this));

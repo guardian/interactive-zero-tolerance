@@ -36,7 +36,7 @@ module.exports =  {
 
     setupCanvas: function() {
         width = $(window).width();
-        height = $(window).height();
+        height = $(window).height() / 10 * 8;
 
         $('.uit-canvas canvas').remove();
 

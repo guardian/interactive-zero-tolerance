@@ -15,6 +15,7 @@ module.exports = {
         $(window).resize(function() {
             this.onScroll();
             this.setValues();
+            this.resetVisulationation();
         }.bind(this));
     },
 
@@ -44,5 +45,9 @@ module.exports = {
                 currentTarget = target;
             }
         }
+    },
+
+    resetVisulationation: function() {
+        $('.uit-canvas').trigger('reset');
     }
 }

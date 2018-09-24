@@ -30,12 +30,16 @@ module.exports =  {
 
         $('.uit-canvas').on('reset', function() {
             $('.uit-canvas__labels').empty();
+            this.setupCanvas();
+            this.calculatePositions($('.uit-canvas').attr('data-set'));
         }.bind(this));
     },
 
     setupCanvas: function() {
         width = $(window).width();
         height = $(window).height();
+
+        $('.uit-canvas canvas').remove();
 
         var canvas = d3.select('.uit-canvas')
             .append('canvas')
@@ -46,7 +50,6 @@ module.exports =  {
     },
 
     calculatePositions: function(sortBy) {
-
         for (var i in data) {
             if (!data[i][sortBy]) {
                 data[i][sortBy] = 'unknown';

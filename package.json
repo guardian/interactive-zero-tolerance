@@ -11,7 +11,7 @@
     "start": "node scripts/local.js",
     "log": "node scripts/log.js",
     "clone": "scripts/mkrepo.sh",
-    "server": "node server/compile.js"
+    "server": "node --max-old-space-size=4096 server/compile.js"
   },
   "repository": {
     "type": "git",

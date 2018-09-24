@@ -6,7 +6,7 @@ var userHome = require('user-home');
 var keys = require(userHome + '/.gu/interactives.json');
 
 var data;
-var newData = false;
+var newData = true;
 
 function fetchData(callback) {
     gsjson({
@@ -79,7 +79,9 @@ module.exports = function getData() {
 
     if (newData) {
         console.log('fetching new data... This may take a few minutes');
+        console.log('hey');
         fetchData(function(result) {
+            console.log(result);
             data = result;
             console.log(data);
             fs.writeFileSync('./.data/data.json', JSON.stringify(data));

@@ -17,6 +17,16 @@ var timer;
 
 module.exports =  {
     init: function() {
+        if (window.$) {
+            this.readyToInit();
+            console.log('ready');
+        } else {
+            console.log('trying');
+            setTimeout(function() { this.init() }.bind(this), 50);
+        }
+    },
+
+    readyToInit: function() {
         this.setupCanvas();
         this.bindings();
         this.setSizing();
@@ -71,7 +81,6 @@ module.exports =  {
             }
 
             data[i].value = 1;
-            data[i].id = data[i].caseNumber; // do this serverside
             data[i].parentId = data[i][sortBy];
         }
 

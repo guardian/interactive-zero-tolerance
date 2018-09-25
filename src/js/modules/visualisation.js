@@ -128,6 +128,7 @@ module.exports =  {
         });
 
         var groups = [];
+        var totalOffset = 0;
 
         packs.forEach(function(p) {
             groups[p.id] = [{
@@ -138,7 +139,20 @@ module.exports =  {
             groups[p.id] = groups[p.id].concat(data.filter(function(d)  {return d[sortBy] == p.id; }));
             groups[p.id] = this.packNodes(groups[p.id]);
 
-            // position first group at 0 y and keep adding some how./????
+            var difference = 0;
+
+            groups[p.id].descendants().forEach(function(d) {
+                if (d.depth == 0) {
+                    parentRadius = d.r
+                    difference = d.x - (totalOffset + parentRadius)
+                }
+
+                if (d.depth == 0 || d.depth == 1) {
+                    d.x = totalOffset + parentRadius
+                } else {
+                    d.x = d.x - difference;
+                }
+            });
         }.bind(this));
 
         return groups['Mexico'];
@@ -154,7 +168,6 @@ module.exports =  {
             .size([width, height])
             .radius(function(){ return radius })
             .padding(function(d) {
-                console.log(d);
                 return d.depth == 1 ? nodePadding : groupPadding;
             });
 
@@ -162,7 +175,7 @@ module.exports =  {
     },
 
     animate: function(positionedData) {
-        // maybe remove this, it causes a lot of visual noise
+        // maybe remove this, it causes a lot of visual noise - at least use number generated ids to ensure better sorting...
         positionedData.sort(function(a,b){
             return a.id.localeCompare(b.id.toLowerCase());
         });

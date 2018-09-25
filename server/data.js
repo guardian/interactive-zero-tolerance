@@ -57,8 +57,12 @@ function cherryPickFields() {
             id: data[i].caseNumber,
             nationality: data[i].nationality,
             plea: data[i].plea,
-            court: data[i].court
-        })
+            court: data[i].court,
+            gender: data[i].gender,
+            crossing: data[i].location,
+            sentenced: data[i].offence,
+            day: data[i].judgmentFiled
+        });
     }
 
     return newData;

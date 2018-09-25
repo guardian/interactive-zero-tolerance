@@ -177,7 +177,7 @@ module.exports =  {
             var id = sortBy ? 'All cases' : d.id;
 
             if (d.depth === 1) {
-                $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(d.x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + id + '</span><span class=\'uit-canvas__label-value\'>' + (100 / total * d.value).toFixed(2) + '%</span><h3>');
+                $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(d.x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + id + '</span><span class=\'uit-canvas__label-value\'>' + parseFloat((100 / total * d.value).toFixed(2)) + '%</span><h3>');
             }
         })
     }

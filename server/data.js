@@ -59,13 +59,26 @@ function cherryPickFields() {
             plea: data[i].plea,
             court: data[i].court,
             gender: data[i].gender,
-            crossing: data[i].location,
+            crossing: getCounty(data[i].location),
             sentenced: data[i].offence,
             day: data[i].judgmentFiled
         });
     }
 
     return newData;
+}
+
+function getCounty(string) {
+    console.log(string);
+    if (string) {
+        string = string.split(',');
+
+        if (string.length > 1) {
+            return string[1]
+        }
+    }
+
+    return 'unknown'
 }
 
 function cleanData(data) {
@@ -83,13 +96,12 @@ module.exports = function getData() {
 
     if (newData) {
         console.log('fetching new data... This may take a few minutes');
-        console.log('hey');
         fetchData(function(result) {
             console.log(result);
             data = result;
-            console.log(data);
             fs.writeFileSync('./.data/data.json', JSON.stringify(data));
             data = cleanData(data);
+            console.log('done');
             isDone = true;
         });
     } else {

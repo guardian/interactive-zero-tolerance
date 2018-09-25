@@ -114,7 +114,8 @@ module.exports =  {
 
         this.animate(root.leaves());
         if (sortBy == 'default') {
-            $('.uit-canvas__labels').empty();
+            this.createLabels(root.descendants(), sortBy);
+            // $('.uit-canvas__labels').empty();
         } else {
             this.createLabels(root.descendants());
         }
@@ -165,15 +166,16 @@ module.exports =  {
         ctx.restore();
     },
 
-    createLabels: function(packedData) {
+    createLabels: function(packedData, sortBy = null) {
         $('.uit-canvas__labels').empty();
 
         packedData.forEach(function(d) {
             var large = d.value > 80;
             var top = large ? d.y : Math.floor(d.y - d.r - 14);
- 
+            var id = sortBy ? 'All cases' : d.id;
+
             if (d.depth === 1) {
-                $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(d.x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + d.id + '</span><span class=\'uit-canvas__label-value\'>' + d.value + '</span><h3>');
+                $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(d.x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + id + '</span><span class=\'uit-canvas__label-value\'>' + d.value + '</span><h3>');
             }
         })
     }

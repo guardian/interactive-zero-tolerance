@@ -121,6 +121,11 @@ module.exports =  {
     },
 
     animate: function(positionedData) {
+        // maybe remove this, it causes a lot of visual noise
+        positionedData.sort(function(a,b){
+            return a.id.localeCompare(b.id.toLowerCase());
+        });
+
         positionedData.forEach(function(positionedDataPoint, i) {
             data[i].sx = data[i].x || width / 2;
             data[i].sy = data[i].y || height / 2; 
@@ -153,7 +158,7 @@ module.exports =  {
             ctx.beginPath();
             ctx.moveTo(d.x + radius, d.y);
             ctx.arc(d.x, d.y, radius, 0, 2 * Math.PI);
-            ctx.fillStyle = '#c70000';
+            ctx.fillStyle = '#121212';
             ctx.fill();
         }.bind(this));
 

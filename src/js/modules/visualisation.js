@@ -137,6 +137,8 @@ module.exports =  {
             groups[p.id] = groups[p.id].concat(p);
             groups[p.id] = groups[p.id].concat(data.filter(function(d)  {return d[sortBy] == p.id; }));
             groups[p.id] = this.packNodes(groups[p.id]);
+
+            // position first group at 0 y and keep adding some how./????
         }.bind(this));
 
         return groups['Mexico'];
@@ -165,11 +167,11 @@ module.exports =  {
             return a.id.localeCompare(b.id.toLowerCase());
         });
 
-        positionedData.forEach(function(positionedDataPoint, i) {
-            data[i].sx = data[i].x || width / 2;
-            data[i].sy = data[i].y || height / 2; 
-            data[i].tx = positionedDataPoint.x;
-            data[i].ty = positionedDataPoint.y; 
+        data.forEach(function(dataPoint, i) {
+            dataPoint.sx = data[i].x || width / 2;
+            dataPoint.sy = data[i].y || height / 2; 
+            dataPoint.tx = positionedData[i] ? positionedData[i].x : -200; // instead of -200 you should randomly generate a number off screen
+            dataPoint.ty = positionedData[i] ? positionedData[i].y : -200; // instead of -200 you should randomly generate a number off screen 
         });
 
         if (timer !== undefined) {

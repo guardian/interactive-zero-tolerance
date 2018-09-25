@@ -83,6 +83,22 @@ module.exports =  {
             data[i].parentId = data[i][sortBy];
         }
 
+        if (sortBy == 'nationality') {
+            var root = this.linearPack(sortBy);
+        } else {
+            var root = this.regularPack(sortBy);
+        }
+
+        this.animate(root.leaves());
+
+        if (sortBy == 'default') {
+            this.createLabels(root.descendants(), root.leaves().length, sortBy);
+        } else {
+            this.createLabels(root.descendants(), root.leaves().length);
+        }
+    },
+
+    regularPack: function(sortBy) {
         var upperLevels = [{
             id: 'cases',
             parentId: null
@@ -95,10 +111,38 @@ module.exports =  {
             }
         });
 
-        upperLevels = upperLevels.concat(middleLevels);
+        var levels = upperLevels.concat(middleLevels);
+            levels = levels.concat(data);
 
-        var levels = upperLevels.concat(data);
+        var root = this.packNodes(levels);
 
+        return root;
+    },
+
+    linearPack: function(sortBy) {
+        var packs = _.map(_.countBy(data, sortBy), function (value, key) {
+            return {
+                id: key,
+                parentId: 'parent',
+            }
+        });
+
+        var groups = [];
+
+        packs.forEach(function(p) {
+            groups[p.id] = [{
+                id: 'parent',
+                parentId: null
+            }];
+            groups[p.id] = groups[p.id].concat(p);
+            groups[p.id] = groups[p.id].concat(data.filter(function(d)  {return d[sortBy] == p.id; }));
+            groups[p.id] = this.packNodes(groups[p.id]);
+        }.bind(this));
+
+        return groups['Mexico'];
+    },
+
+    packNodes: function(levels) {
         var root = d3.stratify()
             (levels)
             .sum(function(d) { return d.value; })
@@ -108,19 +152,11 @@ module.exports =  {
             .size([width, height])
             .radius(function(){ return radius })
             .padding(function(d) {
+                console.log(d);
                 return d.depth == 1 ? nodePadding : groupPadding;
             });
 
-        pack(root);
-
-        this.animate(root.leaves());
-
-        if (sortBy == 'default') {
-            this.createLabels(root.descendants(), root.leaves().length, sortBy);
-            // $('.uit-canvas__labels').empty();
-        } else {
-            this.createLabels(root.descendants(), root.leaves().length);
-        }
+        return pack(root);
     },
 
     animate: function(positionedData) {

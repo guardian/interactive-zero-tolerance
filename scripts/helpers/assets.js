@@ -72,7 +72,9 @@ module.exports = {
         });
 
         handlebars.registerHelper('marked', function(string) {
-            return markdown.toHTML(string);
+            if (string) {
+                return markdown.toHTML(string);
+            }
         });
 
         handlebars.registerHelper('markedCap', function(string) {

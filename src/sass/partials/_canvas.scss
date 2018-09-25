@@ -32,15 +32,17 @@
     animation: fadeIn 0.8s ease-in;
 
     &--large {
-        font-size: 20px;
-        text-align: center;
+        @include mq(tablet) {
+            font-size: 20px;
+            text-align: center;
 
-        .uit-canvas__label-descriptor {
-            display: block;
-        }
+            .uit-canvas__label-descriptor {
+                display: block;
+            }
 
-        .uit-canvas__label-value {
-            font-size: 28px;
+            .uit-canvas__label-value {
+                font-size: 28px;
+            }
         }
     }
 }

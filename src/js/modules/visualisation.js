@@ -28,6 +28,7 @@ module.exports =  {
         this.setupCanvas();
         this.bindings();
         this.setSizing();
+        this.createIgnored();
         this.calculatePositions();
     },
 
@@ -71,12 +72,36 @@ module.exports =  {
         }
     },
 
+    createIgnored: function() {
+        for (var i = 0; i < 458; i++) {
+            data.push({
+                ignored: true
+            })
+        }
+
+        for (var i = 0; i < data.length; i++) {
+            data[i].id = i;
+        }
+    },
+
     calculatePositions: function() {
         var sortBy = $('.uit-canvas').attr('data-set');
 
         for (var i in data) {
-            if (!data[i][sortBy]) {
-                data[i][sortBy] = 'unknown';
+            if (sortBy === 'default') {
+                data[i][sortBy] = 'All cases';
+            } else if (sortBy === 'remove-ignored') {
+                if (data[i].ignored) {
+                    data[i][sortBy] = 'Serious offences';
+                } else {
+                    data[i][sortBy] = 'Low level immigration offenses';
+                }
+            } else {
+                if (data[i].ignored) {
+                    data[i][sortBy] = 'Ignored';
+                } else if (!data[i][sortBy]) {
+                    data[i][sortBy] = 'Unknown';
+                }
             }
 
             data[i].value = 1;
@@ -86,12 +111,7 @@ module.exports =  {
         var root = this.regularPack(sortBy);
 
         this.animate(root.leaves());
-
-        if (sortBy == 'default') {
-            this.createLabels(root.descendants(), root.leaves().length, sortBy);
-        } else {
-            this.createLabels(root.descendants(), root.leaves().length);
-        }
+        this.createLabels(root.descendants(), root.leaves().length);
     },
 
     regularPack: function(sortBy) {
@@ -101,14 +121,16 @@ module.exports =  {
         }];
 
         var middleLevels = _.map(_.countBy(data, sortBy), function (value, key) {
-            return level = {
-                id: key,
-                parentId: 'cases'
+            if (key !== 'Ignored') {
+                return level = {
+                    id: key,
+                    parentId: 'cases'
+                }
             }
         });
 
-        var levels = upperLevels.concat(middleLevels);
-            levels = levels.concat(data);
+        var levels = upperLevels.concat(middleLevels.filter(Boolean));
+            levels = levels.concat(data.filter(function(d) { return d.parentId !== 'Ignored' }));
 
         var root = this.packNodes(levels);
 
@@ -134,15 +156,15 @@ module.exports =  {
     animate: function(positionedData) {
         // maybe remove this, it causes a lot of visual noise - at least use number generated ids to ensure better sorting...
         positionedData.sort(function(a,b){
-            return a.id.localeCompare(b.id.toLowerCase());
+            return b.id - a.id;
         });
 
         data.forEach(function(dataPoint, i) {
             dataPoint.sx = data[i].x || width / 2;
             dataPoint.sy = data[i].y || height / 2; 
-            dataPoint.tx = positionedData[i] ? positionedData[i].x : -200; // instead of -200 you should randomly generate a number off screen
+            dataPoint.tx = positionedData[i] ? positionedData[i].x : width / 2;
             dataPoint.ty = positionedData[i] ? positionedData[i].y : -200; // instead of -200 you should randomly generate a number off screen 
-        });
+        }.bind(this));
 
         if (timer !== undefined) {
             timer.stop();
@@ -161,6 +183,16 @@ module.exports =  {
         }.bind(this), 0);
     },
 
+    offScreen: function(number) {
+        var negative = Math.random() < 0.5;
+
+        if (negative) {
+            return -(radius * 2);
+        } else {
+            return number + (radius * 2);
+        }
+    },
+
     draw: function() {
         ctx.clearRect(0, 0, width, height);
         ctx.save();
@@ -176,16 +208,15 @@ module.exports =  {
         ctx.restore();
     },
 
-    createLabels: function(packedData, total, sortBy = null) {
+    createLabels: function(packedData, total) {
         $('.uit-canvas__labels').empty();
 
         packedData.forEach(function(d) {
             var large = d.value > 80;
             var top = large ? d.y : Math.floor(d.y - d.r - 14);
-            var id = sortBy ? 'All cases' : d.id;
 
             if (d.depth === 1) {
-                $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(d.x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + id + '</span><span class=\'uit-canvas__label-value\'>' + parseFloat((100 / total * d.value).toFixed(2)) + '%</span><h3>');
+                $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(d.x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + d.id + '</span><span class=\'uit-canvas__label-value\'>' + parseFloat((100 / total * d.value).toFixed(2)) + '%</span><h3>');
             }
         })
     }

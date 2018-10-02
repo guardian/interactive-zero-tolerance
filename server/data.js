@@ -53,25 +53,21 @@ function cherryPickFields() {
     var newData = [];
 
     for (var i in data) {
-//         console.log(data[i]);
-
         newData.push({
             id: data[i].caseNumber,
             nationality: data[i].nationality,
             court: data[i].court,
-            gender: data[i].gender,
-            crossing: data[i]['county,State'],
+            gender: getGender(data[i].gender),
+            crossing: getState(data[i]['county,State']),
             sentenced: data[i].offence,
             sentence: data[i].sentenceLengthCategory
         });
     }
 
-        console.log(newData);
-
     return newData;
 }
 
-function getCounty(string) {
+function getState(string) {
     if (string) {
         string = string.split(',');
 
@@ -80,7 +76,19 @@ function getCounty(string) {
         }
     }
 
-    return 'unknown'
+    return 'Unknown'
+}
+
+function getGender(string) {
+    if (string) {
+        if (string === 'M') {
+            return 'Male';
+        } else if (string === 'F') {
+            return 'Female';
+        }
+    }
+
+    return 'Unknown';
 }
 
 function cleanData(data) {

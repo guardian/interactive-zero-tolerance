@@ -90,7 +90,7 @@ module.exports =  {
         for (var i in data) {
             if (sortBy === 'default') {
                 data[i][sortBy] = 'All cases';
-            } else if (sortBy === 'remove-ignored') {
+            } else if (sortBy === 'charges') {
                 if (data[i].ignored) {
                     data[i][sortBy] = 'Serious offences';
                 } else {
@@ -156,7 +156,7 @@ module.exports =  {
     animate: function(positionedData) {
         // maybe remove this, it causes a lot of visual noise - at least use number generated ids to ensure better sorting...
         positionedData.sort(function(a,b){
-            return b.id - a.id;
+            return a.id - b.id;
         });
 
         data.forEach(function(dataPoint, i) {

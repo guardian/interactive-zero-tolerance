@@ -2,43 +2,33 @@
     <div class='uit-container'>
         <div class='uit-content'>
             {{{ markedCap intro }}}
-
-            <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ sectionOneTitle }}</span></h3>
-
-            {{{ markedCap sectionOne }}}
         </div>
     </div>
 </div>
 
 <div class='uit-break'>
     <div class='uit-container'>
-        <div class='uit-break-block' data-set='remove-ignored'>
+        <div class='uit-break-block' data-set='charges'>
             <div class='uit-content'>
-                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ nationalityTitle }}</span></h3>
-                {{{ marked nationality }}}
+                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ chargesTitle }}</span></h3>
+                {{{ marked charges }}}
             </div>
         </div>
 
-        <div class='uit-break-block' data-set='gender'>
+        <div class='uit-break-block' data-set='sentenced'>
             <div class='uit-content'>
-                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ genderTitle }}</span></h3>
-                {{{ marked gender }}}
-                <div class='uit-note'>{{{ marked genderNote }}}</div>
+                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ sentencedTitle }}</span></h3>
+                {{{ marked sentenced }}}
             </div>
         </div>
+    </div>
+</div>
 
-        <div class='uit-break-block' data-set='nationality'>
-            <div class='uit-content'>
-                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ nationalityTitle }}</span></h3>
-                {{{ marked nationality }}}
-            </div>
-        </div>
-
-        <div class='uit-break-block' data-set='crossing'>
-            <div class='uit-content'>
-                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ crossingTitle }}</span></h3>
-                {{{ marked crossing }}}
-            </div>
+<div class='uit-body'>
+    <div class='uit-container'>
+        <div class='uit-content'>
+            <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ sectionOneTitle }}</span></h3>
+            {{{ markedCap sectionOne }}}
         </div>
     </div>
 </div>
@@ -56,24 +46,25 @@
 
 <div class='uit-break'>
     <div class='uit-container'>
-        <div class='uit-break-block uit-break-block--first' data-set='sentenced'>
+        <div class='uit-break-block uit-break-block--first' data-set='nationality'>
             <div class='uit-content'>
-                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ sentencedTitle }}</span></h3>
-                {{{ marked sentenced }}}
+                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ nationalityTitle }}</span></h3>
+                {{{ marked nationality }}}
             </div>
         </div>
 
-        <div class='uit-break-block' data-set='court'>
+       <div class='uit-break-block' data-set='gender'>
             <div class='uit-content'>
-                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ courtTitle }}</span></h3>
-                {{{ marked court }}}
+                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ genderTitle }}</span></h3>
+                {{{ marked gender }}}
+                <div class='uit-note'>{{{ marked genderNote }}}</div>
             </div>
         </div>
 
-        <div class='uit-break-block' data-set='sentence'>
+        <div class='uit-break-block' data-set='previous'>
             <div class='uit-content'>
-                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ dayTitle }}</span></h3>
-                {{{ marked day }}}
+                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ previousTitle }}</span></h3>
+                {{{ marked previous }}}
             </div>
         </div>
     </div>

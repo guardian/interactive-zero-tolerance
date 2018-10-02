@@ -10,8 +10,8 @@ var newData = true;
 
 function fetchData(callback) {
     gsjson({
-        spreadsheetId: '1JBGvwjE_KsMhcsmhtYwfpC9N2Xh2AJLOWxfb8eWxTPY',
-        workSheets: 'MASTER',
+        spreadsheetId: '1yQLS5GHxHc3DyT2K79N3YiGKb4Fy759VKu2RvRE3M10',
+        workSheets: 'USE ONLY',
         credentials: keys.google
     })
     .then(function(result) {

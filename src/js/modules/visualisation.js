@@ -83,11 +83,7 @@ module.exports =  {
             data[i].parentId = data[i][sortBy];
         }
 
-        if (sortBy == 'nationality') {
-            var root = this.linearPack(sortBy);
-        } else {
-            var root = this.regularPack(sortBy);
-        }
+        var root = this.regularPack(sortBy);
 
         this.animate(root.leaves());
 
@@ -117,45 +113,6 @@ module.exports =  {
         var root = this.packNodes(levels);
 
         return root;
-    },
-
-    linearPack: function(sortBy) {
-        var packs = _.map(_.countBy(data, sortBy), function (value, key) {
-            return {
-                id: key,
-                parentId: 'parent',
-            }
-        });
-
-        var groups = [];
-        var totalOffset = 0;
-
-        packs.forEach(function(p) {
-            groups[p.id] = [{
-                id: 'parent',
-                parentId: null
-            }];
-            groups[p.id] = groups[p.id].concat(p);
-            groups[p.id] = groups[p.id].concat(data.filter(function(d)  {return d[sortBy] == p.id; }));
-            groups[p.id] = this.packNodes(groups[p.id]);
-
-            var difference = 0;
-
-            groups[p.id].descendants().forEach(function(d) {
-                if (d.depth == 0) {
-                    parentRadius = d.r
-                    difference = d.x - (totalOffset + parentRadius)
-                }
-
-                if (d.depth == 0 || d.depth == 1) {
-                    d.x = totalOffset + parentRadius
-                } else {
-                    d.x = d.x - difference;
-                }
-            });
-        }.bind(this));
-
-        return groups['Mexico'];
     },
 
     packNodes: function(levels) {

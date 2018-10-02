@@ -40,6 +40,13 @@
         margin: 0;
     }
 
+    .uit-note p {
+        font-family: 'Guardian Sans Web';
+        font-size: 14px;
+        color: $c-dark-grey;
+        padding-bottom: 0;
+    }
+
     .uit-content {
         position: relative;
         z-index: 2;

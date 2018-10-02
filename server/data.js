@@ -6,7 +6,7 @@ var userHome = require('user-home');
 var keys = require(userHome + '/.gu/interactives.json');
 
 var data;
-var newData = true;
+var newData = false;
 
 function fetchData(callback) {
     gsjson({
@@ -53,23 +53,25 @@ function cherryPickFields() {
     var newData = [];
 
     for (var i in data) {
+//         console.log(data[i]);
+
         newData.push({
             id: data[i].caseNumber,
             nationality: data[i].nationality,
-            plea: data[i].plea,
             court: data[i].court,
             gender: data[i].gender,
-            crossing: getCounty(data[i].location),
+            crossing: data[i]['county,State'],
             sentenced: data[i].offence,
-            day: data[i].judgmentFiled
+            sentence: data[i].sentenceLengthCategory
         });
     }
+
+        console.log(newData);
 
     return newData;
 }
 
 function getCounty(string) {
-    console.log(string);
     if (string) {
         string = string.split(',');
 
@@ -82,7 +84,7 @@ function getCounty(string) {
 }
 
 function cleanData(data) {
-    data = removeIgnoredCases();
+    // data = removeIgnoredCases();
     data = removeDuplicates();
     data = cherryPickFields();
 
@@ -106,7 +108,7 @@ module.exports = function getData() {
         });
     } else {
         console.log('cleaning old data');
-        data = JSON.parse(fs.readFileSync('./.data/cleanData.json'));
+        data = JSON.parse(fs.readFileSync('./.data/data.json'));
         data = cleanData(data);
         isDone = true;
     }

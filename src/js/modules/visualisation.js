@@ -105,7 +105,11 @@ module.exports =  {
             data[i].parentId = data[i][sortBy];
         }
 
-        var root = this.regularPack(sortBy);
+        if (sortBy === 'nationality') {
+            var root = this.mapPack(sortBy);
+        } else {
+            var root = this.regularPack(sortBy);
+        }
 
         this.animate(root.leaves());
         this.createLabels(root.descendants(), root.leaves().length);
@@ -138,7 +142,6 @@ module.exports =  {
         var root = d3.stratify()
             (levels)
             .sum(function(d) { return d.value; })
-            .sort(function(a, b) { return b.value - a.value; });;
 
         var pack = d3.pack()
             .size([width, height])
@@ -151,7 +154,6 @@ module.exports =  {
     },
 
     animate: function(positionedData) {
-        // maybe remove this, it causes a lot of visual noise - at least use number generated ids to ensure better sorting...
         positionedData.sort(function(a,b){
             return a.id - b.id;
         });

@@ -2,9 +2,11 @@ var d3 = Object.assign(
     require('d3-selection'),
     require('d3-hierarchy'),
     require('d3-timer'),
-    require('d3-ease')
+    require('d3-ease'),
+    require('d3-geo')
 )
 
+var topojson = require('topojson');
 var _ = require('underscore');
 
 var data = require('../../../.data/cleanData.json');
@@ -107,20 +109,42 @@ module.exports =  {
         }
 
         if (sortBy === 'nationality') {
+            this.drawMap(sortBy);
+
             var root = this.mapPack(sortBy);
         } else {
             var root = this.regularPack(sortBy);
+            var labels = root.descendants().filter(function(d) { return d.depth === 1 });
+            var nodes = root.leaves();
+
+            this.animate(nodes);
+
+            labels.forEach(function(d) {
+                this.createLabel(d.id, d.value, root.leaves().length, d.x, d.y, d.r);
+            }.bind(this));
+        }
+    },
+
+    mapPack: function(sortBy) {
+        
+    },
+
+    drawMap: function(sortBy) {
+        if (sortBy === 'nationality') {
+            var mapData = require('../data/world-110m.json');
+            console.log(mapData);
         }
 
-        this.animate(root.leaves());
+        var countries = topojson.feature(mapData, mapData.objects.countries).features;
+        var projection = d3.geoMercator().scale(width).translate([width / 2, height / 2])
+        var path = d3.geoPath().projection(projection).context(ctx);
 
-        root.descendants().forEach(function(d) {
-            if (d.depth === 1) {
-                this.createLabel(d.id, d.value, root.leaves().length, d.x, d.y, d.r);
-            }
-        }.bind(this));
-
-        // this.createLabels(root.descendants(), root.leaves().length);
+        countries.forEach(function(d, i) {
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            path(d);
+            ctx.fill();
+        });
     },
 
     regularPack: function(sortBy) {
@@ -188,16 +212,6 @@ module.exports =  {
                 timer.stop();
             }
         }.bind(this), 0);
-    },
-
-    offScreen: function(number) {
-        var negative = Math.random() < 0.5;
-
-        if (negative) {
-            return -(radius * 2);
-        } else {
-            return number + (radius * 2);
-        }
     },
 
     draw: function() {

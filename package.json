@@ -32,6 +32,7 @@
     "d3-beeswarm": "0.0.5",
     "d3-ease": "^1.0.5",
     "d3-force": "^1.1.2",
+    "d3-geo": "^1.11.1",
     "d3-scale": "^2.1.2",
     "d3-selection": "^1.3.2",
     "d3-timer": "^1.0.9",
@@ -51,6 +52,7 @@
     "stevedore": "^0.1.4",
     "stringify": "^5.1.0",
     "sync-request": "^3.0.1",
+    "topojson": "^3.0.2",
     "uglify-js": "^3.4.7",
     "user-home": "^2.0.0"
   }

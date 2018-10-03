@@ -19,10 +19,14 @@
 
 .uit-subhead {
     @include banding($c-yellow);
-    font-size: 28px;
+    font-size: 20px;
     font-weight: bold;
     margin: 0;
     margin-bottom: 4px;
+
+    @include mq(desktop) {
+        font-size: 28px;
+    }
 }
 
 .uit-button {

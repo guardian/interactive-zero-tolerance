@@ -39,8 +39,6 @@ function cherryPickFields() {
         });
     }
 
-    console.log(newData);
-
     return newData;
 }
 

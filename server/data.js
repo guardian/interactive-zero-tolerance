@@ -24,45 +24,22 @@ function fetchData(callback) {
     });
 }
 
-function removeIgnoredCases() {
-    for (var i in data) {
-        if (data[i]['useOrIgnore?'] == 'ignore') {
-            delete data[i];
-        }
-    }
-
-    data = data.filter(Object);
-
-    return data;
-}
-
-function removeDuplicates() {
-    // ToDo: Come back and check how duplicates are entered
-    for (var i in data) {
-        if (data[i]['duplicate?']) {
-            delete data[i];
-        }
-    }
-
-    data = data.filter(Object);
-
-    return data;
-}
-
 function cherryPickFields() {
     var newData = [];
 
     for (var i in data) {
         newData.push({
-            id: data[i].caseNumber,
+            id: i,
             nationality: data[i].nationality,
-            court: data[i].court,
             gender: getGender(data[i].gender),
-            crossing: getState(data[i]['county,State']),
+            location: getState(data[i]['county,State']),
+            previousDeportation: data[i].timeSincePreviousDeportation,
             sentenced: data[i].offence,
             sentence: data[i].sentenceLengthCategory
         });
     }
+
+    console.log(newData);
 
     return newData;
 }
@@ -92,8 +69,6 @@ function getGender(string) {
 }
 
 function cleanData(data) {
-    // data = removeIgnoredCases();
-    data = removeDuplicates();
     data = cherryPickFields();
 
     fs.writeFileSync('./.data/cleanData.json', JSON.stringify(data));

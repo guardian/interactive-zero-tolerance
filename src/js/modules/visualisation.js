@@ -75,12 +75,9 @@ module.exports =  {
     createIgnored: function() {
         for (var i = 0; i < 458; i++) {
             data.push({
-                ignored: true
+                ignored: true,
+                id: data.length + i
             })
-        }
-
-        for (var i = 0; i < data.length; i++) {
-            data[i].id = i;
         }
     },
 

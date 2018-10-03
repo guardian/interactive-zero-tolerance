@@ -78,12 +78,14 @@ module.exports = {
         });
 
         handlebars.registerHelper('markedCap', function(string) {
-            var markedIntro = markdown.toHTML(string);
-            var intro = markedIntro.slice(3);
-            var firstCharacter = intro.substring(0, 1);
-                intro = intro.slice(1);
+            if (string) {
+                var markedIntro = markdown.toHTML(string);
+                var intro = markedIntro.slice(3);
+                var firstCharacter = intro.substring(0, 1);
+                    intro = intro.slice(1);
 
-            return '<p><span class=\'uit-drop\'><span class=\'uit-drop__inner\'>' + firstCharacter + '</span></span>' + intro;
+                return '<p><span class=\'uit-drop\'><span class=\'uit-drop__inner\'>' + firstCharacter + '</span></span>' + intro;
+            }
         });
 
         handlebars.registerHelper('inc', function(value, options) {

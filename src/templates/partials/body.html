@@ -17,8 +17,8 @@
 
         <div class='uit-break-block' data-set='sentenced'>
             <div class='uit-content'>
-                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ sentencedTitle }}</span></h3>
-                {{{ marked sentenced }}}
+                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ breakdownTitle }}</span></h3>
+                {{{ marked breakdown }}}
             </div>
         </div>
     </div>
@@ -27,19 +27,9 @@
 <div class='uit-body'>
     <div class='uit-container'>
         <div class='uit-content'>
+            {{{ marked introPartTwo }}}
             <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ sectionOneTitle }}</span></h3>
             {{{ markedCap sectionOne }}}
-        </div>
-    </div>
-</div>
-
-<div class='uit-body'>
-    <div class='uit-container'>
-        <div class='uit-content'>
-            <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ sectionTwoTitle }}</span></h3>
-            {{{ markedCap sectionTwo }}}
-            {{{ marked copyAndPaste }}}
-            {{{ marked sectionTwoContinued }}}
         </div>
     </div>
 </div>
@@ -48,8 +38,8 @@
     <div class='uit-container'>
         <div class='uit-break-block uit-break-block--first' data-set='nationality'>
             <div class='uit-content'>
-                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ nationalityTitle }}</span></h3>
-                {{{ marked nationality }}}
+                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ countryTitle }}</span></h3>
+                {{{ marked country }}}
             </div>
         </div>
 
@@ -61,18 +51,31 @@
             </div>
         </div>
 
-        <div class='uit-break-block' data-set='previous'>
+       <div class='uit-break-block' data-set='previousDeportation'>
             <div class='uit-content'>
-                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ previousTitle }}</span></h3>
-                {{{ marked previous }}}
+                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ previousDeportationTitle }}</span></h3>
+                {{{ marked previousDeportation }}}
+                <div class='uit-note'>{{{ marked previousDeportationNote }}}</div>
+            </div>
+        </div>
+
+       <div class='uit-break-block' data-set='location'>
+            <div class='uit-content'>
+                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ locationTitle }}</span></h3>
+                {{{ marked location }}}
+                <div class='uit-note'>{{{ marked locationNote }}}</div>
             </div>
         </div>
     </div>
 </div>
 
+
 <div class='uit-body'>
     <div class='uit-container'>
         <div class='uit-content'>
+            {{{ marked sectionOneContinued }}}
+            <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ sectionTwoTitle }}</span></h3>
+            {{{ markedCap sectionTwo }}}
             <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ sectionThreeTitle }}</span></h3>
             {{{ markedCap sectionThree }}}
         </div>
@@ -81,17 +84,10 @@
 
 <div class='uit-break'>
     <div class='uit-container'>
-        <div class='uit-break-block uit-break-block--first' data-set='plea'>
-            <div class='uit-content'>
-                <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ pleaTitle }}</span></h3>
-                {{{ marked plea }}}
-            </div>
-        </div>
-
-        <div class='uit-break-block' data-set='sentence'>
+        <div class='uit-break-block uit-break-block--first' data-set='sentence'>
             <div class='uit-content'>
                 <h3 class='uit-subhead'><span class='uit-subhead__inner'>{{ sentenceTitle }}</span></h3>
-                {{{ marked sentences }}}
+                {{{ marked sentence }}}
             </div>
         </div>
     </div>
@@ -105,7 +101,6 @@
         </div>
     </div>
 </div>
-
 
 <div class='uit-canvas'>
     <div class='uit-canvas__labels'></div>

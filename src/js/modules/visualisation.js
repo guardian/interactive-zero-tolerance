@@ -34,6 +34,7 @@ module.exports =  {
 
     bindings: function() {
         $('.uit-canvas').on('shift', function() {
+            this.clearLabels();
             this.calculatePositions();
         }.bind(this));
 
@@ -112,7 +113,14 @@ module.exports =  {
         }
 
         this.animate(root.leaves());
-        this.createLabels(root.descendants(), root.leaves().length);
+
+        root.descendants().forEach(function(d) {
+            if (d.depth === 1) {
+                this.createLabel(d.id, d.value, root.leaves().length, d.x, d.y, d.r);
+            }
+        }.bind(this));
+
+        // this.createLabels(root.descendants(), root.leaves().length);
     },
 
     regularPack: function(sortBy) {
@@ -207,16 +215,14 @@ module.exports =  {
         ctx.restore();
     },
 
-    createLabels: function(packedData, total) {
+    clearLabels: function(packedData, total) {
         $('.uit-canvas__labels').empty();
+    },
 
-        packedData.forEach(function(d) {
-            var large = d.value > 80;
-            var top = large ? d.y : Math.floor(d.y - d.r - 14);
+    createLabel: function(title, value, total, x, y, r) {
+        var large = value > 80;
+        var top = large ? y : Math.floor(y - r - 14);
 
-            if (d.depth === 1) {
-                $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(d.x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + d.id + '</span><span class=\'uit-canvas__label-value\'>' + parseFloat((100 / total * d.value).toFixed(2)) + '%</span><h3>');
-            }
-        })
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + parseFloat((100 / total * value).toFixed(2)) + '%</span><h3>');
     }
 };

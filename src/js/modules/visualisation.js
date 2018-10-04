@@ -144,14 +144,16 @@ module.exports =  {
     },
 
     drawMap: function() {
-        var mapData = topojson.feature(counties, counties.objects['border-counties']).features;
-        var projection = d3.geoMercator().fitSize([width, height]);
-        var path = d3.geoPath();
+        var mapData = topojson.feature(counties, counties.objects['border-counties']);
 
+        var projection = d3.geoMercator().fitSize([width, height], mapData);
+        var path = d3.geoPath().projection(projection);
 
-        svgCtx.append('path')
-            .datum(topojson.feature(counties, counties.objects['border-counties']))
-            .attr('d', d3.geoPath().projection(d3.geoMercator()))
+        svgCtx.selectAll('path')
+            .data(mapData.features)
+            .enter().append('path')
+            .attr('d', path)
+            .attr('class', function(d) { return d.properties.NAME; })
     },
 
     regularPack: function(sortBy) {

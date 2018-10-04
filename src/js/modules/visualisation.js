@@ -168,8 +168,8 @@ module.exports =  {
         data.forEach(function(dataPoint, i) {
             nodes.push({
                 id: dataPoint.id,
-                x: countyPositions[dataPoint.location] ? countyPositions[dataPoint.location].x : 0,
-                y: countyPositions[dataPoint.location] ? countyPositions[dataPoint.location].y : 0
+                x: countyPositions[dataPoint.location] ? countyPositions[dataPoint.location].x : width / 2,
+                y: countyPositions[dataPoint.location] ? countyPositions[dataPoint.location].y : -200
             });
 
             if (countyPositions[dataPoint.location]) {

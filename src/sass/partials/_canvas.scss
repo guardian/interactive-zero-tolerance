@@ -31,8 +31,10 @@
 
 .uit-canvas svg path {
     fill: $c-white;
-    stroke: $c-off-white;
+    stroke: $c-white;
     stroke-width: 2;
+    transition: fill 0.6s linear;
+    transition-delay: 0.2s;
 }
 
 .uit-canvas__labels {

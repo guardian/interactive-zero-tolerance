@@ -5,7 +5,8 @@ var d3 = Object.assign(
     require('d3-ease'),
     require('d3-geo'),
     require('d3-request'),
-    require('d3-scale')
+    require('d3-scale'),
+    require('d3-array')
 )
 
 var topojson = require('topojson');
@@ -131,13 +132,6 @@ module.exports =  {
             var root = this.mapPack(sortBy);
 
             this.animate(root.nodes);
-
-            for (var label in root.labels) {
-                var d = root.labels[label]
-                if (d.value) {
-                    this.createLabel(label, d.value, root.nodes.length, d.x, d.y, 10);
-                }
-            }
         } else {
             var root = this.regularPack(sortBy);
             var labels = root.descendants().filter(function(d) { return d.depth === 1 });
@@ -166,7 +160,7 @@ module.exports =  {
 
             countyPositions[$county.attr('class')] = {
                 x: $county.position().left + ($county.width() / 2),
-                y: ($county.position().top + ($county.height() / 2) + height * 0.16667) - scrollTop
+                y: ($county.position().top + ($county.height() / 2) + height * 0.16667) - scrollTop,
             }
         });
 
@@ -174,7 +168,8 @@ module.exports =  {
             nodes.push({
                 id: dataPoint.id,
                 x: countyPositions[dataPoint.location] ? countyPositions[dataPoint.location].x : width / 2,
-                y: countyPositions[dataPoint.location] ? countyPositions[dataPoint.location].y : -200
+                y: countyPositions[dataPoint.location] ? countyPositions[dataPoint.location].y : -200,
+                o: 0
             });
 
             if (countyPositions[dataPoint.location]) {
@@ -186,7 +181,11 @@ module.exports =  {
             }
         });
 
-        this.showMap(countyPositions);
+        if (!mapDrawn) {
+            this.colourMap(countyPositions);
+        }
+
+        this.showMap();
 
         return  {
             nodes: nodes,
@@ -211,15 +210,39 @@ module.exports =  {
             .enter().append('path')
             .attr('d', path)
             .attr('class', function(d) { return d.properties.NAME.toLowerCase().replace(/ /g, '-') + '-' + this.getState(d.properties.STATEFP); }.bind(this));
+    },
+
+    colourMap: function(countiesForMap) {
+        var dataArray = [];
+
+        for (var county in countiesForMap) {
+            var d = countiesForMap[county];
+
+            if (d.value) {
+                dataArray.push(d.value);
+            }
+        }
+
+        var minVal = d3.min(dataArray);
+        var maxVal = d3.max(dataArray);
+        var ramp = d3.scaleLinear().domain([minVal, maxVal]).range(['#dcdcdc', '#121212']);
+
+        for (var county in countiesForMap) {
+            var d = countiesForMap[county]
+
+            if (d.value) {
+                $('.' + county).attr('style', 'fill: ' + ramp(d.value));
+            }
+        }
 
         mapDrawn = true;
     },
 
-    showMap: function(data) {
+    showMap: function() {
         $('.uit-canvas svg').addClass('is-current');
     },
 
-    hideMap: function(data) {
+    hideMap: function() {
         $('.uit-canvas svg').removeClass('is-current');
     },
 
@@ -282,8 +305,10 @@ module.exports =  {
         data.forEach(function(dataPoint, i) {
             dataPoint.sx = data[i].x || width / 2;
             dataPoint.sy = data[i].y || height / 2; 
+            dataPoint.so = data[i].o || 1;
             dataPoint.tx = positionedData[i] ? positionedData[i].x : width / 2;
             dataPoint.ty = positionedData[i] ? positionedData[i].y : -200;
+            dataPoint.to = positionedData[i] ? positionedData[i].o : 1;
         }.bind(this));
 
         if (timer !== undefined) {
@@ -295,6 +320,7 @@ module.exports =  {
             data.forEach(function(dataPoint, i) {
                 dataPoint.x = dataPoint.sx * (1 - t) + dataPoint.tx * t;
                 dataPoint.y = dataPoint.sy * (1 - t) + dataPoint.ty * t;
+                dataPoint.o = dataPoint.so * (1 - t) + dataPoint.to * t;
             });
             this.draw();
             if (t === 1) {
@@ -311,7 +337,7 @@ module.exports =  {
             ctx.beginPath();
             ctx.moveTo(d.x + radius, d.y);
             ctx.arc(d.x, d.y, radius, 0, 2 * Math.PI);
-            ctx.fillStyle = '#121212';
+            ctx.fillStyle = 'rgba(18, 18, 18, ' + d.o + ')';
             ctx.fill();
         }.bind(this));
 

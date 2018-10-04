@@ -81,6 +81,8 @@ module.exports =  {
             .attr('height', height);
 
         svgCtx = d3.select('.uit-canvas svg');
+
+        mapDrawn = false;
     },
 
     setSizing: function() {

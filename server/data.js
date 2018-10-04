@@ -30,12 +30,13 @@ function cherryPickFields() {
     for (var i in data) {
         newData.push({
             id: i,
-            nationality: data[i].nationality,
+            nationality: data[i].countriesForVisualization,
             gender: getGender(data[i].gender),
             location: getLocation(data[i]['county,State']),
             previousDeportation: data[i].timeSincePreviousDeportation,
             sentenced: data[i].offence,
-            sentence: data[i].sentenceLengthCategory
+            sentence: data[i].sentenceLengthCategory,
+            outcome: data[i].outcome
         });
     }
 

@@ -9,6 +9,10 @@
         position: absolute;
         top: 0;
         left: 0;
+
+        @media screen and (min-height: 999px) {
+            top: -20vh;
+        }
     }
 }
 
@@ -25,6 +29,10 @@
 .uit-canvas__labels {
     position: relative;
     z-index: 5;
+
+    @media screen and (min-height: 999px) {
+        top: -20vh;
+    }
 }
 
 @keyframes fadeIn {

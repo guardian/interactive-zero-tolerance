@@ -13,6 +13,7 @@ var _ = require('underscore');
 
 var data = require('../../../.data/cleanData.json');
 var counties = require('../data/border-counties.json');
+var world = require('../data/world.json');
 var width;
 var height;
 var radius, nodePadding, groupPadding;
@@ -57,7 +58,7 @@ module.exports =  {
     setupCanvas: function() {
         width = $(window).width();
         height = $(window).height();
-        height = height > 1000 ? height / 10 * 8 : height;
+        height = height > 1000 ? height * 1.2 : height;
 
         $('.uit-canvas canvas').remove();
 
@@ -161,7 +162,7 @@ module.exports =  {
 
             countyPositions[$county.attr('class')] = {
                 x: $county.position().left + ($county.width() / 2),
-                y: ($county.position().top + ($county.height() / 2)) - scrollTop
+                y: ($county.position().top + ($county.height() / 2) + height * 0.16667) - scrollTop
             }
         });
 
@@ -181,8 +182,6 @@ module.exports =  {
             }
         });
 
-        console.log(countyPositions);
-
         return  {
             nodes: nodes,
             labels: countyPositions
@@ -194,6 +193,14 @@ module.exports =  {
 
         var projection = d3.geoMercator().fitSize([width, height], mapData);
         var path = d3.geoPath().projection(projection);
+
+        var worldData = topojson.feature(world, world.objects.land);
+
+        svgCtx.selectAll('path')
+            .data(worldData.features)
+            .enter().append('path')
+            .attr('d', path)
+            .attr('class', 'background');
 
         svgCtx.selectAll('path')
             .data(mapData.features)
@@ -305,6 +312,6 @@ module.exports =  {
         var large = value > 80;
         var top = large ? y : Math.floor(y - r - 14);
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + parseFloat((100 / total * value).toFixed(1)) + '%</span><h3>');
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + parseFloat((100 / total * value).toFixed(1)) + '%</span></h3>');
     }
 };

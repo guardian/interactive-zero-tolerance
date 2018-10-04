@@ -19,6 +19,7 @@ var height;
 var radius, nodePadding, groupPadding;
 var ctx;
 var svgCtx;
+var mapDrawn = false;
 var ease = d3.easeCubicOut;
 var timer;
 
@@ -143,6 +144,7 @@ module.exports =  {
             var nodes = root.leaves();
 
             this.animate(nodes);
+            this.hideMap();
 
             labels.forEach(function(d) {
                 this.createLabel(d.id, d.value, root.leaves().length, d.x, d.y, d.r);
@@ -151,7 +153,9 @@ module.exports =  {
     },
 
     mapPack: function(sortBy) {
-        this.drawMap();
+        if (!mapDrawn) {
+            this.drawMap();
+        }
 
         var nodes = [];
         var countyPositions = {};
@@ -182,6 +186,8 @@ module.exports =  {
             }
         });
 
+        this.showMap(countyPositions);
+
         return  {
             nodes: nodes,
             labels: countyPositions
@@ -190,10 +196,8 @@ module.exports =  {
 
     drawMap: function() {
         var mapData = topojson.feature(counties, counties.objects.counties);
-
         var projection = d3.geoMercator().fitSize([width, height], mapData);
         var path = d3.geoPath().projection(projection);
-
         var worldData = topojson.feature(world, world.objects.land);
 
         svgCtx.selectAll('path')
@@ -207,6 +211,16 @@ module.exports =  {
             .enter().append('path')
             .attr('d', path)
             .attr('class', function(d) { return d.properties.NAME.toLowerCase().replace(/ /g, '-') + '-' + this.getState(d.properties.STATEFP); }.bind(this));
+
+        mapDrawn = true;
+    },
+
+    showMap: function(data) {
+        $('.uit-canvas svg').addClass('is-current');
+    },
+
+    hideMap: function(data) {
+        $('.uit-canvas svg').removeClass('is-current');
     },
 
     getState: function(stateID) {

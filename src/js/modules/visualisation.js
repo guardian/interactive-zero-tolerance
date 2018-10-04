@@ -3,17 +3,20 @@ var d3 = Object.assign(
     require('d3-hierarchy'),
     require('d3-timer'),
     require('d3-ease'),
-    require('d3-geo')
+    require('d3-geo'),
+    require('d3-request')
 )
 
 var topojson = require('topojson');
 var _ = require('underscore');
 
 var data = require('../../../.data/cleanData.json');
+var counties = require('../data/border-counties.json');
 var width;
 var height;
 var radius, nodePadding, groupPadding;
 var ctx;
+var svgCtx;
 var ease = d3.easeCubicOut;
 var timer;
 
@@ -28,6 +31,7 @@ module.exports =  {
 
     readyToInit: function() {
         this.setupCanvas();
+        this.setupSVG();
         this.bindings();
         this.setSizing();
         this.createIgnored();
@@ -43,6 +47,7 @@ module.exports =  {
         $('.uit-canvas').on('reset', function() {
             $('.uit-canvas__labels').empty();
             this.setupCanvas();
+            this.setupSVG();
             this.setSizing();
             this.calculatePositions();
         }.bind(this));
@@ -61,6 +66,17 @@ module.exports =  {
             .attr('height', height);
 
         ctx = canvas.node().getContext('2d');
+    },
+
+    setupSVG: function() {
+        $('.uit-canvas svg').remove();
+
+        var svg = d3.select('.uit-canvas')
+            .append('svg')
+            .attr('width', width)
+            .attr('height', height);
+
+        svgCtx = d3.select('.uit-canvas svg');
     },
 
     setSizing: function() {
@@ -108,9 +124,7 @@ module.exports =  {
             data[i].parentId = data[i][sortBy];
         }
 
-        if (sortBy === 'nationality') {
-            this.drawMap(sortBy);
-
+        if (sortBy === 'location') {
             var root = this.mapPack(sortBy);
         } else {
             var root = this.regularPack(sortBy);
@@ -126,25 +140,18 @@ module.exports =  {
     },
 
     mapPack: function(sortBy) {
-        
+        this.drawMap();
     },
 
-    drawMap: function(sortBy) {
-        if (sortBy === 'nationality') {
-            var mapData = require('../data/world-110m.json');
-            console.log(mapData);
-        }
+    drawMap: function() {
+        var mapData = topojson.feature(counties, counties.objects['border-counties']).features;
+        var projection = d3.geoMercator().fitSize([width, height]);
+        var path = d3.geoPath();
 
-        var countries = topojson.feature(mapData, mapData.objects.countries).features;
-        var projection = d3.geoMercator().scale(width).translate([width / 2, height / 2])
-        var path = d3.geoPath().projection(projection).context(ctx);
 
-        countries.forEach(function(d, i) {
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            path(d);
-            ctx.fill();
-        });
+        svgCtx.append('path')
+            .datum(topojson.feature(counties, counties.objects['border-counties']))
+            .attr('d', d3.geoPath().projection(d3.geoMercator()))
     },
 
     regularPack: function(sortBy) {

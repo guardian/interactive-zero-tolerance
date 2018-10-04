@@ -3,6 +3,19 @@
     top: 0;
     left: 0;
     margin: auto;
+
+    svg,
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+}
+
+.uit-canvas svg path {
+    fill: $c-white;
+    stroke: $c-off-white;
+    stroke-width: 2;
 }
 
 .uit-canvas__labels {

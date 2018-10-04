@@ -351,7 +351,8 @@ module.exports =  {
     createLabel: function(title, value, total, x, y, r) {
         var large = value > 80;
         var top = large ? y : Math.floor(y - r - 14);
+        var number = parseFloat((100 / total * value).toFixed(1));
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + parseFloat((100 / total * value).toFixed(1)) + '%</span></h3>');
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + (number == 100 ? total : number + '%') + '</span></h3>');
     }
 };

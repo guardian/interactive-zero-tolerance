@@ -12,6 +12,10 @@
     }
 }
 
+.uit-canvas canvas {
+    z-index: 2;
+}
+
 .uit-canvas svg path {
     fill: $c-white;
     stroke: $c-off-white;

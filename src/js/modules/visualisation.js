@@ -4,7 +4,8 @@ var d3 = Object.assign(
     require('d3-timer'),
     require('d3-ease'),
     require('d3-geo'),
-    require('d3-request')
+    require('d3-request'),
+    require('d3-scale')
 )
 
 var topojson = require('topojson');
@@ -126,6 +127,15 @@ module.exports =  {
 
         if (sortBy === 'location') {
             var root = this.mapPack(sortBy);
+
+            this.animate(root.nodes);
+
+            for (var label in root.labels) {
+                var d = root.labels[label]
+                if (d.value) {
+                    this.createLabel(label, d.value, root.nodes.length, d.x, d.y, 10);
+                }
+            }
         } else {
             var root = this.regularPack(sortBy);
             var labels = root.descendants().filter(function(d) { return d.depth === 1 });
@@ -141,10 +151,44 @@ module.exports =  {
 
     mapPack: function(sortBy) {
         this.drawMap();
+
+        var nodes = [];
+        var countyPositions = {};
+        var scrollTop = $(document).scrollTop();
+
+        $('.uit-canvas path').each(function(i, county) {
+            var $county = $(county);
+
+            countyPositions[$county.attr('class')] = {
+                x: $county.position().left + ($county.width() / 2),
+                y: ($county.position().top + ($county.height() / 2)) - scrollTop
+            }
+        });
+
+        data.forEach(function(dataPoint, i) {
+            nodes.push({
+                id: dataPoint.id,
+                x: countyPositions[dataPoint.location] ? countyPositions[dataPoint.location].x : 0,
+                y: countyPositions[dataPoint.location] ? countyPositions[dataPoint.location].y : 0
+            });
+
+            if (countyPositions[dataPoint.location]) {
+                if (!countyPositions[dataPoint.location].value) {
+                    countyPositions[dataPoint.location].value = 1;
+                } else {
+                    countyPositions[dataPoint.location].value++;
+                }
+            }
+        });
+
+        return  {
+            nodes: nodes,
+            labels: countyPositions
+        }
     },
 
     drawMap: function() {
-        var mapData = topojson.feature(counties, counties.objects['border-counties']);
+        var mapData = topojson.feature(counties, counties.objects.counties);
 
         var projection = d3.geoMercator().fitSize([width, height], mapData);
         var path = d3.geoPath().projection(projection);
@@ -153,7 +197,7 @@ module.exports =  {
             .data(mapData.features)
             .enter().append('path')
             .attr('d', path)
-            .attr('class', function(d) { return d.properties.NAME; })
+            .attr('class', function(d) { return d.properties.NAME; });
     },
 
     regularPack: function(sortBy) {
@@ -203,7 +247,7 @@ module.exports =  {
             dataPoint.sx = data[i].x || width / 2;
             dataPoint.sy = data[i].y || height / 2; 
             dataPoint.tx = positionedData[i] ? positionedData[i].x : width / 2;
-            dataPoint.ty = positionedData[i] ? positionedData[i].y : -200; // instead of -200 you should randomly generate a number off screen 
+            dataPoint.ty = positionedData[i] ? positionedData[i].y : -200;
         }.bind(this));
 
         if (timer !== undefined) {

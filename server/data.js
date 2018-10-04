@@ -32,7 +32,7 @@ function cherryPickFields() {
             id: i,
             nationality: data[i].nationality,
             gender: getGender(data[i].gender),
-            location: getState(data[i]['county,State']),
+            location: getCounty(data[i]['county,State']),
             previousDeportation: data[i].timeSincePreviousDeportation,
             sentenced: data[i].offence,
             sentence: data[i].sentenceLengthCategory
@@ -42,12 +42,12 @@ function cherryPickFields() {
     return newData;
 }
 
-function getState(string) {
+function getCounty(string) {
     if (string) {
         string = string.split(',');
 
         if (string.length > 1) {
-            return string[1]
+            return string[0]
         }
     }
 

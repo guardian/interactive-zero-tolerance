@@ -181,6 +181,8 @@ module.exports =  {
             }
         });
 
+        console.log(countyPositions);
+
         return  {
             nodes: nodes,
             labels: countyPositions
@@ -197,7 +199,20 @@ module.exports =  {
             .data(mapData.features)
             .enter().append('path')
             .attr('d', path)
-            .attr('class', function(d) { return d.properties.NAME; });
+            .attr('class', function(d) { return d.properties.NAME.toLowerCase().replace(/ /g, '-') + '-' + this.getState(d.properties.STATEFP); }.bind(this));
+    },
+
+    getState: function(stateID) {
+        switch(stateID) {
+            case '06':
+                return 'california'
+            case '04':
+                return 'arizona'
+            case '35':
+                return 'new-mexico'
+            case '48':
+                return 'texas'
+        }
     },
 
     regularPack: function(sortBy) {
@@ -290,6 +305,6 @@ module.exports =  {
         var large = value > 80;
         var top = large ? y : Math.floor(y - r - 14);
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + parseFloat((100 / total * value).toFixed(2)) + '%</span><h3>');
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + parseFloat((100 / total * value).toFixed(1)) + '%</span><h3>');
     }
 };

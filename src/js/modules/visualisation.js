@@ -60,7 +60,7 @@ module.exports =  {
     setupCanvas: function() {
         width = $(window).width();
         height = $(window).height();
-        height = height > 1000 ? height * 1.2 : height;
+        height = height > 1000 ? height * 1.2 : height; // remove this and just offset the packed y coords
 
         $('.uit-canvas canvas').remove();
 

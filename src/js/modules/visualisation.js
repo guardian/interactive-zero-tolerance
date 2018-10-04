@@ -162,7 +162,7 @@ module.exports =  {
 
             countyPositions[$county.attr('class')] = {
                 x: $county.position().left + ($county.width() / 2),
-                y: ($county.position().top + ($county.height() / 2) + height * 0.16667) - scrollTop,
+                y: ($county.position().top + ($county.height() / 2)) + (height > 1000 ? height * 0.16667 : 0) - scrollTop
             }
         });
 

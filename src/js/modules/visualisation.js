@@ -136,10 +136,10 @@ module.exports =  {
             root.labels.forEach(function(d) {
                 this.createLabel(d.id, 100, 0, d.x, d.y, 0);
             }.bind(this));
-        } else if (sortBy === 'previousDeportation') {
+        } else if (sortBy === 'previousDeportation' || sortBy === 'sentence') {
             var root = this.linearPack(sortBy);
-
-            // this.animate(root.nodes);
+            this.animate(root.nodes);
+            this.hideMap();
         } else {
             var root = this.regularPack(sortBy);
             var labels = root.descendants().filter(function(d) { return d.depth === 1 });
@@ -167,12 +167,12 @@ module.exports =  {
 
         delete timeline.Unknown;
 
-        var bandWidth = (nodePadding * 9) + (radius * 10);
+        var bandWidth = (nodePadding * 10) + (radius * 10);
         var groups = Object.keys(timeline);
 
         var x = d3.scaleBand()
             .range([0, bandWidth * groups.length])
-            .padding(0.2);
+            .padding(0);
 
         var y = d3.scaleLinear()
             .range([height, 0]);
@@ -185,22 +185,29 @@ module.exports =  {
         for (var time in timeline) {
             chartStarts[time] = {
                 x: x(time),
-                y: y(timeline[time])
+                y: height / 2,
+                positioned: 0,
+                row: 0
             }
-
-            ctx.fillStyle = '#c70000';
-            ctx.fillRect(x(time), y(timeline[time]), x.bandwidth(), height - y(timeline[time]));
         }
 
         var nodes = [];
 
         data.forEach(function(dataPoint, i) {
             if (chartStarts[dataPoint[sortBy]]) {
-            nodes.push({
-                id: dataPoint.id,
-                x: chartStarts[dataPoint[sortBy]].x,
-                y: chartStarts[dataPoint[sortBy]].y
-            })
+//                 console.log(chartStarts[dataPoint[sortBy]].positioned + ' ' + (chartStarts[dataPoint[sortBy]].positioned % 10));
+                nodes.push({
+                    id: dataPoint.id,
+                    x: chartStarts[dataPoint[sortBy]].x + (chartStarts[dataPoint[sortBy]].positioned * (nodePadding + radius)),
+                    y: chartStarts[dataPoint[sortBy]].y - (chartStarts[dataPoint[sortBy]].row * (nodePadding + radius))
+                });
+
+                chartStarts[dataPoint[sortBy]].positioned++;
+
+                if (chartStarts[dataPoint[sortBy]].positioned % 10 === 0) {
+                    chartStarts[dataPoint[sortBy]].row++;
+                    chartStarts[dataPoint[sortBy]].positioned = 0;
+                }
             };
         });
 

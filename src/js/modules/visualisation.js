@@ -136,6 +136,10 @@ module.exports =  {
             root.labels.forEach(function(d) {
                 this.createLabel(d.id, 100, 0, d.x, d.y, 0);
             }.bind(this));
+        } else if (sortBy === 'previousDeportation') {
+            var root = this.linearPack(sortBy);
+
+            // this.animate(root.nodes);
         } else {
             var root = this.regularPack(sortBy);
             var labels = root.descendants().filter(function(d) { return d.depth === 1 });
@@ -147,6 +151,61 @@ module.exports =  {
             labels.forEach(function(d) {
                 this.createLabel(d.id, d.value, root.leaves().length, d.x, d.y, d.r);
             }.bind(this));
+        }
+    },
+
+    linearPack: function(sortBy) {
+        var timeline = {};
+
+        data.forEach(function(dataPoint, i) {
+            if (!timeline[dataPoint[sortBy]]) {
+                timeline[dataPoint[sortBy]] = 1;
+            } else {
+                timeline[dataPoint[sortBy]]++;
+            }
+        });
+
+        delete timeline.Unknown;
+
+        var bandWidth = (nodePadding * 9) + (radius * 10);
+        var groups = Object.keys(timeline);
+
+        var x = d3.scaleBand()
+            .range([0, bandWidth * groups.length])
+            .padding(0.2);
+
+        var y = d3.scaleLinear()
+            .range([height, 0]);
+
+        x.domain(groups);
+        y.domain([0, 600]);
+
+        var chartStarts = {};
+
+        for (var time in timeline) {
+            chartStarts[time] = {
+                x: x(time),
+                y: y(timeline[time])
+            }
+
+            ctx.fillStyle = '#c70000';
+            ctx.fillRect(x(time), y(timeline[time]), x.bandwidth(), height - y(timeline[time]));
+        }
+
+        var nodes = [];
+
+        data.forEach(function(dataPoint, i) {
+            if (chartStarts[dataPoint[sortBy]]) {
+            nodes.push({
+                id: dataPoint.id,
+                x: chartStarts[dataPoint[sortBy]].x,
+                y: chartStarts[dataPoint[sortBy]].y
+            })
+            };
+        });
+
+        return {
+            nodes: nodes
         }
     },
 
@@ -319,6 +378,7 @@ module.exports =  {
         var root = d3.stratify()
             (levels)
             .sum(function(d) { return d.value; })
+            .sort(function(a, b) { return b.value - a.value });
 
         var pack = d3.pack()
             .size([width, height])
@@ -384,7 +444,6 @@ module.exports =  {
     createLabel: function(title, value, total, x, y, r) {
         var large = value > 80;
         var top = large ? y : Math.floor(y - r - 14);
-            top -= 100;
         var number = parseFloat((100 / total * value).toFixed(1));
 
         $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span>' + (total ? '<span class=\'uit-canvas__label-value\'>' + (number == 100 ? total : number + '%') + '</span></h3>' : ''));

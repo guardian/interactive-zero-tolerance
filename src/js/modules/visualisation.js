@@ -13,8 +13,7 @@ var topojson = require('topojson');
 var _ = require('underscore');
 
 var data = require('../../../.data/cleanData.json');
-var counties = require('../data/border-counties.json');
-var world = require('../data/world.json');
+var map = require('../data/map.json');
 var width;
 var height;
 var radius, nodePadding, groupPadding;
@@ -133,6 +132,10 @@ module.exports =  {
             var root = this.mapPack(sortBy);
 
             this.animate(root.nodes);
+
+            root.labels.forEach(function(d) {
+                this.createLabel(d.id, 100, 0, d.x, d.y, 0);
+            }.bind(this));
         } else {
             var root = this.regularPack(sortBy);
             var labels = root.descendants().filter(function(d) { return d.depth === 1 });
@@ -156,12 +159,13 @@ module.exports =  {
         var countyPositions = {};
         var scrollTop = $(document).scrollTop();
 
-        $('.uit-canvas path').each(function(i, county) {
+        $('.county').each(function(i, county) {
             var $county = $(county);
+            var countyName = $county.attr('class').replace(' county', '');
 
-            countyPositions[$county.attr('class')] = {
+            countyPositions[countyName] = {
                 x: $county.position().left + ($county.width() / 2),
-                y: ($county.position().top + ($county.height() / 2)) + (height > 1000 ? height * 0.16667 : 0) - scrollTop
+                y: $county.position().top + ($county.height() / 2) - scrollTop
             }
         });
 
@@ -182,6 +186,18 @@ module.exports =  {
             }
         });
 
+        var statePositions = [];
+
+        $('.state').each(function(i, state) {
+            var $state = $(state);
+
+            statePositions.push({
+                id: $state.data('state'),
+                x: $state.position().left + ($state.width() / 2),
+                y: $state.position().top + ($state.height() / 2) - scrollTop
+            })
+        });
+
         if (!mapDrawn) {
             this.colourMap(countyPositions);
         }
@@ -190,27 +206,43 @@ module.exports =  {
 
         return  {
             nodes: nodes,
-            labels: countyPositions
+            labels: statePositions
         }
     },
 
     drawMap: function() {
-        var mapData = topojson.feature(counties, counties.objects.counties);
-        var projection = d3.geoMercator().fitSize([width, height], mapData);
+        var counties = topojson.feature(map, map.objects.counties);
+        var states = topojson.feature(map, map.objects.states);
+        var countries = topojson.feature(map, map.objects.countries);
+        var projection = d3.geoMercator().translate([0, -2000]).fitSize([width, height], counties);
         var path = d3.geoPath().projection(projection);
-        var worldData = topojson.feature(world, world.objects.land);
 
-        svgCtx.selectAll('path')
-            .data(worldData.features)
+        svgCtx.append('g')
+            .attr('class', 'countries')
+            .selectAll('path')
+            .data(countries.features)
             .enter().append('path')
             .attr('d', path)
-            .attr('class', 'background');
+            .attr('class', 'country');
 
-        svgCtx.selectAll('path')
-            .data(mapData.features)
+        svgCtx.append('g')
+            .attr('class', 'states')
+            .selectAll('path')
+            .data(states.features)
             .enter().append('path')
             .attr('d', path)
-            .attr('class', function(d) { return d.properties.NAME.toLowerCase().replace(/ /g, '-') + '-' + this.getState(d.properties.STATEFP); }.bind(this));
+            .attr('class', 'state')
+            .attr('data-state', function(d) {
+                return d.properties.NAME;
+            });
+
+        svgCtx.append('g')
+            .attr('class', 'counties')
+            .selectAll('path')
+            .data(counties.features)
+            .enter().append('path')
+            .attr('d', path)
+            .attr('class', function(d) { return d.properties.NAME.toLowerCase().replace(/ /g, '-') + '-' + this.getState(d.properties.STATEFP) + ' county'; }.bind(this));
     },
 
     colourMap: function(countiesForMap) {
@@ -308,7 +340,7 @@ module.exports =  {
             dataPoint.sy = data[i].y || height / 2; 
             dataPoint.so = data[i].o || 1;
             dataPoint.tx = positionedData[i] ? positionedData[i].x : width / 2;
-            dataPoint.ty = positionedData[i] ? positionedData[i].y - 100 : -200;
+            dataPoint.ty = positionedData[i] ? positionedData[i].y : -200;
             dataPoint.to = positionedData[i] ? positionedData[i].o : 1;
         }.bind(this));
 
@@ -355,6 +387,6 @@ module.exports =  {
             top -= 100;
         var number = parseFloat((100 / total * value).toFixed(1));
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + (number == 100 ? total : number + '%') + '</span></h3>');
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span>' + (total ? '<span class=\'uit-canvas__label-value\'>' + (number == 100 ? total : number + '%') + '</span></h3>' : ''));
     }
 };

@@ -25,12 +25,20 @@
     z-index: 2;
 }
 
-.uit-canvas svg path {
-    fill: $c-white;
-    stroke: $c-white;
-    stroke-width: 2;
-    transition: fill 0.6s linear;
-    transition-delay: 0.2s;
+.uit-canvas svg {
+    .country {
+        fill: $c-white;
+    }
+
+    .state {
+        fill: transparent;
+        stroke: $c-light-grey;
+        stroke-width: 1;
+    }
+
+    .county {
+        fill: transparent;
+    }
 }
 
 .uit-canvas__labels {

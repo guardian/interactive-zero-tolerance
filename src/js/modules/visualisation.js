@@ -140,6 +140,11 @@ module.exports =  {
             var root = this.linearPack(sortBy);
             this.animate(root.nodes);
             this.hideMap();
+
+            root.labels.forEach(function(d) {
+                console.log(d);
+                this.createLabel(d.id, d.value, 1000, d.x, d.y, 0);
+            }.bind(this));
         } else {
             var root = this.regularPack(sortBy);
             var labels = root.descendants().filter(function(d) { return d.depth === 1 });
@@ -167,18 +172,15 @@ module.exports =  {
 
         delete timeline.Unknown;
 
-        var bandWidth = (nodePadding * 10) + (radius * 10);
+        var bandWidth = (nodePadding * 10) + (radius * 10) + groupPadding;
         var groups = Object.keys(timeline);
+        var totalWidth = bandWidth * groups.length - groupPadding;
 
         var x = d3.scaleBand()
-            .range([0, bandWidth * groups.length])
+            .range([(width - totalWidth) / 2, totalWidth + ((width - totalWidth) / 2)])
             .padding(0);
 
-        var y = d3.scaleLinear()
-            .range([height, 0]);
-
         x.domain(groups);
-        y.domain([0, 600]);
 
         var chartStarts = {};
 
@@ -195,7 +197,6 @@ module.exports =  {
 
         data.forEach(function(dataPoint, i) {
             if (chartStarts[dataPoint[sortBy]]) {
-//                 console.log(chartStarts[dataPoint[sortBy]].positioned + ' ' + (chartStarts[dataPoint[sortBy]].positioned % 10));
                 nodes.push({
                     id: dataPoint.id,
                     x: chartStarts[dataPoint[sortBy]].x + (chartStarts[dataPoint[sortBy]].positioned * (nodePadding + radius)),
@@ -211,8 +212,22 @@ module.exports =  {
             };
         });
 
+        labels = [];
+
+        for (var chart in chartStarts) {
+            console.log(chartStarts);
+
+            labels.push({
+                id: chart,
+                x: chartStarts[chart].x + (nodePadding * 5) + (radius * 5),
+                y: chartStarts[chart].y + 50,
+                value: timeline[chart]
+            })
+        }
+
         return {
-            nodes: nodes
+            nodes: nodes,
+            labels: labels
         }
     },
 

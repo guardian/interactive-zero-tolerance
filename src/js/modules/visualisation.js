@@ -60,7 +60,6 @@ module.exports =  {
     setupCanvas: function() {
         width = $(window).width();
         height = $(window).height();
-        height = height > 1000 ? height * 1.2 : height; // remove this and just offset the packed y coords
 
         $('.uit-canvas canvas').remove();
 
@@ -89,7 +88,7 @@ module.exports =  {
         if (width > 768) {
             radius = 2.5;
             nodePadding = 4;
-            groupPadding = 50;
+            groupPadding = 40;
         } else {
             radius = 1.5;
             nodePadding = 2;
@@ -309,7 +308,7 @@ module.exports =  {
             dataPoint.sy = data[i].y || height / 2; 
             dataPoint.so = data[i].o || 1;
             dataPoint.tx = positionedData[i] ? positionedData[i].x : width / 2;
-            dataPoint.ty = positionedData[i] ? positionedData[i].y : -200;
+            dataPoint.ty = positionedData[i] ? positionedData[i].y - 100 : -200;
             dataPoint.to = positionedData[i] ? positionedData[i].o : 1;
         }.bind(this));
 
@@ -353,6 +352,7 @@ module.exports =  {
     createLabel: function(title, value, total, x, y, r) {
         var large = value > 80;
         var top = large ? y : Math.floor(y - r - 14);
+            top -= 100;
         var number = parseFloat((100 / total * value).toFixed(1));
 
         $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + (number == 100 ? total : number + '%') + '</span></h3>');

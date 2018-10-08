@@ -4,6 +4,11 @@
     background-color: $c-white;
     position: relative;
     z-index: 2;
+
+    p:last-of-type {
+        margin-bottom: 0;
+        padding-bottom: 18px;
+    }
 }
 
 .uit-credits__title {

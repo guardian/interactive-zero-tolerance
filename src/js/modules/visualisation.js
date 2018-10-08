@@ -134,7 +134,9 @@ module.exports =  {
             this.animate(root.nodes);
 
             root.labels.forEach(function(d) {
-                this.createLabel(d.id, 100, 0, d.x, d.y, 0);
+                if (d.id === 'Arizona' || d.id === 'New Mexico' || d.id === 'California' || d.id === 'Texas') {
+                    this.createLabel(d.id, 100, 0, d.x, d.y, 0);
+                }
             }.bind(this));
         } else if (sortBy === 'previousDeportation' || sortBy === 'sentence') {
             var root = this.linearPack(sortBy);
@@ -215,8 +217,6 @@ module.exports =  {
         labels = [];
 
         for (var chart in chartStarts) {
-            console.log(chartStarts);
-
             labels.push({
                 id: chart,
                 x: chartStarts[chart].x + (nodePadding * 5) + (radius * 5),
@@ -403,7 +403,7 @@ module.exports =  {
             .sort(function(a, b) { return b.value - a.value });
 
         var pack = d3.pack()
-            .size([width, height])
+            .size([width, height / 10 * 8])
             .radius(function(){ return radius })
             .padding(function(d) {
                 return d.depth == 1 ? nodePadding : groupPadding;

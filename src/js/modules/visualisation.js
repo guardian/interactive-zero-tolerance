@@ -295,7 +295,7 @@ module.exports =  {
         var counties = topojson.feature(map, map.objects.counties);
         var states = topojson.feature(map, map.objects.states);
         var countries = topojson.feature(map, map.objects.countries);
-        var projection = d3.geoMercator().translate([0, -2000]).fitSize([width, height], counties);
+        var projection = d3.geoMercator().fitExtent([[width * 0.05, 0], [width * 0.95, height]], counties);
         var path = d3.geoPath().projection(projection);
 
         svgCtx.append('g')

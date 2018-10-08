@@ -164,6 +164,16 @@ module.exports =  {
     linearPack: function(sortBy) {
         var timeline = {};
 
+        if (sortBy === 'previousDeportation') {
+            timeline = {
+                '1 week or less': 0,
+                '1 week to 1 month': 0,
+                '1 month to 6 months': 0,
+                '6 months to 1 year': 0,
+                'More than a year': 0
+            };
+        }
+
         data.forEach(function(dataPoint, i) {
             if (!timeline[dataPoint[sortBy]]) {
                 timeline[dataPoint[sortBy]] = 1;
@@ -173,6 +183,7 @@ module.exports =  {
         });
 
         delete timeline.Unknown;
+        delete timeline.Ignored;
 
         var bandWidth = (nodePadding * 10) + (radius * 10) + groupPadding;
         var groups = Object.keys(timeline);

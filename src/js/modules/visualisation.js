@@ -189,6 +189,7 @@ module.exports =  {
         var groups = Object.keys(timeline);
         var totalWidth = bandWidth * groups.length - groupPadding;
 
+        // this can be easily replaced without d3 scale band
         var x = d3.scaleBand()
             .range([(width - totalWidth) / 2, totalWidth + ((width - totalWidth) / 2)])
             .padding(0);

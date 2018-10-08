@@ -144,7 +144,6 @@ module.exports =  {
             this.hideMap();
 
             root.labels.forEach(function(d) {
-                console.log(d);
                 this.createLabel(d.id, d.value, 1000, d.x, d.y, 0);
             }.bind(this));
         } else {
@@ -307,6 +306,8 @@ module.exports =  {
         var counties = topojson.feature(map, map.objects.counties);
         var states = topojson.feature(map, map.objects.states);
         var countries = topojson.feature(map, map.objects.countries);
+        var rivers = topojson.feature(map, map.objects.river);
+        var border = topojson.feature(map, map.objects.border);
         var projection = d3.geoMercator().fitExtent([[width * 0.05, 0], [width * 0.95, height]], counties);
         var path = d3.geoPath().projection(projection);
 
@@ -336,6 +337,22 @@ module.exports =  {
             .enter().append('path')
             .attr('d', path)
             .attr('class', function(d) { return d.properties.NAME.toLowerCase().replace(/ /g, '-') + '-' + this.getState(d.properties.STATEFP) + ' county'; }.bind(this));
+
+        svgCtx.append('g')
+            .attr('class', 'rivers')
+            .selectAll('path')
+            .data(rivers.features)
+            .enter().append('path')
+            .attr('d', path)
+            .attr('class', 'river');
+
+        svgCtx.append('g')
+            .attr('class', 'border')
+            .selectAll('path')
+            .data(border.features)
+            .enter().append('path')
+            .attr('d', path)
+            .attr('class', 'border-section')
     },
 
     colourMap: function(countiesForMap) {

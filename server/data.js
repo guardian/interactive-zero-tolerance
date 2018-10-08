@@ -6,7 +6,7 @@ var userHome = require('user-home');
 var keys = require(userHome + '/.gu/interactives.json');
 
 var data;
-var newData = true;
+var newData = false;
 
 function fetchData(callback) {
     gsjson({
@@ -30,7 +30,7 @@ function cherryPickFields() {
     for (var i in data) {
         newData.push({
             id: i,
-            nationality: data[i].countriesForVisualization,
+            nationality: data[i].nationality.toLowerCase().replace(/ /g, '-'),
             gender: getGender(data[i].gender),
             location: getLocation(data[i]['county,State']),
             previousDeportation: data[i].timeSincePreviousDeportation,

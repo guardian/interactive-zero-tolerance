@@ -128,15 +128,15 @@ module.exports =  {
             data[i].parentId = data[i][sortBy];
         }
 
-        if (sortBy === 'location') {
+        if (sortBy === 'location' || sortBy === 'nationality') {
             var root = this.mapPack(sortBy);
 
             this.animate(root.nodes);
 
             root.labels.forEach(function(d) {
-                if (d.id === 'Arizona' || d.id === 'New Mexico' || d.id === 'California' || d.id === 'Texas') {
+//                 if (d.id === 'Arizona' || d.id === 'New Mexico' || d.id === 'California' || d.id === 'Texas') {
                     this.createLabel(d.id, 100, 0, d.x, d.y, 0);
-                }
+//                 }
             }.bind(this));
         } else if (sortBy === 'previousDeportation' || sortBy === 'sentence') {
             var root = this.linearPack(sortBy);
@@ -244,80 +244,97 @@ module.exports =  {
 
     mapPack: function(sortBy) {
         if (!mapDrawn) {
-            this.drawMap();
+            this.drawMap(sortBy);
         }
 
         var nodes = [];
-        var countyPositions = {};
         var scrollTop = $(document).scrollTop();
+        var pointPositions = {};
+        var pointTarget = sortBy === 'nationality' ? '.country' : '.county';
 
-        $('.county').each(function(i, county) {
+        $(pointTarget).each(function(i, county) {
             var $county = $(county);
-            var countyName = $county.attr('class').replace(' county', '');
+            var countyName = $county.data('link');
 
-            countyPositions[countyName] = {
+            pointPositions[countyName] = {
                 x: $county.position().left + ($county.width() / 2),
                 y: $county.position().top + ($county.height() / 2) - scrollTop
             }
         });
 
+        var dataSource = sortBy === 'nationality' ? 'nationality' : 'location';
+
         data.forEach(function(dataPoint, i) {
             nodes.push({
                 id: dataPoint.id,
-                x: countyPositions[dataPoint.location] ? countyPositions[dataPoint.location].x : width / 2,
-                y: countyPositions[dataPoint.location] ? countyPositions[dataPoint.location].y : -200,
+                x: pointPositions[dataPoint[dataSource]] ? pointPositions[dataPoint[dataSource]].x : width / 2,
+                y: pointPositions[dataPoint[dataSource]] ? pointPositions[dataPoint[dataSource]].y : -200,
                 o: 0
             });
 
-            if (countyPositions[dataPoint.location]) {
-                if (!countyPositions[dataPoint.location].value) {
-                    countyPositions[dataPoint.location].value = 1;
+            if (pointPositions[dataPoint[dataSource]]) {
+                if (!pointPositions[dataPoint[dataSource]].value) {
+                    pointPositions[dataPoint[dataSource]].value = 1;
                 } else {
-                    countyPositions[dataPoint.location].value++;
+                    pointPositions[dataPoint[dataSource]].value++;
                 }
             }
         });
 
-        var statePositions = [];
+        console.log(pointPositions);
 
-        $('.state').each(function(i, state) {
-            var $state = $(state);
+        var labelPositions = [];
+        var labelTarget = sortBy === 'nationality' ? '.country' : '.state';
 
-            statePositions.push({
-                id: $state.data('state'),
-                x: $state.position().left + ($state.width() / 2),
-                y: $state.position().top + ($state.height() / 2) - scrollTop
+        $(labelTarget).each(function(i, label) {
+            var $label = $(label);
+
+            labelPositions.push({
+                id: $label.data('label'),
+                x: $label.position().left + ($label.width() / 2),
+                y: $label.position().top + ($label.height() / 2) - scrollTop
             })
         });
 
-        if (!mapDrawn) {
-            this.colourMap(countyPositions);
-        }
-
+        this.colourMap(pointPositions);
         this.showMap();
 
         return  {
             nodes: nodes,
-            labels: statePositions
+            labels: labelPositions
         }
     },
 
-    drawMap: function() {
+    drawMap: function(sortBy) {
+        $('.uit-canvas svg').empty();
+        $('.uit-canvas svg').removeClass().addClass(sortBy);
+
         var counties = topojson.feature(map, map.objects.counties);
         var states = topojson.feature(map, map.objects.states);
         var countries = topojson.feature(map, map.objects.countries);
         var rivers = topojson.feature(map, map.objects.river);
         var border = topojson.feature(map, map.objects.border);
-        var projection = d3.geoMercator().fitExtent([[width * 0.05, 0], [width * 0.95, height]], counties);
-        var path = d3.geoPath().projection(projection);
 
+        if (sortBy === 'nationality') {
+            var projection = d3.geoMercator().fitExtent([[width * 0.05, 0], [width * 0.95, height]], countries);
+        } else {
+            var projection = d3.geoMercator().fitExtent([[width * 0.05, 0], [width * 0.95, height]], counties);
+        }
+
+        var path = d3.geoPath().projection(projection);
         svgCtx.append('g')
             .attr('class', 'countries')
             .selectAll('path')
             .data(countries.features)
             .enter().append('path')
             .attr('d', path)
-            .attr('class', 'country');
+            .attr('class', function(d) { return 'country' })
+            .attr('data-label', function(d) {
+                return d.properties.GEOUNIT;
+            })
+            .attr('data-link', function(d) {
+                return d.properties.GEOUNIT.toLowerCase().replace(/ /g, '-');
+            });
 
         svgCtx.append('g')
             .attr('class', 'states')
@@ -326,7 +343,7 @@ module.exports =  {
             .enter().append('path')
             .attr('d', path)
             .attr('class', 'state')
-            .attr('data-state', function(d) {
+            .attr('data-label', function(d) {
                 return d.properties.NAME;
             });
 
@@ -336,7 +353,10 @@ module.exports =  {
             .data(counties.features)
             .enter().append('path')
             .attr('d', path)
-            .attr('class', function(d) { return d.properties.NAME.toLowerCase().replace(/ /g, '-') + '-' + this.getState(d.properties.STATEFP) + ' county'; }.bind(this));
+            .attr('class', 'county')
+            .attr('data-link', function(d) {
+                return d.properties.NAME.toLowerCase().replace(/ /g, '-') + '-' + this.getState(d.properties.STATEFP);
+            }.bind(this))
 
         svgCtx.append('g')
             .attr('class', 'rivers')
@@ -352,7 +372,7 @@ module.exports =  {
             .data(border.features)
             .enter().append('path')
             .attr('d', path)
-            .attr('class', 'border-section')
+            .attr('class', 'border-section');
     },
 
     colourMap: function(countiesForMap) {
@@ -374,11 +394,9 @@ module.exports =  {
             var d = countiesForMap[county]
 
             if (d.value) {
-                $('.' + county).attr('style', 'fill: ' + ramp(d.value));
+                $('[data-link=\'' + county + '\']').attr('style', 'fill: ' + ramp(d.value));
             }
         }
-
-        mapDrawn = true;
     },
 
     showMap: function() {

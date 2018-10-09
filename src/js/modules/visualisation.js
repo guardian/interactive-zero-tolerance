@@ -281,8 +281,6 @@ module.exports =  {
             }
         });
 
-        console.log(pointPositions);
-
         var labelPositions = [];
         var labelTarget = sortBy === 'nationality' ? '.country' : '.state';
 
@@ -316,7 +314,16 @@ module.exports =  {
         var border = topojson.feature(map, map.objects.border);
 
         if (sortBy === 'nationality') {
-            var projection = d3.geoMercator().fitExtent([[width * 0.05, 0], [width * 0.95, height]], countries);
+            var cropArea = topojson.feature(map, {
+                type: "GeometryCollection",
+                geometries: map.objects.countries.geometries.filter(function(d) {
+                    return d.properties.GEOUNIT != 'Canada' && d.properties.GEOUNIT != 'United States of America' && d.properties.GEOUNIT != 'Chile' && d.properties.GEOUNIT != 'Argentina';
+                })
+            });
+
+            console.log(cropArea);
+
+            var projection = d3.geoMercator().fitExtent([[width * 0.05, 0], [width * 0.95, height]], cropArea);
         } else {
             var projection = d3.geoMercator().fitExtent([[width * 0.05, 0], [width * 0.95, height]], counties);
         }

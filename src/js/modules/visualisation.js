@@ -134,9 +134,8 @@ module.exports =  {
             this.animate(root.nodes);
 
             root.labels.forEach(function(d) {
-//                 if (d.id === 'Arizona' || d.id === 'New Mexico' || d.id === 'California' || d.id === 'Texas') {
-                    this.createLabel(d.id, 100, 0, d.x, d.y, 0);
-//                 }
+                console.log(d);
+                this.createLabel(d.id, d.value, 3000, d.x, d.y, 0);
             }.bind(this));
         } else if (sortBy === 'previousDeportation' || sortBy === 'sentence') {
             var root = this.linearPack(sortBy);
@@ -281,17 +280,23 @@ module.exports =  {
             }
         });
 
+        console.log(pointPositions);
+
         var labelPositions = [];
         var labelTarget = sortBy === 'nationality' ? '.country' : '.state';
 
         $(labelTarget).each(function(i, label) {
             var $label = $(label);
+            var value = pointPositions[$label.data('link')].value;
 
-            labelPositions.push({
-                id: $label.data('label'),
-                x: $label.position().left + ($label.width() / 2),
-                y: $label.position().top + ($label.height() / 2) - scrollTop
-            })
+            if (value) {
+                labelPositions.push({
+                    id: $label.data('label'),
+                    value: value,
+                    x: $label.position().left + ($label.width() / 2),
+                    y: $label.position().top + ($label.height() / 2) - scrollTop,
+                })
+            };
         });
 
         this.colourMap(pointPositions);
@@ -320,8 +325,6 @@ module.exports =  {
                     return d.properties.GEOUNIT != 'Canada' && d.properties.GEOUNIT != 'United States of America' && d.properties.GEOUNIT != 'Chile' && d.properties.GEOUNIT != 'Argentina';
                 })
             });
-
-            console.log(cropArea);
 
             var projection = d3.geoMercator().fitExtent([[width * 0.05, 0], [width * 0.95, height]], cropArea);
         } else {

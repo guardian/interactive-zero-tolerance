@@ -6,7 +6,8 @@ var d3 = Object.assign(
     require('d3-geo'),
     require('d3-request'),
     require('d3-scale'),
-    require('d3-array')
+    require('d3-array'),
+    require('d3-axis')
 )
 
 var topojson = require('topojson');
@@ -142,6 +143,9 @@ module.exports =  {
             root.labels.forEach(function(d) {
                 this.createLabel(d.id, d.value, 1000, d.x, d.y, 0);
             }.bind(this));
+        } else if (sortBy === 'sentence-average') {
+            this.barChart();
+            this.animate();
         } else {
             var root = this.regularPack(sortBy);
             var labels = root.descendants().filter(function(d) { return d.depth === 1 });
@@ -167,6 +171,17 @@ module.exports =  {
                 '6 months to 1 year': 0,
                 'More than a year': 0
             };
+        } else if (sortBy === 'sentence') {
+            timeline = {
+                '1 (1-2 days)': 0,
+                '2 (3-7 days)': 0,
+                '3 (8-14 days)': 0,
+                '4 (15-30 days)': 0,
+                '5 (1 month to 3 months)': 0,
+                '6 (3 months to 6 months)': 0,
+                '7 (6 months - 1 year)': 0,
+                '8 (>1 year)': 0
+            }
         }
 
         data.forEach(function(dataPoint, i) {
@@ -495,7 +510,7 @@ module.exports =  {
         return pack(root);
     },
 
-    animate: function(positionedData) {
+    animate: function(positionedData = []) {
         positionedData.sort(function(a,b){
             return a.id - b.id;
         });
@@ -552,5 +567,98 @@ module.exports =  {
         var number = parseFloat((100 / total * value).toFixed(1));
 
         $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span>' + (total ? '<span class=\'uit-canvas__label-value\'>' + (number == 100 ? total : number + '%') + '</span></h3>' : ''));
+    },
+
+    barChart: function(target) {
+        $('.uit-canvas svg').empty();
+
+        var barData = [
+            {
+                district: 'New Mexico',
+                felony: 43
+            },
+            {
+                district: 'Arizona',
+                felony: 60
+            },
+            {
+                district: 'California',
+                felony: 60
+            },
+            {
+                district: 'Texas Western',
+                felony: 105
+            },
+            {
+                district: 'Texas Southern',
+                felony: 130
+            }
+        ]
+
+        var isMobile = width < 620;
+        var chartWidth = isMobile ? width - 40 : 620;
+        var chartHeight = isMobile ? 250: 250;
+        var xOffset = (width - chartWidth) / 2;
+        var yOffset = (height - chartHeight) / 2;
+
+        if (isMobile) {
+            $('.uit-canvas svg').addClass('is-mobile');
+        } else {
+            $('.uit-canvas svg').removeClass('is-mobile');
+        }
+
+
+        var y = d3.scaleBand()
+                .range([yOffset, yOffset + chartHeight])
+                .padding(isMobile ? 0.7 : 0.3);
+
+        var x = d3.scaleLinear()
+                .range([xOffset, xOffset + chartWidth]);
+
+        y.domain(barData.map(function(d) { return d.district }));
+        x.domain([0, 160]);
+
+        var ticks = 8;
+
+        svgCtx.append('g')
+            .attr('class', 'grid-lines')
+            .attr('transform', 'translate(0, ' + (yOffset - 12) + ')')
+            .call(d3.axisTop(x)
+                .ticks(ticks)
+                .tickSize(-(chartHeight))
+                .tickFormat(function(d) { return d == 0 ? d + ' days' : d})
+            )
+            .selectAll('.tick text')
+            .attr('y', 12)
+            .attr('x', 0)
+
+        var graph = svgCtx.append('g')
+            .attr('transform', 'translate(' + xOffset + ',' + (isMobile ? 12 : 0) + ')');
+
+        var district = graph.selectAll('g.district')
+            .data(barData)
+            .enter()
+            .append('g')
+            .attr('class', 'district');
+
+        district.append('text')
+            .attr('y', function(d) { return (isMobile ? -16 : 0) + y(d.district) })
+            .attr('x', isMobile ? 0 : -6)
+            .attr('class', 'district-name')
+            .text(function(d) { return d.district });
+
+        district.append('text')
+            .attr('y', function(d) { return y(d.district) })
+            .attr('x', function(d) { return x(d.felony) - xOffset })
+            .attr('class', 'district-percentage')
+            .text(function(d) { return d.felony + ' days' });
+
+        district.append('rect')
+            .attr('y', function(d) { return y(d.district) })
+            .attr('x', 0)
+            .attr('width', function(d) { return x(d.felony) - xOffset })
+            .attr('height', y.bandwidth());
+
+        this.showMap();
     }
 };

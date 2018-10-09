@@ -118,3 +118,69 @@
     padding: 2px 4px;
     white-space: nowrap;
 }
+
+
+.grid-lines .tick line,
+.domain {
+    stroke: $c-light-grey;
+}
+
+.district {
+    fill: $c-yellow;
+}
+
+.district-name {
+    text-anchor: end;
+    font-size: 14px;
+    transform: translateY(24px);
+    fill: $c-black;
+    font-size: 24px;
+    font-weight: 700;
+    font-family: 'Guardian Egyptian Web';
+}
+
+.district-percentage {
+    font-family: 'Guardian Figures';
+    font-size: 32px;
+    fill: $c-red;
+    transform: translate(4px, 26px);
+}
+
+.domain {
+    display: none;
+    opacity: 0;
+}
+
+.tick line {
+    stroke: $c-light-grey;
+    transform: translateY(16px);
+}
+
+.tick text {
+    font-size: 14px;
+    font-family: 'Guardian Sans Web';
+    fill: $c-black;
+    text-anchor: middle;
+}
+
+.is-mobile {
+    .district-name {
+        text-anchor: start;
+        font-size: 18px;
+        transform: translateY(10px);
+    }
+
+    .district-year {
+        opacity: 0;
+    }
+
+    .tick line {
+        stroke: $c-light-grey;
+    }
+
+    .district-percentage {
+        font-family: 'Guardian Sans Web';
+        font-size: 14px;
+        transform: translate(4px, 12px);
+    }
+}

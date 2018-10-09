@@ -35,7 +35,7 @@ function cherryPickFields() {
             location: getLocation(data[i]['county,State']),
             previousDeportation: data[i].timeSincePreviousDeportation,
             sentenced: data[i].offence,
-            sentence: data[i].sentenceLengthCategory,
+            sentence: data[i].newSentenceCategories,
             outcome: data[i].outcome
         });
     }

@@ -51,6 +51,13 @@
         stroke: $c-black;
         stroke-width: 2;
     }
+
+    &.nationality {
+        .country {
+            stroke: $c-light-grey;
+            stroke-width: 1;
+        }
+    }
 }
 
 .uit-canvas__labels {

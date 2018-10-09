@@ -131,6 +131,7 @@ module.exports =  {
             this.animate(root.nodes);
 
             root.labels.forEach(function(d) {
+                // TODO: Get total value instead of using 3000
                 this.createLabel(d.id, d.value, 3000, d.x, d.y, 0);
             }.bind(this));
         } else if (sortBy === 'previousDeportation' || sortBy === 'sentence') {
@@ -340,6 +341,8 @@ module.exports =  {
                         && d.properties.GEOUNIT != 'Uruguay'
                         && d.properties.GEOUNIT != 'Brazil'
                         && d.properties.GEOUNIT != 'Peru'
+                        && d.properties.GEOUNIT != 'Paraguay'
+                        && d.properties.GEOUNIT != 'Bolivia'
                         && d.properties.GEOUNIT != 'Argentina';
                 })
             });
@@ -364,46 +367,48 @@ module.exports =  {
                 return d.properties.GEOUNIT.toLowerCase().replace(/ /g, '-');
             });
 
-        svgCtx.append('g')
-            .attr('class', 'states')
-            .selectAll('path')
-            .data(states.features)
-            .enter().append('path')
-            .attr('d', path)
-            .attr('class', 'state')
-            .attr('data-label', function(d) {
-                return d.properties.NAME;
-            })
-            .attr('data-link', function(d) {
-                return d.properties.NAME.toLowerCase().replace(/ /g, '-');
-            });
+        if (sortBy === 'location') {
+            svgCtx.append('g')
+                .attr('class', 'states')
+                .selectAll('path')
+                .data(states.features)
+                .enter().append('path')
+                .attr('d', path)
+                .attr('class', 'state')
+                .attr('data-label', function(d) {
+                    return d.properties.NAME;
+                })
+                .attr('data-link', function(d) {
+                    return d.properties.NAME.toLowerCase().replace(/ /g, '-');
+                });
 
-        svgCtx.append('g')
-            .attr('class', 'counties')
-            .selectAll('path')
-            .data(counties.features)
-            .enter().append('path')
-            .attr('d', path)
-            .attr('class', 'county')
-            .attr('data-link', function(d) {
-                return d.properties.NAME.toLowerCase().replace(/ /g, '-') + '-' + this.getState(d.properties.STATEFP);
-            }.bind(this));
+            svgCtx.append('g')
+                .attr('class', 'counties')
+                .selectAll('path')
+                .data(counties.features)
+                .enter().append('path')
+                .attr('d', path)
+                .attr('class', 'county')
+                .attr('data-link', function(d) {
+                    return d.properties.NAME.toLowerCase().replace(/ /g, '-') + '-' + this.getState(d.properties.STATEFP);
+                }.bind(this));
 
-        svgCtx.append('g')
-            .attr('class', 'rivers')
-            .selectAll('path')
-            .data(rivers.features)
-            .enter().append('path')
-            .attr('d', path)
-            .attr('class', 'river');
+            svgCtx.append('g')
+                .attr('class', 'rivers')
+                .selectAll('path')
+                .data(rivers.features)
+                .enter().append('path')
+                .attr('d', path)
+                .attr('class', 'river');
 
-        svgCtx.append('g')
-            .attr('class', 'border')
-            .selectAll('path')
-            .data(border.features)
-            .enter().append('path')
-            .attr('d', path)
-            .attr('class', 'border-section');
+            svgCtx.append('g')
+                .attr('class', 'border')
+                .selectAll('path')
+                .data(border.features)
+                .enter().append('path')
+                .attr('d', path)
+                .attr('class', 'border-section');
+        }
     },
 
     colourMap: function(countiesForMap) {

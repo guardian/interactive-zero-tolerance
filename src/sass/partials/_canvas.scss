@@ -125,8 +125,12 @@
     stroke: $c-light-grey;
 }
 
-.district {
+.felony {
     fill: $c-yellow;
+}
+
+.misdemeanor {
+    fill: $c-red;
 }
 
 .district-name {

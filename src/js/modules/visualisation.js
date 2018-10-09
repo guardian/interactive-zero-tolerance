@@ -575,25 +575,30 @@ module.exports =  {
         var barData = [
             {
                 district: 'New Mexico',
-                felony: 43
+                felony: 43,
+                misdemeanor: 8
             },
             {
                 district: 'Arizona',
-                felony: 60
+                felony: 60,
+                misdemeanor: 2
             },
             {
                 district: 'California',
-                felony: 60
+                felony: 60,
+                misdemeanor: 16
             },
             {
                 district: 'Texas Western',
-                felony: 105
+                felony: 105,
+                misdemeanor: 10
             },
             {
                 district: 'Texas Southern',
-                felony: 130
+                felony: 130,
+                misdemeanor: 3
             }
-        ]
+        ];
 
         var isMobile = width < 620;
         var chartWidth = isMobile ? width - 40 : 620;
@@ -606,7 +611,6 @@ module.exports =  {
         } else {
             $('.uit-canvas svg').removeClass('is-mobile');
         }
-
 
         var y = d3.scaleBand()
                 .range([yOffset, yOffset + chartHeight])
@@ -656,7 +660,15 @@ module.exports =  {
         district.append('rect')
             .attr('y', function(d) { return y(d.district) })
             .attr('x', 0)
+            .attr('class', 'felony')
             .attr('width', function(d) { return x(d.felony) - xOffset })
+            .attr('height', y.bandwidth());
+
+        district.append('rect')
+            .attr('y', function(d) { return y(d.district) })
+            .attr('x', 0)
+            .attr('class', 'misdemeanor')
+            .attr('width', function(d) { return x(d.misdemeanor) - xOffset })
             .attr('height', y.bandwidth());
 
         this.showMap();

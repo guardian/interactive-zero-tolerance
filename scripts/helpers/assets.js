@@ -24,9 +24,18 @@ module.exports = {
             var compiledJS = buf.toString();
                 compiledJS = compiledJS.replace(/\{\{ path \}\}/g, absolutePath).replace(/\{\{path\}\}/g, absolutePath);
 
+/*
             if (isDeploy) {
-                compiledJS = UglifyJS.minify(compiledJS).code;
+                var minifiedJS = UglifyJS.minify(compiledJS);
+
+                if (minifiedJS.error) {
+                    console.log(minifiedJS.error);
+                    throw minifiedJS.error;
+                } else {
+                    compiledJS = minifiedJS.code;
+                }
             }
+*/
 
             fs.writeFileSync(path + '/' + fileName + '.js', compiledJS);
             isDone = true;

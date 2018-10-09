@@ -19,7 +19,6 @@ var height;
 var radius, nodePadding, groupPadding;
 var ctx;
 var svgCtx;
-var mapDrawn = false;
 var ease = d3.easeCubicOut;
 var timer;
 
@@ -79,8 +78,6 @@ module.exports =  {
             .attr('height', height);
 
         svgCtx = d3.select('.uit-canvas svg');
-
-        mapDrawn = false;
     },
 
     setSizing: function() {
@@ -134,7 +131,6 @@ module.exports =  {
             this.animate(root.nodes);
 
             root.labels.forEach(function(d) {
-                console.log(d);
                 this.createLabel(d.id, d.value, 3000, d.x, d.y, 0);
             }.bind(this));
         } else if (sortBy === 'previousDeportation' || sortBy === 'sentence') {
@@ -242,14 +238,13 @@ module.exports =  {
     },
 
     mapPack: function(sortBy) {
-        if (!mapDrawn) {
-            this.drawMap(sortBy);
-        }
+        this.drawMap(sortBy);
 
         var nodes = [];
         var scrollTop = $(document).scrollTop();
         var pointPositions = {};
         var pointTarget = sortBy === 'nationality' ? '.country' : '.county';
+        var stateValues = {};
 
         $(pointTarget).each(function(i, county) {
             var $county = $(county);
@@ -261,7 +256,7 @@ module.exports =  {
             }
         });
 
-        var dataSource = sortBy === 'nationality' ? 'nationality' : 'location';
+        var dataSource = sortBy === 'nationality' ? 'nationality' : 'location'; // is this line needed??
 
         data.forEach(function(dataPoint, i) {
             nodes.push({
@@ -278,16 +273,33 @@ module.exports =  {
                     pointPositions[dataPoint[dataSource]].value++;
                 }
             }
-        });
 
-        console.log(pointPositions);
+            if (sortBy === 'location') {
+                var state = dataPoint.location.split(/[-]+/).pop();
+                    state = state == 'mexico' ? 'new-mexico' : state;
+
+                if (!stateValues[state]) {
+                    stateValues[state] = {};
+                    stateValues[state].value = 1;
+                } else {
+                    stateValues[state].value++;
+                }
+            }
+        });
 
         var labelPositions = [];
         var labelTarget = sortBy === 'nationality' ? '.country' : '.state';
 
         $(labelTarget).each(function(i, label) {
             var $label = $(label);
-            var value = pointPositions[$label.data('link')].value;
+
+            if (sortBy === 'nationality') {
+                var value = pointPositions[$label.data('link')].value;
+            } else {
+                if (stateValues[$label.data('link')]) {
+                    var value = stateValues[$label.data('link')].value;
+                }
+            }
 
             if (value) {
                 labelPositions.push({
@@ -322,7 +334,13 @@ module.exports =  {
             var cropArea = topojson.feature(map, {
                 type: "GeometryCollection",
                 geometries: map.objects.countries.geometries.filter(function(d) {
-                    return d.properties.GEOUNIT != 'Canada' && d.properties.GEOUNIT != 'United States of America' && d.properties.GEOUNIT != 'Chile' && d.properties.GEOUNIT != 'Argentina';
+                    return d.properties.GEOUNIT != 'Canada'
+                        && d.properties.GEOUNIT != 'United States of America'
+                        && d.properties.GEOUNIT != 'Chile'
+                        && d.properties.GEOUNIT != 'Uruguay'
+                        && d.properties.GEOUNIT != 'Brazil'
+                        && d.properties.GEOUNIT != 'Peru'
+                        && d.properties.GEOUNIT != 'Argentina';
                 })
             });
 
@@ -355,6 +373,9 @@ module.exports =  {
             .attr('class', 'state')
             .attr('data-label', function(d) {
                 return d.properties.NAME;
+            })
+            .attr('data-link', function(d) {
+                return d.properties.NAME.toLowerCase().replace(/ /g, '-');
             });
 
         svgCtx.append('g')
@@ -366,7 +387,7 @@ module.exports =  {
             .attr('class', 'county')
             .attr('data-link', function(d) {
                 return d.properties.NAME.toLowerCase().replace(/ /g, '-') + '-' + this.getState(d.properties.STATEFP);
-            }.bind(this))
+            }.bind(this));
 
         svgCtx.append('g')
             .attr('class', 'rivers')

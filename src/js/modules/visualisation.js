@@ -142,8 +142,8 @@ module.exports =  {
             root.labels.forEach(function(d) {
                 this.createLabel(d.id, d.value, null, d.x, d.y, 0, null, true);
             }.bind(this));
-        } else if (sortBy === 'sentence-average') {
-            this.barChart();
+        } else if (sortBy === 'sentence-average-misdemeanour' || sortBy == 'sentence-average-felony') {
+            this.barChart(sortBy);
             this.animate();
         } else {
             var root = this.regularPack(sortBy);
@@ -589,8 +589,10 @@ module.exports =  {
         $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + number + '</span></h3>');
     },
 
-    barChart: function(target) {
+    barChart: function(sortBy) {
         $('.uit-canvas svg').empty();
+
+        var dataSet = sortBy === 'sentence-average-misdemeanour' ? 'misdemeanor' : 'felony';
 
         var barData = [
             {
@@ -604,7 +606,7 @@ module.exports =  {
                 misdemeanor: 2
             },
             {
-                district: 'California',
+                district: 'California Southern',
                 felony: 60,
                 misdemeanor: 16
             },
@@ -639,8 +641,10 @@ module.exports =  {
         var x = d3.scaleLinear()
                 .range([xOffset, xOffset + chartWidth]);
 
+        console.log(dataSet);
+
         y.domain(barData.map(function(d) { return d.district }));
-        x.domain([0, 160]);
+        x.domain([0, dataSet == 'misdemeanor' ? 20 : 160]);
 
         var ticks = 8;
 
@@ -673,22 +677,15 @@ module.exports =  {
 
         district.append('text')
             .attr('y', function(d) { return y(d.district) })
-            .attr('x', function(d) { return x(d.felony) - xOffset })
+            .attr('x', function(d) { return x(d[dataSet]) - xOffset })
             .attr('class', 'district-percentage')
-            .text(function(d) { return d.felony + ' days' });
+            .text(function(d) { return d[dataSet] + ' days' });
 
         district.append('rect')
             .attr('y', function(d) { return y(d.district) })
             .attr('x', 0)
             .attr('class', 'felony')
-            .attr('width', function(d) { return x(d.felony) - xOffset })
-            .attr('height', y.bandwidth());
-
-        district.append('rect')
-            .attr('y', function(d) { return y(d.district) })
-            .attr('x', 0)
-            .attr('class', 'misdemeanor')
-            .attr('width', function(d) { return x(d.misdemeanor) - xOffset })
+            .attr('width', function(d) { return x(d[dataSet]) - xOffset })
             .attr('height', y.bandwidth());
 
         this.showMap();

@@ -564,6 +564,7 @@ module.exports =  {
     createLabel: function(title, value, total, x, y, r) {
         var large = value > 80;
         var top = large ? y : Math.floor(y - r - 14);
+            top = y > height * 0.5 && !large ? y + r + 14 : top;
         var number = parseFloat((100 / total * value).toFixed(1));
 
         $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span>' + (total ? '<span class=\'uit-canvas__label-value\'>' + (number == 100 ? total.toLocaleString() : number + '%') + '</span></h3>' : ''));

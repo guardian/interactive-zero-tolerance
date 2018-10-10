@@ -154,7 +154,7 @@ module.exports =  {
             this.hideMap();
 
             labels.forEach(function(d) {
-                this.createLabel(d.id, d.value, root.leaves().length, d.x, d.y, d.r);
+                this.createLabel(d.id, d.value, root.leaves().length, d.x, d.y, d.r, d.value > 80);
             }.bind(this));
         }
     },
@@ -560,8 +560,7 @@ module.exports =  {
         $('.uit-canvas__labels').empty();
     },
 
-    createLabel: function(title, value, total, x, y, r) {
-        var large = value > 80;
+    createLabel: function(title, value, total, x, y, r, large = false) { 
         var top = large ? y : Math.floor(y - r - 14);
             top = y > height * 0.5 && !large ? y + r + 14 : top;
 

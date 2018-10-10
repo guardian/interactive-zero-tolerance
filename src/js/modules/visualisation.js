@@ -112,7 +112,7 @@ module.exports =  {
                 if (data[i].ignored) {
                     data[i][sortBy] = 'Serious offenses';
                 } else {
-                    data[i][sortBy] = 'Low level immigration offenses';
+                    data[i][sortBy] = 'Low-level immigration offenses';
                 }
             } else {
                 if (data[i].ignored) {

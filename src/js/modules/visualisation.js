@@ -438,7 +438,7 @@ module.exports =  {
 
         var minVal = d3.min(dataArray);
         var maxVal = d3.max(dataArray);
-        var ramp = d3.scaleLinear().domain([minVal, maxVal]).range(['#dcdcdc', '#121212']);
+        var ramp = d3.scaleLinear().domain([minVal, maxVal]).range(['#dcdcdc', '#676767']);
 
         for (var county in countiesForMap) {
             var d = countiesForMap[county]

@@ -140,7 +140,7 @@ module.exports =  {
             this.hideMap();
 
             root.labels.forEach(function(d) {
-                this.createLabel(d.id, d.value, 1000, d.x, d.y, 0);
+                this.createLabel(d.id, d.value, null, d.x, d.y, 0);
             }.bind(this));
         } else if (sortBy === 'sentence-average') {
             this.barChart();

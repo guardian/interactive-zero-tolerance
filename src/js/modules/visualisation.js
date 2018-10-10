@@ -132,8 +132,7 @@ module.exports =  {
             this.animate(root.nodes);
 
             root.labels.forEach(function(d) {
-                // TODO: Get total value instead of using 3000
-                this.createLabel(d.id, d.value, 3000, d.x, d.y, 0);
+                this.createLabel(d.id, d.value, null, d.x, d.y, 0);
             }.bind(this));
         } else if (sortBy === 'previousDeportation' || sortBy === 'sentence') {
             var root = this.linearPack(sortBy);
@@ -565,9 +564,18 @@ module.exports =  {
         var large = value > 80;
         var top = large ? y : Math.floor(y - r - 14);
             top = y > height * 0.5 && !large ? y + r + 14 : top;
-        var number = parseFloat((100 / total * value).toFixed(1));
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span>' + (total ? '<span class=\'uit-canvas__label-value\'>' + (number == 100 ? total.toLocaleString() : number + '%') + '</span></h3>' : ''));
+        var number;
+
+        if (!total || value == data.length) {
+            number = value.toLocaleString();
+        } else if (total) {
+            number = parseFloat((100 / total * value).toFixed(1)) + '%';
+        } else {
+            number = 'XXXX'
+        }
+
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + number + '</span></h3>');
     },
 
     barChart: function(target) {

@@ -132,7 +132,7 @@ module.exports =  {
             this.animate(root.nodes);
 
             root.labels.forEach(function(d) {
-                this.createLabel(d.id, d.value, null, d.x, d.y, 0);
+                this.createLabel(d.id, d.value, null, d.x, d.y, 0, sortBy === 'location');
             }.bind(this));
         } else if (sortBy === 'previousDeportation' || sortBy === 'sentence') {
             var root = this.linearPack(sortBy);

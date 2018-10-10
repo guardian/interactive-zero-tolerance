@@ -107,10 +107,10 @@ module.exports =  {
 
         for (var i in data) {
             if (sortBy === 'default') {
-                data[i][sortBy] = 'All cases';
+                data[i][sortBy] = 'Total cases analyzed';
             } else if (sortBy === 'charges') {
                 if (data[i].ignored) {
-                    data[i][sortBy] = 'Serious offences';
+                    data[i][sortBy] = 'Serious offenses';
                 } else {
                     data[i][sortBy] = 'Low level immigration offenses';
                 }
@@ -566,7 +566,7 @@ module.exports =  {
         var top = large ? y : Math.floor(y - r - 14);
         var number = parseFloat((100 / total * value).toFixed(1));
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span>' + (total ? '<span class=\'uit-canvas__label-value\'>' + (number == 100 ? total : number + '%') + '</span></h3>' : ''));
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span>' + (total ? '<span class=\'uit-canvas__label-value\'>' + (number == 100 ? total.toLocaleString() : number + '%') + '</span></h3>' : ''));
     },
 
     barChart: function(target) {

@@ -6,7 +6,7 @@ var userHome = require('user-home');
 var keys = require(userHome + '/.gu/interactives.json');
 
 var data;
-var newData = true;
+var newData = false;
 
 function fetchData(callback) {
     gsjson({

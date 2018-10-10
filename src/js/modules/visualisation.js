@@ -132,7 +132,7 @@ module.exports =  {
             this.animate(root.nodes);
 
             root.labels.forEach(function(d) {
-                this.createLabel(d.id, d.value, null, d.x, d.y, 0, sortBy === 'location');
+                this.createLabel(d.id, d.value, null, d.x, d.y, 0, sortBy === 'location' || d.id === 'Mexico');
             }.bind(this));
         } else if (sortBy === 'previousDeportation' || sortBy === 'sentence') {
             var root = this.linearPack(sortBy);
@@ -561,9 +561,21 @@ module.exports =  {
     },
 
     createLabel: function(title, value, total, x, y, r, large = false) { 
-        var top = large ? y : Math.floor(y - r - 14);
-            top = y > height * 0.5 && !large ? y + r + 14 : top;
+        // get x position
+        var top;
 
+        if (title === 'Honduras') {
+            top = y - 10;
+        } else if (large || title === 'El Salvador') {
+            top = y;
+        } else if (y > height * 0.5) {
+            top = y + r + 14
+        } else {
+            top = Math.floor(y - r - 14);
+        }
+
+
+        // get number
         var number;
 
         if (!total || value == data.length) {

@@ -100,6 +100,17 @@
             }
         }
     }
+
+    &--stacked {
+        text-align: center;
+        white-space: normal;
+        max-width: 160px;
+
+        .uit-canvas__label-descriptor {
+            display: block;
+            white-space: normal;
+        }
+    }
 }
 
 .uit-canvas__label-descriptor {

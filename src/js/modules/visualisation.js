@@ -140,7 +140,7 @@ module.exports =  {
             this.hideMap();
 
             root.labels.forEach(function(d) {
-                this.createLabel(d.id, d.value, null, d.x, d.y, 0);
+                this.createLabel(d.id, d.value, null, d.x, d.y, 0, null, true);
             }.bind(this));
         } else if (sortBy === 'sentence-average') {
             this.barChart();
@@ -154,7 +154,8 @@ module.exports =  {
             this.hideMap();
 
             labels.forEach(function(d) {
-                this.createLabel(d.id, d.value, root.leaves().length, d.x, d.y, d.r, d.value > 80);
+                var total = sortBy === 'outcome' ? null : root.leaves().length;
+                this.createLabel(d.id, d.value, total, d.x, d.y, d.r, d.value > 80);
             }.bind(this));
         }
     },
@@ -440,13 +441,6 @@ module.exports =  {
         var maxVal = d3.max(dataArray);
         var ramp = d3.scaleLinear().domain([minVal, maxVal]).range(['#ccc', '#676767']);
 
-        console.log(minVal);
-        console.log(maxVal);
-        console.log(ramp(1));
-        console.log(ramp(10));
-        console.log(ramp(100));
-        console.log(ramp(1000));
-
         for (var county in countiesForMap) {
             var d = countiesForMap[county]
 
@@ -567,7 +561,7 @@ module.exports =  {
         $('.uit-canvas__labels').empty();
     },
 
-    createLabel: function(title, value, total, x, y, r, large = false) { 
+    createLabel: function(title, value, total, x, y, r, large = false, alwaysStack = false) { 
         // get x position
         var top;
 
@@ -592,7 +586,7 @@ module.exports =  {
             number = 'XXXX'
         }
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (large ? ' uit-canvas__label--large' : '') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + number + '</span></h3>');
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + number + '</span></h3>');
     },
 
     barChart: function(target) {

@@ -140,7 +140,7 @@ module.exports =  {
             this.hideMap();
 
             root.labels.forEach(function(d) {
-                this.createLabel(d.id, d.value, null, d.x, d.y, 0, null, true);
+                this.createLabel(d.id.match(/\(([^)]+)\)/)[1], d.value, null, d.x, d.y, 0, null, true);
             }.bind(this));
         } else if (sortBy === 'sentence-average-misdemeanour' || sortBy == 'sentence-average-felony') {
             this.barChart(sortBy);
@@ -165,11 +165,11 @@ module.exports =  {
 
         if (sortBy === 'previousDeportation') {
             timeline = {
-                '1 week or less': 0,
-                '1 week to 1 month': 0,
-                '1 month to 6 months': 0,
-                '6 months to 1 year': 0,
-                'More than a year': 0
+                '1 (1 week or less)': 0,
+                '2 (1 week to 1 month)': 0,
+                '3 (1 month to 6 months)': 0,
+                '4 (6 months to 1 year)': 0,
+                '5 (More than a year)': 0
             };
         } else if (sortBy === 'sentence') {
             timeline = {
@@ -207,13 +207,25 @@ module.exports =  {
         x.domain(groups);
 
         var chartStarts = {};
+        var isDouble = sortBy === 'sentence';
 
         for (var time in timeline) {
-            chartStarts[time] = {
+            chartStarts[time] = {};
+
+            chartStarts[time][0] = {
                 x: x(time),
                 y: height / 2,
                 positioned: 0,
                 row: 0
+            }
+
+            if (isDouble) {
+                chartStarts[time][1] = {
+                    x: x(time) + ((nodePadding + radius) * 5),
+                    y: height / 2,
+                    positioned: 0,
+                    row: 0
+                }
             }
         }
 
@@ -221,19 +233,23 @@ module.exports =  {
 
         data.forEach(function(dataPoint, i) {
             if (chartStarts[dataPoint[sortBy]]) {
+                var column = dataPoint.sentenced === 'Felony re-entry' && isDouble ? 1 : 0;
+
                 nodes.push({
                     id: dataPoint.id,
-                    x: chartStarts[dataPoint[sortBy]].x + (chartStarts[dataPoint[sortBy]].positioned * (nodePadding + radius)),
-                    y: chartStarts[dataPoint[sortBy]].y - (chartStarts[dataPoint[sortBy]].row * (nodePadding + radius))
+                    x: chartStarts[dataPoint[sortBy]][column].x + (chartStarts[dataPoint[sortBy]][column].positioned * (nodePadding + radius)),
+                    y: chartStarts[dataPoint[sortBy]][column].y - (chartStarts[dataPoint[sortBy]][column].row * (nodePadding + radius)),
                 });
 
-                chartStarts[dataPoint[sortBy]].positioned++;
+                dataPoint.colour = column === 1 ? '18, 18, 18' : '18, 18, 18';
 
-                if (chartStarts[dataPoint[sortBy]].positioned % 10 === 0) {
-                    chartStarts[dataPoint[sortBy]].row++;
-                    chartStarts[dataPoint[sortBy]].positioned = 0;
+                chartStarts[dataPoint[sortBy]][column].positioned++;
+
+                if (chartStarts[dataPoint[sortBy]][column].positioned % (isDouble ? 5: 10) === 0) {
+                    chartStarts[dataPoint[sortBy]][column].row++;
+                    chartStarts[dataPoint[sortBy]][column].positioned = 0;
                 }
-            };
+            }
         });
 
         labels = [];
@@ -241,8 +257,8 @@ module.exports =  {
         for (var chart in chartStarts) {
             labels.push({
                 id: chart,
-                x: chartStarts[chart].x + (nodePadding * 5) + (radius * 5),
-                y: chartStarts[chart].y + 50,
+                x: chartStarts[chart][0].x + (nodePadding * 5) + (radius * 5),
+                y: chartStarts[chart][0].y + 50,
                 value: timeline[chart]
             })
         }
@@ -516,6 +532,7 @@ module.exports =  {
         });
 
         data.forEach(function(dataPoint, i) {
+            dataPoint.colour = data[i].colour || '18, 18, 18';
             dataPoint.sx = data[i].x || width / 2;
             dataPoint.sy = data[i].y || height / 2; 
             dataPoint.so = data[i].o || 1;
@@ -533,7 +550,7 @@ module.exports =  {
             data.forEach(function(dataPoint, i) {
                 dataPoint.x = dataPoint.sx * (1 - t) + dataPoint.tx * t;
                 dataPoint.y = dataPoint.sy * (1 - t) + dataPoint.ty * t;
-                dataPoint.o = dataPoint.so * (1 - t) + dataPoint.to * t;
+                dataPoint.o = dataPoint.so * (1 - t) + dataPoint.to * t || 1;
             });
             this.draw();
             if (t === 1) {
@@ -550,7 +567,7 @@ module.exports =  {
             ctx.beginPath();
             ctx.moveTo(d.x + radius, d.y);
             ctx.arc(d.x, d.y, radius, 0, 2 * Math.PI);
-            ctx.fillStyle = 'rgba(18, 18, 18, ' + d.o + ')';
+            ctx.fillStyle = 'rgba(' + d.colour + ', ' + d.o + ')';
             ctx.fill();
         }.bind(this));
 
@@ -640,8 +657,6 @@ module.exports =  {
 
         var x = d3.scaleLinear()
                 .range([xOffset, xOffset + chartWidth]);
-
-        console.log(dataSet);
 
         y.domain(barData.map(function(d) { return d.district }));
         x.domain([0, dataSet == 'misdemeanor' ? 20 : 160]);

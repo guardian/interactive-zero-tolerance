@@ -1,0 +1,37 @@
+.uit-key,
+.uit-key p {
+    font-family: 'Guardian Sans Web';
+    font-size: 14px;
+    line-height: 1.2;
+    color: $c-black;
+    max-width: 320px;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 4px;
+}
+
+.uit-key__blocks {
+    display: flex;
+}
+
+.uit-key__block {
+    background-color: $c-red;
+    height: 6px;
+    width: 20%;
+}
+
+@for $i from 1 through 5 {
+    .uit-key__block--#{$i} {
+        background-color: mix(#dcdcdc, #676767, $i * 20);
+    }
+}
+
+.uit-key__scale {
+    display: flex;
+    padding-top: 4px;
+}
+
+.uit-key__scale-entry {
+    width: 20%;
+    flex-shrink: 0;
+}

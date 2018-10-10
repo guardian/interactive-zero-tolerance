@@ -440,6 +440,13 @@ module.exports =  {
         var maxVal = d3.max(dataArray);
         var ramp = d3.scaleLinear().domain([minVal, maxVal]).range(['#ccc', '#676767']);
 
+        console.log(minVal);
+        console.log(maxVal);
+        console.log(ramp(1));
+        console.log(ramp(10));
+        console.log(ramp(100));
+        console.log(ramp(1000));
+
         for (var county in countiesForMap) {
             var d = countiesForMap[county]
 
@@ -556,7 +563,7 @@ module.exports =  {
         ctx.restore();
     },
 
-    clearLabels: function(packedData, total) {
+    clearLabels: function() {
         $('.uit-canvas__labels').empty();
     },
 
@@ -573,7 +580,6 @@ module.exports =  {
         } else {
             top = Math.floor(y - r - 14);
         }
-
 
         // get number
         var number;

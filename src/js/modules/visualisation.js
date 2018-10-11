@@ -219,16 +219,7 @@ module.exports =  {
 
         var nodes = [];
 
-        console.log(timeline);
-
         data.forEach(function(dataPoint, i) {
-            if (i === 200) {
-                console.log(dataPoint);
-                console.log(key);
-                console.log(timeline[dataPoint[key]]);
-                console.log(dataPoint.id);
-            }
-
             if (timeline[dataPoint[key]] && timeline[dataPoint[key]].includes(dataPoint.id)) {
                 nodes.push({
                     id: dataPoint.id,
@@ -334,8 +325,8 @@ module.exports =  {
                 labelPositions.push({
                     id: $label.data('label'),
                     value: value,
-                    x: $label.position().left + ($label.width() / 2),
-                    y: $label.position().top + ($label.height() / 2) - scrollTop,
+                    x: $label.data('label') === 'Brazil' ? $label.position().left + (width * 0.2) : $label.position().left + ($label.width() / 2),
+                    y: $label.data('label') === 'Brazil' ? $label.position().top - scrollTop + 32 : $label.position().top + ($label.height() / 2) - scrollTop,
                 })
             };
         });
@@ -581,8 +572,6 @@ module.exports =  {
             return a.id - b.id;
         });
 
-        console.log(positionedData[200]);
-
         data.forEach(function(dataPoint, i) {
             dataPoint.sx = data[i].x || width / 2;
             dataPoint.sy = data[i].y || height / 2; 
@@ -591,8 +580,6 @@ module.exports =  {
             dataPoint.ty = positionedData[i] && positionedData[i].y ? positionedData[i].y : -200;
             dataPoint.to = positionedData[i] && positionedData[i].hide ? 0 : 1;
         }.bind(this));
-
-        console.log(data[100]);
 
         if (timer !== undefined) {
             timer.stop();
@@ -633,7 +620,7 @@ module.exports =  {
     },
 
     createLabel: function(title, value, total, x, y, r, large = false, alwaysStack = false) { 
-        // get x position
+        // get y position
         var top;
         if (title === 'Nicaragua') {
             top = y + (height / 100 * 2);
@@ -647,6 +634,9 @@ module.exports =  {
             top = Math.floor(y - r - 14);
         }
 
+        // get x position
+        var left = Math.floor(x);
+
         // get number
         var number;
 
@@ -658,7 +648,7 @@ module.exports =  {
             number = 'XXXX'
         }
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + Math.floor(x) + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + number + '</span></h3>');
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + left + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + number + '</span></h3>');
     },
 
     barChart: function(sortBy) {

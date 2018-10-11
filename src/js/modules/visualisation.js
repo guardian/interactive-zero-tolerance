@@ -97,7 +97,7 @@ module.exports =  {
         for (var i = 0; i < 458; i++) {
             data.push({
                 ignored: true,
-                id: data.length + i
+                id: data.length + i,
             })
         }
     },
@@ -219,12 +219,21 @@ module.exports =  {
 
         var nodes = [];
 
+        console.log(timeline);
+
         data.forEach(function(dataPoint, i) {
+            if (i === 200) {
+                console.log(dataPoint);
+                console.log(key);
+                console.log(timeline[dataPoint[key]]);
+                console.log(dataPoint.id);
+            }
+
             if (timeline[dataPoint[key]] && timeline[dataPoint[key]].includes(dataPoint.id)) {
                 nodes.push({
                     id: dataPoint.id,
                     x: chartStarts[dataPoint[key]].x + (chartStarts[dataPoint[key]].positioned * (nodePadding + radius)),
-                    y: chartStarts[dataPoint[key]].y - (chartStarts[dataPoint[key]].row * (nodePadding + radius)),
+                    y: chartStarts[dataPoint[key]].y - (chartStarts[dataPoint[key]].row * (nodePadding + radius))
                 });
 
                 chartStarts[dataPoint[key]].positioned++;
@@ -283,7 +292,7 @@ module.exports =  {
                 id: dataPoint.id,
                 x: pointPositions[dataPoint[dataSource]] ? pointPositions[dataPoint[dataSource]].x : width / 2,
                 y: pointPositions[dataPoint[dataSource]] ? pointPositions[dataPoint[dataSource]].y : -200,
-                o: 0
+                hide: true
             });
 
             if (pointPositions[dataPoint[dataSource]]) {
@@ -496,7 +505,7 @@ module.exports =  {
 
         var minVal = d3.min(dataArray);
         var maxVal = d3.max(dataArray);
-        var ramp = d3.scaleLinear().domain([minVal, maxVal]).range(['#ccc', '#676767']);
+        var ramp = d3.scaleLinear().domain([minVal, maxVal]).range(['#ffbac8', '#c70000']);
 
         for (var county in countiesForMap) {
             var d = countiesForMap[county]
@@ -572,14 +581,18 @@ module.exports =  {
             return a.id - b.id;
         });
 
+        console.log(positionedData[200]);
+
         data.forEach(function(dataPoint, i) {
             dataPoint.sx = data[i].x || width / 2;
             dataPoint.sy = data[i].y || height / 2; 
             dataPoint.so = data[i].o || 1;
-            dataPoint.tx = positionedData[i] ? positionedData[i].x : width / 2;
-            dataPoint.ty = positionedData[i] ? positionedData[i].y : -200;
-            dataPoint.to = positionedData[i] ? positionedData[i].o : 1;
+            dataPoint.tx = positionedData[i] && positionedData[i].x ? positionedData[i].x : width / 2;
+            dataPoint.ty = positionedData[i] && positionedData[i].y ? positionedData[i].y : -200;
+            dataPoint.to = positionedData[i] && positionedData[i].hide ? 0 : 1;
         }.bind(this));
+
+        console.log(data[100]);
 
         if (timer !== undefined) {
             timer.stop();
@@ -592,6 +605,7 @@ module.exports =  {
                 dataPoint.y = dataPoint.sy * (1 - t) + dataPoint.ty * t;
                 dataPoint.o = dataPoint.so * (1 - t) + dataPoint.to * t;
             });
+
             this.draw();
             if (t === 1) {
                 timer.stop();
@@ -604,10 +618,10 @@ module.exports =  {
         ctx.save();
 
         data.forEach(function(d) {
+            ctx.fillStyle = 'rgba(199, 0, 0, ' + d.o + ')';
             ctx.beginPath();
             ctx.moveTo(d.x + radius, d.y);
             ctx.arc(d.x, d.y, radius, 0, 2 * Math.PI);
-            ctx.fillStyle = 'rgba(18, 18, 18, ' + d.o + ')';
             ctx.fill();
         }.bind(this));
 

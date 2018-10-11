@@ -169,7 +169,7 @@ module.exports =  {
                 '2 (1 week to 1 month)': 0,
                 '3 (1 month to 6 months)': 0,
                 '4 (6 months to 1 year)': 0,
-                '5 (More than a year)': 0
+                '6 (More than a year)': 0
             };
         } else if (sortBy === 'sentence') {
             timeline = {
@@ -194,6 +194,8 @@ module.exports =  {
 
         delete timeline.Unknown;
         delete timeline.Ignored;
+
+        console.log(timeline);
 
         var bandWidth = (nodePadding * 10) + (radius * 10) + groupPadding;
         var groups = Object.keys(timeline);
@@ -550,7 +552,7 @@ module.exports =  {
             data.forEach(function(dataPoint, i) {
                 dataPoint.x = dataPoint.sx * (1 - t) + dataPoint.tx * t;
                 dataPoint.y = dataPoint.sy * (1 - t) + dataPoint.ty * t;
-                dataPoint.o = dataPoint.so * (1 - t) + dataPoint.to * t || 1;
+                dataPoint.o = dataPoint.so * (1 - t) + dataPoint.to * t;
             });
             this.draw();
             if (t === 1) {
@@ -586,7 +588,7 @@ module.exports =  {
             top = y - 10;
         } else if (large || title === 'El Salvador') {
             top = y;
-        } else if (y > height * 0.5) {
+        } else if (y > height * 0.55) {
             top = y + r + 14
         } else {
             top = Math.floor(y - r - 14);
@@ -613,9 +615,9 @@ module.exports =  {
 
         var barData = [
             {
-                district: 'New Mexico',
-                felony: 43,
-                misdemeanor: 8
+                district: 'California Southern',
+                felony: 60,
+                misdemeanor: 16
             },
             {
                 district: 'Arizona',
@@ -623,9 +625,9 @@ module.exports =  {
                 misdemeanor: 2
             },
             {
-                district: 'California Southern',
-                felony: 60,
-                misdemeanor: 16
+                district: 'New Mexico',
+                felony: 43,
+                misdemeanor: 8
             },
             {
                 district: 'Texas Western',

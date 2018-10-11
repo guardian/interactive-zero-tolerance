@@ -165,11 +165,11 @@ module.exports =  {
 
         if (sortBy === 'previousDeportation') {
             timeline = {
-                '1 (1 week or less)': [],
-                '2 (1 week to 1 month)': [],
-                '3 (1 month to 6 months)': [],
-                '4 (6 months to 1 year)': [],
-                '6 (More than a year)': []
+                '1 (≤1 week)': [],
+                '2 (1-4 weeks)': [],
+                '3 (1-6 months)': [],
+                '4 (6 months - 1 year)': [],
+                '6 (>1 year)': []
             };
         } else if (sortBy.includes('sentence')) {
             timeline = {
@@ -177,8 +177,8 @@ module.exports =  {
                 '2 (3-7 days)': [],
                 '3 (8-14 days)': [],
                 '4 (15-30 days)': [],
-                '5 (1 month to 3 months)': [],
-                '6 (3 months to 6 months)': [],
+                '5 (1-3 months)': [],
+                '6 (3-6 months)': [],
                 '7 (6 months - 1 year)': [],
                 '8 (>1 year)': []
             }

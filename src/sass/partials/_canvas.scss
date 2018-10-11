@@ -42,14 +42,14 @@
 
     .river {
         fill: transparent;
-        stroke: $c-black;
+        stroke: lighten($c-blue, 20%);
         opacity: 0.5;
         stroke-width: 2;
     }
 
     .border-section {
         fill: transparent;
-        stroke: $c-black;
+        stroke: $c-dark-grey;
         stroke-width: 2;
     }
 

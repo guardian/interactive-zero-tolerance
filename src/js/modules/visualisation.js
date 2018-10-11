@@ -134,7 +134,7 @@ module.exports =  {
             root.labels.forEach(function(d) {
                 this.createLabel(d.id, d.value, null, d.x, d.y, 0, sortBy === 'location' || d.id === 'Mexico');
             }.bind(this));
-        } else if (sortBy === 'previousDeportation' || sortBy === 'sentence') {
+        } else if (sortBy === 'previousDeportation' || sortBy === 'sentence-felony' || sortBy === 'sentence-misdemeanor') {
             var root = this.linearPack(sortBy);
             this.animate(root.nodes);
             this.hideMap();
@@ -165,35 +165,32 @@ module.exports =  {
 
         if (sortBy === 'previousDeportation') {
             timeline = {
-                '1 (1 week or less)': 0,
-                '2 (1 week to 1 month)': 0,
-                '3 (1 month to 6 months)': 0,
-                '4 (6 months to 1 year)': 0,
-                '6 (More than a year)': 0
+                '1 (1 week or less)': [],
+                '2 (1 week to 1 month)': [],
+                '3 (1 month to 6 months)': [],
+                '4 (6 months to 1 year)': [],
+                '6 (More than a year)': []
             };
-        } else if (sortBy === 'sentence') {
+        } else if (sortBy.includes('sentence')) {
             timeline = {
-                '1 (1-2 days)': 0,
-                '2 (3-7 days)': 0,
-                '3 (8-14 days)': 0,
-                '4 (15-30 days)': 0,
-                '5 (1 month to 3 months)': 0,
-                '6 (3 months to 6 months)': 0,
-                '7 (6 months - 1 year)': 0,
-                '8 (>1 year)': 0
+                '1 (1-2 days)': [],
+                '2 (3-7 days)': [],
+                '3 (8-14 days)': [],
+                '4 (15-30 days)': [],
+                '5 (1 month to 3 months)': [],
+                '6 (3 months to 6 months)': [],
+                '7 (6 months - 1 year)': [],
+                '8 (>1 year)': []
             }
         }
 
-        data.forEach(function(dataPoint, i) {
-            if (!timeline[dataPoint[sortBy]]) {
-                timeline[dataPoint[sortBy]] = 1;
-            } else {
-                timeline[dataPoint[sortBy]]++;
-            }
-        });
+        var key = sortBy.includes('sentence') ? 'sentence' : sortBy;
 
-        delete timeline.Unknown;
-        delete timeline.Ignored;
+        data.forEach(function(dataPoint, i) {
+            if (timeline[dataPoint[key]]) {
+                timeline[dataPoint[key]].push(dataPoint.id);
+            };
+        });
 
         var bandWidth = (nodePadding * 10) + (radius * 10) + groupPadding;
         var groups = Object.keys(timeline);
@@ -220,19 +217,23 @@ module.exports =  {
         var nodes = [];
 
         data.forEach(function(dataPoint, i) {
-            if (chartStarts[dataPoint[sortBy]]) {
+            if (timeline[dataPoint[key]] && timeline[dataPoint[key]].includes(dataPoint.id)) {
                 nodes.push({
                     id: dataPoint.id,
-                    x: chartStarts[dataPoint[sortBy]].x + (chartStarts[dataPoint[sortBy]].positioned * (nodePadding + radius)),
-                    y: chartStarts[dataPoint[sortBy]].y - (chartStarts[dataPoint[sortBy]].row * (nodePadding + radius)),
+                    x: chartStarts[dataPoint[key]].x + (chartStarts[dataPoint[key]].positioned * (nodePadding + radius)),
+                    y: chartStarts[dataPoint[key]].y - (chartStarts[dataPoint[key]].row * (nodePadding + radius)),
                 });
 
-                chartStarts[dataPoint[sortBy]].positioned++;
+                chartStarts[dataPoint[key]].positioned++;
 
-                if (chartStarts[dataPoint[sortBy]].positioned % 10 === 0) {
-                    chartStarts[dataPoint[sortBy]].row++;
-                    chartStarts[dataPoint[sortBy]].positioned = 0;
+                if (chartStarts[dataPoint[key]].positioned % 10 === 0) {
+                    chartStarts[dataPoint[key]].row++;
+                    chartStarts[dataPoint[key]].positioned = 0;
                 }
+            } else {
+                nodes.push({
+                    id: dataPoint.id
+                })
             }
         });
 
@@ -243,7 +244,7 @@ module.exports =  {
                 id: chart,
                 x: chartStarts[chart].x + (nodePadding * 5) + (radius * 5),
                 y: chartStarts[chart].y + 50,
-                value: timeline[chart]
+                value: timeline[chart].length
             })
         }
 

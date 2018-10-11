@@ -195,8 +195,6 @@ module.exports =  {
         delete timeline.Unknown;
         delete timeline.Ignored;
 
-        console.log(timeline);
-
         var bandWidth = (nodePadding * 10) + (radius * 10) + groupPadding;
         var groups = Object.keys(timeline);
         var totalWidth = bandWidth * groups.length - groupPadding;
@@ -583,10 +581,11 @@ module.exports =  {
     createLabel: function(title, value, total, x, y, r, large = false, alwaysStack = false) { 
         // get x position
         var top;
-
-        if (title === 'Honduras') {
-            top = y - 10;
-        } else if (large || title === 'El Salvador') {
+        if (title === 'Nicaragua') {
+            top = y + (height / 100 * 2);
+        } else if (title === 'Belize' || title === 'Guatemala' || title === 'Honduras' ) {
+            top = y - (height / 100);
+        } else if (large || title === 'Dominican Republic' || title === 'El Salvador') {
             top = y;
         } else if (y > height * 0.55) {
             top = y + r + 14

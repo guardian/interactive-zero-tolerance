@@ -22,7 +22,7 @@
 
 @for $i from 1 through 5 {
     .uit-key__block--#{$i} {
-        background-color: mix(#dcdcdc, #676767, $i * 20);
+        background-color: mix(#ffbac8, $c-red, $i * 20);
     }
 }
 

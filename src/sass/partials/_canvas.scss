@@ -42,7 +42,8 @@
 
     .river {
         fill: transparent;
-        stroke: $c-grey;
+        stroke: $c-black;
+        opacity: 0.5;
         stroke-width: 2;
     }
 
@@ -50,6 +51,21 @@
         fill: transparent;
         stroke: $c-black;
         stroke-width: 2;
+    }
+
+    .label__point {
+        fill: $c-red;
+    }
+
+    .label__text {
+        font-family: 'Guardian Sans Web';
+        font-size: 14px;
+        transform: translate(0, -10px);
+        text-anchor: middle;
+    }
+
+    .label--below .label__text {
+        transform: translate(0, 18px);
     }
 
     &.nationality {

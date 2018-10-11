@@ -207,25 +207,13 @@ module.exports =  {
         x.domain(groups);
 
         var chartStarts = {};
-        var isDouble = sortBy === 'sentence';
 
         for (var time in timeline) {
-            chartStarts[time] = {};
-
-            chartStarts[time][0] = {
+            chartStarts[time] = {
                 x: x(time),
                 y: height / 2,
                 positioned: 0,
                 row: 0
-            }
-
-            if (isDouble) {
-                chartStarts[time][1] = {
-                    x: x(time) + ((nodePadding + radius) * 5),
-                    y: height / 2,
-                    positioned: 0,
-                    row: 0
-                }
             }
         }
 
@@ -233,21 +221,17 @@ module.exports =  {
 
         data.forEach(function(dataPoint, i) {
             if (chartStarts[dataPoint[sortBy]]) {
-                var column = dataPoint.sentenced === 'Felony re-entry' && isDouble ? 1 : 0;
-
                 nodes.push({
                     id: dataPoint.id,
-                    x: chartStarts[dataPoint[sortBy]][column].x + (chartStarts[dataPoint[sortBy]][column].positioned * (nodePadding + radius)),
-                    y: chartStarts[dataPoint[sortBy]][column].y - (chartStarts[dataPoint[sortBy]][column].row * (nodePadding + radius)),
+                    x: chartStarts[dataPoint[sortBy]].x + (chartStarts[dataPoint[sortBy]].positioned * (nodePadding + radius)),
+                    y: chartStarts[dataPoint[sortBy]].y - (chartStarts[dataPoint[sortBy]].row * (nodePadding + radius)),
                 });
 
-                dataPoint.colour = column === 1 ? '18, 18, 18' : '18, 18, 18';
+                chartStarts[dataPoint[sortBy]].positioned++;
 
-                chartStarts[dataPoint[sortBy]][column].positioned++;
-
-                if (chartStarts[dataPoint[sortBy]][column].positioned % (isDouble ? 5: 10) === 0) {
-                    chartStarts[dataPoint[sortBy]][column].row++;
-                    chartStarts[dataPoint[sortBy]][column].positioned = 0;
+                if (chartStarts[dataPoint[sortBy]].positioned % 10 === 0) {
+                    chartStarts[dataPoint[sortBy]].row++;
+                    chartStarts[dataPoint[sortBy]].positioned = 0;
                 }
             }
         });
@@ -257,8 +241,8 @@ module.exports =  {
         for (var chart in chartStarts) {
             labels.push({
                 id: chart,
-                x: chartStarts[chart][0].x + (nodePadding * 5) + (radius * 5),
-                y: chartStarts[chart][0].y + 50,
+                x: chartStarts[chart].x + (nodePadding * 5) + (radius * 5),
+                y: chartStarts[chart].y + 50,
                 value: timeline[chart]
             })
         }
@@ -425,6 +409,14 @@ module.exports =  {
                 }.bind(this));
 
             svgCtx.append('g')
+                .attr('class', 'border')
+                .selectAll('path')
+                .data(border.features)
+                .enter().append('path')
+                .attr('d', path)
+                .attr('class', 'border-section');
+
+            svgCtx.append('g')
                 .attr('class', 'rivers')
                 .selectAll('path')
                 .data(rivers.features)
@@ -432,13 +424,58 @@ module.exports =  {
                 .attr('d', path)
                 .attr('class', 'river');
 
-            svgCtx.append('g')
-                .attr('class', 'border')
-                .selectAll('path')
-                .data(border.features)
-                .enter().append('path')
-                .attr('d', path)
-                .attr('class', 'border-section');
+            var labelData = [
+                {
+                    label: 'El Paso',
+                    long: -106.4850,
+                    lat: 31.7619
+                },
+                {
+                    label: 'Brownsville',
+                    long: -97.4975,
+                    lat: 25.9017,
+                    below: true
+                },
+                {
+                    label: 'Nogales',
+                    long: -110.9381,
+                    lat: 31.3012
+                },
+                {
+                    label: 'San Diego',
+                    long: -117.1611,
+                    lat: 32.7157
+                },
+                {
+                    label: 'Tijuana',
+                    long: -117.0382,
+                    lat: 32.5149,
+                    below: true
+                },
+                {
+                    label: 'Ciudad Juarez',
+                    long: -106.4245,
+                    lat: 31.6904,
+                    below: true
+                }
+            ]
+
+            var labels = svgCtx.append('g')
+                .attr('class', 'labels')
+                .selectAll('g')
+                .data(labelData)
+                .enter()
+                .append('g')
+                .attr('transform', function(d) { return 'translate(' + projection([d.long, d.lat]) + ')' })
+                .attr('class', function(d) { return 'label' + (d.below ? ' label--below' : '') });
+
+            labels.append('circle')
+                .attr('class', 'label__point')
+                .attr('r', 4);
+
+            labels.append('text')
+                .attr('class', 'label__text')
+                .text(function(d) { return d.label });
         }
     },
 
@@ -532,7 +569,6 @@ module.exports =  {
         });
 
         data.forEach(function(dataPoint, i) {
-            dataPoint.colour = data[i].colour || '18, 18, 18';
             dataPoint.sx = data[i].x || width / 2;
             dataPoint.sy = data[i].y || height / 2; 
             dataPoint.so = data[i].o || 1;
@@ -567,7 +603,7 @@ module.exports =  {
             ctx.beginPath();
             ctx.moveTo(d.x + radius, d.y);
             ctx.arc(d.x, d.y, radius, 0, 2 * Math.PI);
-            ctx.fillStyle = 'rgba(' + d.colour + ', ' + d.o + ')';
+            ctx.fillStyle = 'rgba(18, 18, 18, ' + d.o + ')';
             ctx.fill();
         }.bind(this));
 

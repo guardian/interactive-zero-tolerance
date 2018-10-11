@@ -187,7 +187,10 @@ module.exports =  {
         var key = sortBy.includes('sentence') ? 'sentence' : sortBy;
 
         data.forEach(function(dataPoint, i) {
-            if (timeline[dataPoint[key]]) {
+            if (key === 'sentence' && sortBy.includes('felony') && dataPoint.sentenced !== 'Felony re-entry' ||
+                key === 'sentence' && sortBy.includes('misdemeanor') && dataPoint.sentenced !== 'Misdemeanor illegal entry') {
+                return;
+            } else if (timeline[dataPoint[key]]) {
                 timeline[dataPoint[key]].push(dataPoint.id);
             };
         });

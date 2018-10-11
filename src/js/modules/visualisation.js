@@ -325,8 +325,8 @@ module.exports =  {
                 labelPositions.push({
                     id: $label.data('label'),
                     value: value,
-                    x: $label.data('label') === 'Brazil' ? $label.position().left + (width * 0.2) : $label.position().left + ($label.width() / 2),
-                    y: $label.data('label') === 'Brazil' ? $label.position().top - scrollTop + 32 : $label.position().top + ($label.height() / 2) - scrollTop,
+                    x: $label.data('label') === 'Brazil' ? $label.position().left + ($label.width() * 0.3) : $label.position().left + ($label.width() / 2),
+                    y: $label.data('label') === 'Brazil' ? $label.position().top - scrollTop + ($label.height() * 0.1) : $label.position().top + ($label.height() / 2) - scrollTop,
                 })
             };
         });

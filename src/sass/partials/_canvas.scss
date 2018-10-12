@@ -149,6 +149,25 @@
     font-family: 'Guardian Sans Web';
     font-size: 14px;
     color: $c-black;
+
+    span {
+        position: relative;
+        z-index: 2;
+        padding: 0 8px;
+        background-color: $c-off-white;
+    }
+
+    &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        margin: auto;
+        height: 1px;
+        width: 100%;
+        background-color: $c-light-grey;
+    }
 }
 
 .grid-lines .tick line,

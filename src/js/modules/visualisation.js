@@ -684,14 +684,14 @@ module.exports =  {
                 label = 'Length of sentence for re-entering offenders'
                 break;
             case 'sentence-average-misdemeanour':
-                label = 'Median sentence length for first-time offenders'
+                label = 'Median sentence length for misdemeanour illegal entry'
                 break;
             case 'sentence-average-felony':
-                label = 'Median sentence length for re-entering offenders'
+                label = 'Median sentence length for felony illegal re-entry'
                 break;
         };
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__axis-label\' style=\'top: ' + y + 'px; left: ' + x + 'px; width: ' + width + 'px;\'>' + label + '</h3>')
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__axis-label\' style=\'top: ' + y + 'px; left: ' + x + 'px; width: ' + width + 'px;\'><span>' + label + '</span></h3>')
     },
 
     barChart: function(sortBy) {

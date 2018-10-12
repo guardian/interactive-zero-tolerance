@@ -178,7 +178,7 @@ module.exports =  {
                 '1 (≤1 week)': [],
                 '2 (1-4 weeks)': [],
                 '3 (1-6 months)': [],
-                '4 (6 months - 1 year)': [],
+                '4 (6-12 months)': [],
                 '6 (>1 year)': []
             };
         } else if (sortBy.includes('sentence')) {
@@ -189,7 +189,7 @@ module.exports =  {
                 '4 (15-30 days)': [],
                 '5 (1-3 months)': [],
                 '6 (3-6 months)': [],
-                '7 (6 months - 1 year)': [],
+                '7 (6-12 months)': [],
                 '8 (>1 year)': []
             }
         }

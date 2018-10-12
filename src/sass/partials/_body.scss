@@ -57,18 +57,21 @@
         color: $c-black;
         border-top: 1px solid $c-light-grey;
         border-bottom: 1px solid $c-light-grey;
-        padding: 10px 0;
-        margin-top: -10px;
+        padding: 4px 0;
         margin-bottom: 24px;
+        float: left;
+        width: 50%;
+        max-width: 240px;
+        margin-right: 20px;
+        margin-bottom: 6px;
+        margin-top: 10px;
 
         @include mq(tablet) {
             max-width: 240px;
             float: left;
-            margin-right: 20px;
-            margin-bottom: 6px;
             margin-top: 0;
             border: none;
-            padding-top: 0;
+            padding-top: 6px;
         }
 
         @include mq(leftCol) {
@@ -84,9 +87,9 @@
         p {
             font-family: 'Guardian Egyptian Web';
             font-weight: 700;
-            font-size: 24px;
+            font-size: 20px;
             line-height: 1.2;
-            padding: 0;
+            padding: 0 !important;
             margin: 0;
         }
 

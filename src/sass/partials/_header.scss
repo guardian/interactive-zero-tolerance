@@ -81,7 +81,8 @@
 }
 
 
-.uit-header__standfirst {
+.uit-header__standfirst,
+.uit-header__toggle {
     padding: 3px 0 0;
     font-family: 'Guardian Egyptian Web';
     font-weight: 300;
@@ -90,6 +91,16 @@
 
     @include mq(tablet) {
         font-size: 24px;
+    }
+}
+
+.uit-header__toggle {
+    color: $c-red;
+    display: inline;
+
+    &:hover {
+        cursor: pointer;
+        border-bottom: 1px solid $c-red;
     }
 }
 
@@ -104,6 +115,7 @@
     font-style: italic;
     font-weight: 400;
     color: $c-red;
+    margin-top: 8px;
 
     a {
         font-style: normal;

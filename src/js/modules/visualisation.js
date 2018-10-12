@@ -704,7 +704,7 @@ module.exports =  {
                 label = 'Length of sentences for felony illegal re-entry'
                 break;
             case 'sentence-average-misdemeanour':
-                label = 'Median sentence length for misdemeanour illegal entry'
+                label = 'Median sentence length for misdemeanor illegal entry'
                 break;
             case 'sentence-average-felony':
                 label = 'Median sentence length for felony illegal re-entry'

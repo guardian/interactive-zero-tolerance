@@ -3,6 +3,16 @@
     z-index: 2;
     background-color: $c-white;
 
+    a {
+        color: $c-red;
+        border-bottom: mix($c-red, $c-white, 30%) 1px solid;
+        text-decoration: none;
+
+        &:hover {
+            border-bottom-color: $c-red;
+        }
+    }
+
     p {
         @include bodyCopy();
         padding-top: 6px;
@@ -68,7 +78,7 @@
 
 
 .uit-break-block {
-    margin: 70vh 0;
+    margin: 80vh 0;
 
     p {
         @include bodyCopy();

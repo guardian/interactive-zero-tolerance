@@ -82,14 +82,18 @@ module.exports =  {
     },
 
     setSizing: function() {
-        if (width > 768) {
-            radius = 2.5;
-            nodePadding = 4;
-            groupPadding = 40;
-        } else {
+        if (width < 768) {
             radius = 1.5;
             nodePadding = 2;
             groupPadding = 25;
+        } else if (height < 768) {
+            radius = 1.8;
+            nodePadding = 3.5;
+            groupPadding = 30;
+        } else {
+            radius = 2.5;
+            nodePadding = 4;
+            groupPadding = 40;
         }
     },
 
@@ -201,6 +205,19 @@ module.exports =  {
             };
         });
 
+        var chartHeight = 0;
+
+        for (var bar in timeline) {
+            console.log(bar);
+
+            if (timeline[bar].length > chartHeight) {
+                chartHeight = timeline[bar].length;
+            }
+        }
+
+        chartHeight = chartHeight / 10 * (nodePadding + radius);
+        chartHeight = ((height - chartHeight) / 2) + chartHeight - (height * 0.05);
+
         var bandWidth = (nodePadding * 10) + (radius * 10) + groupPadding;
         var groups = Object.keys(timeline);
         var totalWidth = bandWidth * groups.length - groupPadding;
@@ -217,7 +234,7 @@ module.exports =  {
         for (var time in timeline) {
             chartStarts[time] = {
                 x: x(time),
-                y: height / 2,
+                y: chartHeight,
                 positioned: 0,
                 row: 0
             }
@@ -678,10 +695,10 @@ module.exports =  {
                 label = 'Time since previous deportation';
                 break;
             case 'sentence-misdemeanor':
-                label = 'Length of sentence for first-time offenders'
+                label = 'Length of sentences for misdemeanour illegal entry'
                 break;
             case 'sentence-felony':
-                label = 'Length of sentence for re-entering offenders'
+                label = 'Length of sentences for felony illegal re-entry'
                 break;
             case 'sentence-average-misdemeanour':
                 label = 'Median sentence length for misdemeanour illegal entry'
@@ -727,10 +744,15 @@ module.exports =  {
             }
         ];
 
-        var isMobile = width < 620;
+        var isMobile = width < 940;
         var chartWidth = isMobile ? width - 40 : 620;
+
+        if (isMobile && chartWidth > 620) {
+            chartWidth = 620
+        }
+
         var chartHeight = isMobile ? 250: 250;
-        var xOffset = (width - chartWidth) / 2;
+        var xOffset = isMobile ? (width - chartWidth) / 2 : (width - chartWidth) / 2 + 120;
         var yOffset = (height - chartHeight) / 2;
 
         if (isMobile) {

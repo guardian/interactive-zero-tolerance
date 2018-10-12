@@ -54,3 +54,13 @@
         }
     }
 }
+
+.english,
+.spanish {
+    display: none;
+}
+
+.is-english .english,
+.is-spanish .spanish {
+    display: inline;
+}

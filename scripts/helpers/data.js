@@ -13,7 +13,6 @@ function fetchData(callback) {
     gsjson({
         spreadsheetId: config.data.id,
         allWorksheets: true,
-        vertical: true,
         credentials: keys.google
     })
     .then(function(result) {
@@ -26,11 +25,30 @@ function fetchData(callback) {
     });
 }
 
+function sortIntoResults() {
+    var newData = {}; 
+
+    for (var section in data) {
+        var sectionName = data[section].section.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
+            if (+match === 0) return "";
+            return index == 0 ? match.toLowerCase() : match.toUpperCase();
+        });
+
+        newData[sectionName] = {
+            english: data[section].english,
+            spanish: data[section].spanish
+        }
+    }
+
+    return newData;
+}
+
 module.exports = function getData() {
     var isDone = false;
 
     fetchData(function(result) {
-        data = result[0][0];
+        data = result[0];
+        data = sortIntoResults();
 
         isDone = true;
     });

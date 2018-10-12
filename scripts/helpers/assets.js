@@ -80,20 +80,42 @@ module.exports = {
             }
         });
 
-        handlebars.registerHelper('marked', function(string) {
-            if (string) {
-                return markdown.toHTML(string).replace(/src="/, 'src="' + path);
+        handlebars.registerHelper('marked', function(copy) {
+            if (copy && copy.english && copy.spanish) {
+                var english = '<span class=\'english\'>' + markdown.toHTML(copy.english).replace(/src="/, 'src="' + path) + '</span>';
+                var spanish = '<span class=\'spanish\'>' + markdown.toHTML(copy.spanish).replace(/src="/, 'src="' + path) + '</span>';
+                return english + spanish;
+            } else {
+                return 'MISSING COPY';
             }
         });
 
-        handlebars.registerHelper('markedCap', function(string) {
-            if (string) {
-                var markedIntro = markdown.toHTML(string).replace(/src="/, 'src="' + absolutePath);
-                var intro = markedIntro.slice(3);
-                var firstCharacter = intro.substring(0, 1);
-                    intro = intro.slice(1);
+        function markedCap(string) {
+            var markedIntro = markdown.toHTML(string).replace(/src="/, 'src="' + absolutePath);
+            var intro = markedIntro.slice(3);
+            var firstCharacter = intro.substring(0, 1);
+                intro = intro.slice(1);
 
-                return '<p><span class=\'uit-drop\'><span class=\'uit-drop__inner\'>' + firstCharacter + '</span></span>' + intro;
+            return '<p><span class=\'uit-drop\'><span class=\'uit-drop__inner\'>' + firstCharacter + '</span></span>' + intro;
+        }
+
+        handlebars.registerHelper('markedCap', function(copy) {
+            if (copy && copy.english && copy.spanish) {
+                var english = '<span class=\'english\'>' + markedCap(copy.english) + '</span>';
+                var spanish = '<span class=\'spanish\'>' + markedCap(copy.spanish) + '</span>';
+                return english + spanish;
+            } else {
+                return 'MISSING COPY';
+            }
+        });
+
+        handlebars.registerHelper('splitCopy', function(copy) {
+            if (copy && copy.english && copy.spanish) {
+                var english = '<span class=\'english\'>' + copy.english + '</span>';
+                var spanish = '<span class=\'spanish\'>' + copy.spanish + '</span>';
+                return english + spanish;
+            } else {
+                return 'MISSING COPY';
             }
         });
 

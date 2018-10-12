@@ -167,6 +167,16 @@ img.uit-illo {
         margin: 0;
     }
 
+    a {
+        color: $c-red;
+        border-bottom: mix($c-red, $c-white, 30%) 1px solid;
+        text-decoration: none;
+
+        &:hover {
+            border-bottom-color: $c-red;
+        }
+    }
+
     .uit-note p {
         font-family: 'Guardian Sans Web';
         font-size: 14px;

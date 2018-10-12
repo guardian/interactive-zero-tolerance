@@ -1,5 +1,5 @@
 var pageUrl = window.location.href.split('#')[0],
-    shareCopy = 'What a cool article #Article';
+    shareCopy = '3,121 desperate journeys: exposing a week of chaos under Trump\'s zero tolerance';
 
 module.exports =  {
     init: function() {

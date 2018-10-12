@@ -493,7 +493,7 @@ module.exports =  {
                     below: true
                 },
                 {
-                    label: 'Ciudad Juarez',
+                    label: 'Ciudad Juárez',
                     long: -106.4245,
                     lat: 31.6904,
                     below: true
@@ -698,7 +698,7 @@ module.exports =  {
                 label = 'Time since previous deportation';
                 break;
             case 'sentence-misdemeanor':
-                label = 'Length of sentences for misdemeanour illegal entry'
+                label = 'Length of sentences for misdemeanor illegal entry'
                 break;
             case 'sentence-felony':
                 label = 'Length of sentences for felony illegal re-entry'
@@ -721,7 +721,7 @@ module.exports =  {
 
         var barData = [
             {
-                district: 'California Southern',
+                district: 'California southern',
                 felony: 60,
                 misdemeanor: 16
             },
@@ -736,12 +736,12 @@ module.exports =  {
                 misdemeanor: 8
             },
             {
-                district: 'Texas Western',
+                district: 'Texas western',
                 felony: 105,
                 misdemeanor: 10
             },
             {
-                district: 'Texas Southern',
+                district: 'Texas southern',
                 felony: 130,
                 misdemeanor: 3
             }

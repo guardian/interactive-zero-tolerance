@@ -83,9 +83,9 @@ module.exports =  {
 
     setSizing: function() {
         if (width < 768) {
-            radius = 1.5;
+            radius = 1;
             nodePadding = 2;
-            groupPadding = 25;
+            groupPadding = 15;
         } else if (height < 768) {
             radius = 1.8;
             nodePadding = 3.5;
@@ -474,7 +474,8 @@ module.exports =  {
                 {
                     label: 'Nogales',
                     long: -110.9381,
-                    lat: 31.3012
+                    lat: 31.3012,
+                    below: true
                 },
                 {
                     label: 'San Diego',

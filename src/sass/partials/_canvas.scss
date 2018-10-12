@@ -143,6 +143,13 @@
     white-space: nowrap;
 }
 
+.uit-canvas__axis-label {
+    position: absolute;
+    text-align: center;
+    font-family: 'Guardian Sans Web';
+    font-size: 14px;
+    color: $c-black;
+}
 
 .grid-lines .tick line,
 .domain {

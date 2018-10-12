@@ -146,6 +146,8 @@ module.exports =  {
             root.totalLabels.forEach(function(d) {
                 this.createTotalLabel(d.total, d.x, d.y);
             }.bind(this));
+
+            this.addAxisLabel(sortBy, root.x, root.y, root.width);
         } else if (sortBy === 'sentence-average-misdemeanour' || sortBy == 'sentence-average-felony') {
             this.barChart(sortBy);
             this.animate();
@@ -264,7 +266,10 @@ module.exports =  {
         return {
             nodes: nodes,
             labels: labels,
-            totalLabels: totalLabels
+            totalLabels: totalLabels,
+            x: chartStarts[Object.keys(chartStarts)[0]].x,
+            y: chartStarts[Object.keys(chartStarts)[0]].y + 50,
+            width: totalWidth - groupPadding
         }
     },
 
@@ -666,6 +671,29 @@ module.exports =  {
         $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label uit-canvas__label--large\' style=\'top: ' + y + 'px; left: ' + x + 'px; \'><span class=\'uit-canvas__label-value\'>' + total + '</span></h3>');
     },
 
+    addAxisLabel: function(sortBy, x, y, width) {
+        var label;
+        switch(sortBy) {
+            case 'previousDeportation':
+                label = 'Time since previous deportation';
+                break;
+            case 'sentence-misdemeanor':
+                label = 'Length of sentence for first-time offenders'
+                break;
+            case 'sentence-felony':
+                label = 'Length of sentence for re-entering offenders'
+                break;
+            case 'sentence-average-misdemeanour':
+                label = 'Median sentence length for first-time offenders'
+                break;
+            case 'sentence-average-felony':
+                label = 'Median sentence length for re-entering offenders'
+                break;
+        };
+
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__axis-label\' style=\'top: ' + y + 'px; left: ' + x + 'px; width: ' + width + 'px;\'>' + label + '</h3>')
+    },
+
     barChart: function(sortBy) {
         $('.uit-canvas svg').empty();
 
@@ -763,6 +791,7 @@ module.exports =  {
             .attr('width', function(d) { return x(d[dataSet]) - xOffset })
             .attr('height', y.bandwidth());
 
+        this.addAxisLabel(sortBy, xOffset, yOffset + chartHeight + 20, chartWidth);
         this.showMap();
     }
 };

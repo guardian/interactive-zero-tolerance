@@ -124,6 +124,12 @@
             display: block;
         }
     }
+
+    &--numberless {
+        min-width: 50px;
+        max-width: 80px;
+        white-space: normal;
+    }
 }
 
 .uit-canvas__label-descriptor {
@@ -133,7 +139,7 @@
     font-family: 'Guardian Sans Web';
 
     @include mq($until: mobileLandscape) {
-        line-height: 1.42;
+        line-height: 1.3;
     }
 
     @include mq(mobileLandscape) {

@@ -97,7 +97,7 @@
     -webkit-font-smoothing: subpixel-antialiased;
     transform: scale(1.0, 1.0) translate(-50%, -50%);
     display: inline-block;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.4;
     white-space: nowrap;
     animation: fadeIn 0.8s ease-in;
@@ -127,11 +127,14 @@
 }
 
 .uit-canvas__label-descriptor {
-    background-color: $c-yellow;
+    @include banding($c-yellow);
     color: $c-black;
+    padding-right: 4px;
     font-family: 'Guardian Sans Web';
-    padding: 1px 2px;
-    white-space: nowrap;
+
+    @include mq($until: mobileLandscape) {
+        line-height: 1.42;
+    }
 
     @include mq(mobileLandscape) {
         font-family: 'Guardian Egyptian Web';
@@ -144,8 +147,12 @@
     background-color: $c-white;
     color: $c-red;
     font-family: 'Guardian Figures';
-    padding: 2px 4px;
+    padding: 1px 2px;
     white-space: nowrap;
+
+    @include mq(mobileLandscape) {
+        padding: 2px 4px;
+    }
 }
 
 .uit-canvas__axis-label {

@@ -216,9 +216,13 @@ module.exports =  {
         chartHeight = chartHeight / 10 * (nodePadding + radius);
         chartHeight = ((height - chartHeight) / 2) + chartHeight - (height * 0.05);
 
-        var bandWidth = (nodePadding * 10) + (radius * 10) + groupPadding;
+        var isMobile = 768 > width;
         var groups = Object.keys(timeline);
-        var totalWidth = bandWidth * groups.length - groupPadding;
+        var bandWidth = (nodePadding * 10) + (radius * 10);
+        var rawWidth = bandWidth * groups.length;
+        var groupSpacing = isMobile ? (width - 40 - rawWidth) / groups.length : groupPadding;
+            bandWidth += groupSpacing;
+        var totalWidth = bandWidth * groups.length - groupSpacing;
 
         // this can be easily replaced without d3 scale band
         var x = d3.scaleBand()
@@ -680,7 +684,7 @@ module.exports =  {
         // get x position
         var left = Math.floor(x);
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + left + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span>' + (number ? '<span class=\'uit-canvas__label-value\'>' + number + '</span>' : '') + '</h3>');
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + left + 'px; \'><span class=\'uit-canvas__label-descriptor\'><span class=\'uit-canvas__label-descriptor__inner\'>' + title + '</span></span>' + (number ? '<span class=\'uit-canvas__label-value\'>' + number + '</span>' : '') + '</h3>');
     },
 
     createTotalLabel: function(total, x, y) {

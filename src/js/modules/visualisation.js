@@ -208,8 +208,6 @@ module.exports =  {
         var chartHeight = 0;
 
         for (var bar in timeline) {
-            console.log(bar);
-
             if (timeline[bar].length > chartHeight) {
                 chartHeight = timeline[bar].length;
             }

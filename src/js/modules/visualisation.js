@@ -142,6 +142,10 @@ module.exports =  {
             root.labels.forEach(function(d) {
                 this.createLabel(d.id.match(/\(([^)]+)\)/)[1], d.value, null, d.x, d.y, 0, null, true);
             }.bind(this));
+
+            root.totalLabels.forEach(function(d) {
+                this.createTotalLabel(d.total, d.x, d.y);
+            }.bind(this));
         } else if (sortBy === 'sentence-average-misdemeanour' || sortBy == 'sentence-average-felony') {
             this.barChart(sortBy);
             this.animate();
@@ -240,20 +244,27 @@ module.exports =  {
             }
         });
 
-        labels = [];
+        var labels = [];
+        var totalLabels = [];
 
         for (var chart in chartStarts) {
             labels.push({
                 id: chart,
-                x: chartStarts[chart].x + (nodePadding * 5) + (radius * 5),
-                y: chartStarts[chart].y + 50,
-                value: timeline[chart].length
-            })
+                x: chartStarts[chart].x + (nodePadding * 5) + (radius * 4),
+                y: chartStarts[chart].y + 40
+            });
+
+            totalLabels.push({
+                total: timeline[chart].length,
+                x: chartStarts[chart].x + (nodePadding * 5) + (radius * 4),
+                y: chartStarts[chart].y - 30 - ((nodePadding + radius) * (timeline[chart].length / 10))
+            });
         }
 
         return {
             nodes: nodes,
-            labels: labels
+            labels: labels,
+            totalLabels: totalLabels
         }
     },
 
@@ -640,15 +651,19 @@ module.exports =  {
         // get number
         var number;
 
-        if (!total || value == data.length) {
+        if (!total && value || value == data.length) {
             number = value.toLocaleString();
         } else if (total) {
             number = parseFloat((100 / total * value).toFixed(1)) + '%';
         } else {
-            number = 'XXXX'
+            number = false;
         }
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + left + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span><span class=\'uit-canvas__label-value\'>' + number + '</span></h3>');
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + left + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span>' + (number ? '<span class=\'uit-canvas__label-value\'>' + number + '</span>' : '') + '</h3>');
+    },
+
+    createTotalLabel: function(total, x, y) {
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label uit-canvas__label--large\' style=\'top: ' + y + 'px; left: ' + x + 'px; \'><span class=\'uit-canvas__label-value\'>' + total + '</span></h3>');
     },
 
     barChart: function(sortBy) {

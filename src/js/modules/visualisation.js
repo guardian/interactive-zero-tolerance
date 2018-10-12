@@ -636,23 +636,6 @@ module.exports =  {
     },
 
     createLabel: function(title, value, total, x, y, r, large = false, alwaysStack = false) { 
-        // get y position
-        var top;
-        if (title === 'Nicaragua') {
-            top = y + (height / 100 * 2);
-        } else if (title === 'Belize' || title === 'Guatemala' || title === 'Honduras' ) {
-            top = y - (height / 100);
-        } else if (large || title === 'Dominican Republic' || title === 'El Salvador') {
-            top = y;
-        } else if (y > height * 0.55) {
-            top = y + r + 14
-        } else {
-            top = Math.floor(y - r - 14);
-        }
-
-        // get x position
-        var left = Math.floor(x);
-
         // get number
         var number;
 
@@ -663,6 +646,23 @@ module.exports =  {
         } else {
             number = false;
         }
+
+        // get y position
+        var top;
+        if (title === 'Nicaragua') {
+            top = y + (height / 100 * 2);
+        } else if (title === 'Belize' || title === 'Guatemala' || title === 'Honduras' ) {
+            top = y - (height / 100);
+        } else if (large || title === 'Dominican Republic' || title === 'El Salvador') {
+            top = y;
+        } else if (number && y > height * 0.55) {
+            top = y + r + 14
+        } else {
+            top = Math.floor(y - r - 14);
+        }
+
+        // get x position
+        var left = Math.floor(x);
 
         $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + left + 'px; \'><span class=\'uit-canvas__label-descriptor\'>' + title + '</span>' + (number ? '<span class=\'uit-canvas__label-value\'>' + number + '</span>' : '') + '</h3>');
     },

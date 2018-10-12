@@ -14,6 +14,8 @@
     }
 
     p {
+        position: relative;
+        z-index: 2;
         @include bodyCopy();
         padding-top: 6px;
         padding-bottom: 12px;
@@ -45,12 +47,8 @@
         }
     }
 
-    .uit-subhead {
-        padding: 80px 0 12px;
-
-        @include mq(desktop) {
-            padding: 140px 0 24px;
-        }
+    img {
+        width: 100%;
     }
 }
 
@@ -60,15 +58,50 @@
     color: $c-red;
 }
 
+img.uit-illo {
+    width: 250px;
+    margin-left: 24px;
+
+    @include mq(desktop) {
+        width: 320px;
+    }
+}
+
 .uit-subhead {
+    position: relative;
+    z-index: 2;
     @include banding($c-yellow);
-    font-size: 20px;
+    font-size: 24px;
     font-weight: bold;
     margin: 0;
     margin-bottom: 4px;
 
     @include mq(desktop) {
-        font-size: 28px;
+        font-size: 30px;
+    }
+}
+
+.uit-section--top {
+    .uit-subhead {
+        padding-top: 32px;
+        margin-bottom: -56px;
+
+        @include mq(desktop) {
+            padding-top: 56px;
+            margin-bottom: -72px;
+        }
+    }
+}
+
+.uit-section--bottom {
+    .uit-subhead {
+        margin-top: -72px;
+        margin-bottom: 32px;
+
+        @include mq(desktop) {
+            margin-top: -92px;
+            margin-bottom: 48px;
+        }
     }
 }
 

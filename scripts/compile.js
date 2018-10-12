@@ -25,7 +25,7 @@ var version = 'v/' + Date.now();
 fs.mkdirsSync(path);
 
 if (specs.modified === 'html') {
-    assets.html(path, data);
+    assets.html(path, data, data.path);
 } else if (specs.modified === 'js') {
     assets.js(path, 'main', data.path, specs.deploy);
     assets.js(path, 'app', data.path, specs.deploy);
@@ -34,7 +34,7 @@ if (specs.modified === 'html') {
 } else if (specs.modified === 'static') {
     assets.static(path)
 } else {
-    assets.html(path, data);
+    assets.html(path, data, data.path);
     assets.css(path, data.path);
     assets.js(path, 'main', data.path, specs.deploy);
     assets.js(path, 'app', data.path, specs.deploy);

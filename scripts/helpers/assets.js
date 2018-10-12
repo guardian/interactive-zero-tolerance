@@ -69,7 +69,7 @@ module.exports = {
         });
     },
 
-    html: function(path, data) {
+    html: function(path, data, absolutePath) {
         fs.removeSync(path + '/main.html');
 
         handlebars.registerHelper('if_eq', function(a, b, opts) {
@@ -82,13 +82,13 @@ module.exports = {
 
         handlebars.registerHelper('marked', function(string) {
             if (string) {
-                return markdown.toHTML(string);
+                return markdown.toHTML(string).replace(/src="/, 'src="' + path);
             }
         });
 
         handlebars.registerHelper('markedCap', function(string) {
             if (string) {
-                var markedIntro = markdown.toHTML(string);
+                var markedIntro = markdown.toHTML(string).replace(/src="/, 'src="' + absolutePath);
                 var intro = markedIntro.slice(3);
                 var firstCharacter = intro.substring(0, 1);
                     intro = intro.slice(1);

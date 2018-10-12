@@ -129,10 +129,15 @@
 .uit-canvas__label-descriptor {
     background-color: $c-yellow;
     color: $c-black;
-    font-family: 'Guardian Egyptian Web';
-    font-weight: 700;
-    padding: 2px 4px;
+    font-family: 'Guardian Sans Web';
+    padding: 1px 2px;
     white-space: nowrap;
+
+    @include mq(tablet) {
+        font-family: 'Guardian Egyptian Web';
+        font-weight: 700;
+        padding: 2px 4px;
+    }
 }
 
 .uit-canvas__label-value {
@@ -156,6 +161,7 @@
         z-index: 2;
         padding: 0 8px;
         background-color: $c-off-white;
+        white-space: nowrap;
     }
 
     &:before {

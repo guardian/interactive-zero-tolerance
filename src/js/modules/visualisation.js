@@ -83,8 +83,8 @@ module.exports =  {
 
     setSizing: function() {
         if (width < 768) {
-            radius = 1;
-            nodePadding = 2;
+            radius = 1.2;
+            nodePadding = 1.8;
             groupPadding = 15;
         } else if (height < 768) {
             radius = 1.8;

@@ -30,7 +30,7 @@ function cherryPickFields() {
 
     for (var i in data) {
         newData.cases.push({
-            id: i,
+            id: parseInt(i) / 10000 + 0.00001,
             nationality: data[i].nationality.toLowerCase().replace(/ /g, '-'),
             gender: getGender(data[i].gender),
             location: getLocation(data[i]['county,State']),
@@ -110,10 +110,42 @@ function minifyCases() {
     return data;
 }
 
+function addExtraLabels() {
+    data.labels.default = {};
+    data.labels.default.case = {
+        value: 3579,
+        id: 0,
+        englishLabel: 'Total cases analyzed',
+        spanishLabel: 'TK TK TK',
+        parentId: 'cases'
+    }
+
+    data.labels.charges = {};
+    data.labels.charges['Low-level immigration offenses'] = {
+        value: 3121,
+        id: 0,
+        englishLabel: 'Low-level immigration offenses',
+        spanishLabel: 'TK TK TK',
+        parentId: 'cases'
+    };
+    data.labels.charges['Serious offenses'] = {
+        value: 458,
+        id: 1,
+        englishLabel: 'Serious offenses',
+        spanishLabel: 'TK TK TK',
+        parentId: 'cases'
+    }
+
+    return data;
+}
+
 function cleanData(data) {
     data = cherryPickFields(data);
     data = addLabels();
     data = minifyCases();
+    data = addExtraLabels();
+
+    console.log(data.labels);
 
     fs.writeFileSync('./.data/cleanData.json', JSON.stringify(data));
 

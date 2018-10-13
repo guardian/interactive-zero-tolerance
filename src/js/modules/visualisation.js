@@ -38,6 +38,7 @@ module.exports =  {
         this.bindings();
         this.setSizing();
         this.createIgnored();
+        this.setAdditionalValues();
         this.calculatePositions();
     },
 
@@ -101,8 +102,15 @@ module.exports =  {
         for (var i = 0; i < 458; i++) {
             data.cases.push({
                 ignored: true,
-                id: data.cases.length + i,
+                id: parseInt(data.cases.length + i) / 10000,
             })
+        }
+    },
+
+    setAdditionalValues: function() {
+        for (var i in data.cases) {
+            data.cases[i].default = 0;
+            data.cases[i].charges = data.cases[i].ignored ? 1 : 0;
         }
     },
 
@@ -110,23 +118,6 @@ module.exports =  {
         var sortBy = $('.uit-canvas').attr('data-set');
 
         for (var i in data.cases) {
-            if (sortBy === 'default') {
-                data.cases[i][sortBy] = 'Total cases analyzed';
-            } else if (sortBy === 'charges') {
-                if (data.cases[i].ignored) {
-                    data.cases[i][sortBy] = 'Serious offenses';
-                } else {
-                    data.cases[i][sortBy] = 'Low-level immigration offenses';
-                }
-            } else {
-                if (data.cases[i].ignored) {
-                    data.cases[i][sortBy] = 'Ignored';
-                } else if (!data.cases[i][sortBy]) {
-                    data.cases[i][sortBy] = 'Unknown';
-                }
-            }
-
-            data.cases[i].value = 1;
             data.cases[i].parentId = data.cases[i][sortBy];
         }
 
@@ -143,13 +134,14 @@ module.exports =  {
             this.animate(root.nodes);
             this.hideMap();
 
-            root.labels.forEach(function(d) {
-                this.createLabel(d.id.match(/\(([^)]+)\)/)[1], d.value, null, d.x, d.y, 0, null, true);
-            }.bind(this));
+            console.log(root.labels);
 
-            root.totalLabels.forEach(function(d) {
-                this.createTotalLabel(d.total, d.x, d.y);
-            }.bind(this));
+            for (var i in root.labels) {
+                var d = root.labels[i];
+
+                this.createLabel(d.englishLabel, null, null, d.x, d.y, 0, null, true);
+                this.createTotalLabel(d.value, d.tx, d.ty);
+            }
 
             this.addAxisLabel(sortBy, root.x, root.y, root.width);
         } else if (sortBy === 'sentence-average-misdemeanour' || sortBy == 'sentence-average-felony') {
@@ -165,51 +157,20 @@ module.exports =  {
 
             labels.forEach(function(d) {
                 var total = sortBy === 'outcome' ? null : root.leaves().length;
-                this.createLabel(d.id, d.value, total, d.x, d.y, d.r, d.value > 80);
+                this.createLabel(d.data.englishLabel, d.value, total, d.x, d.y, d.r, d.value > 80);
             }.bind(this));
         }
     },
 
     linearPack: function(sortBy) {
-        var timeline = {};
-
-        if (sortBy === 'previousDeportation') {
-            timeline = {
-                '1 (≤1 week)': [],
-                '2 (1-4 weeks)': [],
-                '3 (1-6 months)': [],
-                '4 (6-12 months)': [],
-                '6 (>1 year)': []
-            };
-        } else if (sortBy.includes('sentence')) {
-            timeline = {
-                '1 (1-2 days)': [],
-                '2 (3-7 days)': [],
-                '3 (8-14 days)': [],
-                '4 (15-30 days)': [],
-                '5 (1-3 months)': [],
-                '6 (3-6 months)': [],
-                '7 (6-12 months)': [],
-                '8 (>1 year)': []
-            }
-        }
-
         var key = sortBy.includes('sentence') ? 'sentence' : sortBy;
-
-        data.cases.forEach(function(dataPoint, i) {
-            if (key === 'sentence' && sortBy.includes('felony') && dataPoint.sentenced !== 'Felony re-entry' ||
-                key === 'sentence' && sortBy.includes('misdemeanor') && dataPoint.sentenced !== 'Misdemeanor illegal entry') {
-                return;
-            } else if (timeline[dataPoint[key]]) {
-                timeline[dataPoint[key]].push(dataPoint.id);
-            };
-        });
+        var levels = data.labels[key];
 
         var chartHeight = 0;
 
-        for (var bar in timeline) {
-            if (timeline[bar].length > chartHeight) {
-                chartHeight = timeline[bar].length;
+        for (var i in levels) {
+            if (levels[i].value > chartHeight) {
+                chartHeight = levels[i].value;
             }
         }
 
@@ -217,7 +178,7 @@ module.exports =  {
         chartHeight = ((height - chartHeight) / 2) + chartHeight - (height * 0.05);
 
         var isMobile = 768 > width;
-        var groups = Object.keys(timeline);
+        var groups = Object.keys(levels);
         var bandWidth = (nodePadding * 10) + (radius * 10);
         var rawWidth = bandWidth * groups.length;
         var groupSpacing = isMobile ? (width - 40 - rawWidth) / groups.length : groupPadding;
@@ -231,32 +192,37 @@ module.exports =  {
 
         x.domain(groups);
 
-        var chartStarts = {};
+        var levelsById = {};
 
-        for (var time in timeline) {
-            chartStarts[time] = {
-                x: x(time),
-                y: chartHeight,
-                positioned: 0,
-                row: 0
-            }
+        for (var i in levels) {
+            levels[i].x = x(i);
+            console.log(x(i));
+            levels[i].y = chartHeight;
+            levels[i].positioned = 0;
+            levels[i].row = 0;
+
+            levelsById[levels[i].id] = i;
         }
 
         var nodes = [];
 
         data.cases.forEach(function(dataPoint, i) {
-            if (timeline[dataPoint[key]] && timeline[dataPoint[key]].includes(dataPoint.id)) {
+            if (typeof dataPoint[key] == 'number') {
+
+                var level = levels[levelsById[dataPoint[key]]];
+
                 nodes.push({
                     id: dataPoint.id,
-                    x: chartStarts[dataPoint[key]].x + (chartStarts[dataPoint[key]].positioned * (nodePadding + radius)),
-                    y: chartStarts[dataPoint[key]].y - (chartStarts[dataPoint[key]].row * (nodePadding + radius))
+                    x: level.x + (level.positioned * (nodePadding + radius)),
+                    y: level.y - (level.row * (nodePadding + radius))
                 });
 
-                chartStarts[dataPoint[key]].positioned++;
 
-                if (chartStarts[dataPoint[key]].positioned % 10 === 0) {
-                    chartStarts[dataPoint[key]].row++;
-                    chartStarts[dataPoint[key]].positioned = 0;
+                level.positioned++;
+
+                if (level.positioned % 10 === 0) {
+                    level.row++;
+                    level.positioned = 0;
                 }
             } else {
                 nodes.push({
@@ -268,26 +234,18 @@ module.exports =  {
         var labels = [];
         var totalLabels = [];
 
-        for (var chart in chartStarts) {
-            labels.push({
-                id: chart,
-                x: chartStarts[chart].x + (nodePadding * 5) + (radius * 4),
-                y: chartStarts[chart].y + 40
-            });
-
-            totalLabels.push({
-                total: timeline[chart].length,
-                x: chartStarts[chart].x + (nodePadding * 5) + (radius * 4),
-                y: chartStarts[chart].y - 30 - ((nodePadding + radius) * (timeline[chart].length / 10))
-            });
+        for (var i in levels) {
+            levels[i].x += (nodePadding * 5) + (radius * 4)
+            levels[i].y += 40;
+            levels[i].tx = levels[i].x + (nodePadding * 5) + (radius * 4);
+            levels[i].ty = levels[i].y - 30 - ((nodePadding + radius) * (levels[i].value / 10))
         }
 
         return {
             nodes: nodes,
-            labels: labels,
-            totalLabels: totalLabels,
-            x: chartStarts[Object.keys(chartStarts)[0]].x,
-            y: chartStarts[Object.keys(chartStarts)[0]].y + 50,
+            labels: levels,
+            x: levels[Object.keys(levels)[0]].x,
+            y: levels[Object.keys(levels)[0]].y + 50,
             width: totalWidth - groupPadding
         }
     },
@@ -565,24 +523,17 @@ module.exports =  {
     },
 
     regularPack: function(sortBy) {
-        var upperLevels = [{
-            id: 'cases',
-            parentId: null
-        }];
+        var levels = [];
+            levels.push({
+                id: 'cases',
+                parentId: null
+            });
 
-        var middleLevels = _.map(_.countBy(data.cases, sortBy), function (value, key) {
-            if (key !== 'Ignored') {
-                return level = {
-                    id: key,
-                    parentId: 'cases'
-                }
-            }
-        });
+        for (var i in data.labels[sortBy]) {
+            levels.push(data.labels[sortBy][i])
+        }
 
-        console.log(middleLevels);
-
-        var levels = upperLevels.concat(middleLevels.filter(Boolean));
-            levels = levels.concat(data.cases.filter(function(d) { return d.parentId !== 'Ignored' }));
+        levels = levels.concat(data.cases.filter(function(d) { return d.parentId !== 'Ignored' && typeof d[sortBy] == 'number' }));
 
         var root = this.packNodes(levels);
 

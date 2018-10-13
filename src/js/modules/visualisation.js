@@ -99,9 +99,9 @@ module.exports =  {
 
     createIgnored: function() {
         for (var i = 0; i < 458; i++) {
-            data.push({
+            data.cases.push({
                 ignored: true,
-                id: data.length + i,
+                id: data.cases.length + i,
             })
         }
     },
@@ -109,25 +109,25 @@ module.exports =  {
     calculatePositions: function() {
         var sortBy = $('.uit-canvas').attr('data-set');
 
-        for (var i in data) {
+        for (var i in data.cases) {
             if (sortBy === 'default') {
-                data[i][sortBy] = 'Total cases analyzed';
+                data.cases[i][sortBy] = 'Total cases analyzed';
             } else if (sortBy === 'charges') {
-                if (data[i].ignored) {
-                    data[i][sortBy] = 'Serious offenses';
+                if (data.cases[i].ignored) {
+                    data.cases[i][sortBy] = 'Serious offenses';
                 } else {
-                    data[i][sortBy] = 'Low-level immigration offenses';
+                    data.cases[i][sortBy] = 'Low-level immigration offenses';
                 }
             } else {
-                if (data[i].ignored) {
-                    data[i][sortBy] = 'Ignored';
-                } else if (!data[i][sortBy]) {
-                    data[i][sortBy] = 'Unknown';
+                if (data.cases[i].ignored) {
+                    data.cases[i][sortBy] = 'Ignored';
+                } else if (!data.cases[i][sortBy]) {
+                    data.cases[i][sortBy] = 'Unknown';
                 }
             }
 
-            data[i].value = 1;
-            data[i].parentId = data[i][sortBy];
+            data.cases[i].value = 1;
+            data.cases[i].parentId = data.cases[i][sortBy];
         }
 
         if (sortBy === 'location' || sortBy === 'nationality') {
@@ -196,7 +196,7 @@ module.exports =  {
 
         var key = sortBy.includes('sentence') ? 'sentence' : sortBy;
 
-        data.forEach(function(dataPoint, i) {
+        data.cases.forEach(function(dataPoint, i) {
             if (key === 'sentence' && sortBy.includes('felony') && dataPoint.sentenced !== 'Felony re-entry' ||
                 key === 'sentence' && sortBy.includes('misdemeanor') && dataPoint.sentenced !== 'Misdemeanor illegal entry') {
                 return;
@@ -244,7 +244,7 @@ module.exports =  {
 
         var nodes = [];
 
-        data.forEach(function(dataPoint, i) {
+        data.cases.forEach(function(dataPoint, i) {
             if (timeline[dataPoint[key]] && timeline[dataPoint[key]].includes(dataPoint.id)) {
                 nodes.push({
                     id: dataPoint.id,
@@ -313,7 +313,7 @@ module.exports =  {
 
         var dataSource = sortBy === 'nationality' ? 'nationality' : 'location'; // is this line needed??
 
-        data.forEach(function(dataPoint, i) {
+        data.cases.forEach(function(dataPoint, i) {
             nodes.push({
                 id: dataPoint.id,
                 x: pointPositions[dataPoint[dataSource]] ? pointPositions[dataPoint[dataSource]].x : width / 2,
@@ -570,7 +570,7 @@ module.exports =  {
             parentId: null
         }];
 
-        var middleLevels = _.map(_.countBy(data, sortBy), function (value, key) {
+        var middleLevels = _.map(_.countBy(data.cases, sortBy), function (value, key) {
             if (key !== 'Ignored') {
                 return level = {
                     id: key,
@@ -579,8 +579,10 @@ module.exports =  {
             }
         });
 
+        console.log(middleLevels);
+
         var levels = upperLevels.concat(middleLevels.filter(Boolean));
-            levels = levels.concat(data.filter(function(d) { return d.parentId !== 'Ignored' }));
+            levels = levels.concat(data.cases.filter(function(d) { return d.parentId !== 'Ignored' }));
 
         var root = this.packNodes(levels);
 
@@ -608,10 +610,10 @@ module.exports =  {
             return a.id - b.id;
         });
 
-        data.forEach(function(dataPoint, i) {
-            dataPoint.sx = data[i].x || width / 2;
-            dataPoint.sy = data[i].y || height / 2; 
-            dataPoint.so = data[i].o || 1;
+        data.cases.forEach(function(dataPoint, i) {
+            dataPoint.sx = data.cases[i].x || width / 2;
+            dataPoint.sy = data.cases[i].y || height / 2; 
+            dataPoint.so = data.cases[i].o || 1;
             dataPoint.tx = positionedData[i] && positionedData[i].x ? positionedData[i].x : width / 2;
             dataPoint.ty = positionedData[i] && positionedData[i].y ? positionedData[i].y : -200;
             dataPoint.to = positionedData[i] && positionedData[i].hide ? 0 : 1;
@@ -623,7 +625,7 @@ module.exports =  {
 
         timer = d3.timer(function(elapsed) {
             var t = Math.min(1, ease(elapsed / 800));
-            data.forEach(function(dataPoint, i) {
+            data.cases.forEach(function(dataPoint, i) {
                 dataPoint.x = dataPoint.sx * (1 - t) + dataPoint.tx * t;
                 dataPoint.y = dataPoint.sy * (1 - t) + dataPoint.ty * t;
                 dataPoint.o = dataPoint.so * (1 - t) + dataPoint.to * t;
@@ -640,7 +642,7 @@ module.exports =  {
         ctx.clearRect(0, 0, width, height);
         ctx.save();
 
-        data.forEach(function(d) {
+        data.cases.forEach(function(d) {
             ctx.fillStyle = 'rgba(199, 0, 0, ' + d.o + ')';
             ctx.beginPath();
             ctx.moveTo(d.x + radius, d.y);
@@ -659,7 +661,7 @@ module.exports =  {
         // get number
         var number;
 
-        if (!total && value || value == data.length) {
+        if (!total && value || value == data.cases.length) {
             number = value.toLocaleString();
         } else if (total) {
             number = parseFloat((100 / total * value).toFixed(1)) + '%';

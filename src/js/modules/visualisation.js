@@ -695,23 +695,23 @@ module.exports =  {
         var label;
         switch(sortBy) {
             case 'previousDeportation':
-                label = 'Time since previous deportation';
+                label = { english: 'Time since previous deportation', spanish: 'TK TK TK' }
                 break;
             case 'sentence-misdemeanor':
-                label = 'Length of sentences for misdemeanor illegal entry'
+                label = { english: 'Length of sentences for misdemeanor illegal entry', spanish: 'TK TK TK' }
                 break;
             case 'sentence-felony':
-                label = 'Length of sentences for felony illegal re-entry'
+                label = { english: 'Length of sentences for felony illegal re-entry', spanish: 'TK TK TK' }
                 break;
             case 'sentence-average-misdemeanour':
-                label = 'Median sentence length for misdemeanor illegal entry'
+                label = { english: 'Median sentence length for misdemeanor illegal entry', spanish: 'TK TK TK' }
                 break;
             case 'sentence-average-felony':
-                label = 'Median sentence length for felony illegal re-entry'
+                label = { english: 'Median sentence length for felony illegal re-entry', spanish: 'TK TK TK' }
                 break;
         };
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__axis-label\' style=\'top: ' + y + 'px; left: ' + x + 'px; width: ' + width + 'px;\'><span>' + label + '</span></h3>')
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__axis-label\' style=\'top: ' + y + 'px; left: ' + x + 'px; width: ' + width + 'px;\'><span><span class=\'english\'>' + label.english + '</span><span class=\'spanish\'>' + label.spanish + '</span></span></h3>')
     },
 
     barChart: function(sortBy) {
@@ -722,26 +722,31 @@ module.exports =  {
         var barData = [
             {
                 district: 'California southern',
+                spanishDistrict: 'TK TK TK',
                 felony: 60,
                 misdemeanor: 16
             },
             {
                 district: 'Arizona',
+                spanishDistrict: 'TK TK TK',
                 felony: 60,
                 misdemeanor: 2
             },
             {
                 district: 'New Mexico',
+                spanishDistrict: 'TK TK TK',
                 felony: 43,
                 misdemeanor: 8
             },
             {
                 district: 'Texas western',
+                spanishDistrict: 'TK TK TK',
                 felony: 105,
                 misdemeanor: 10
             },
             {
                 district: 'Texas southern',
+                spanishDistrict: 'TK TK TK',
                 felony: 130,
                 misdemeanor: 3
             }
@@ -777,7 +782,7 @@ module.exports =  {
         var ticks = 8;
 
         svgCtx.append('g')
-            .attr('class', 'grid-lines')
+            .attr('class', 'grid-lines english')
             .attr('transform', 'translate(0, ' + (yOffset - 12) + ')')
             .call(d3.axisTop(x)
                 .ticks(ticks)
@@ -786,7 +791,19 @@ module.exports =  {
             )
             .selectAll('.tick text')
             .attr('y', 12)
-            .attr('x', 0)
+            .attr('x', 0);
+
+        svgCtx.append('g')
+            .attr('class', 'grid-lines spanish')
+            .attr('transform', 'translate(0, ' + (yOffset - 12) + ')')
+            .call(d3.axisTop(x)
+                .ticks(ticks)
+                .tickSize(-(chartHeight))
+                .tickFormat(function(d) { return d == 0 ? d + ' días' : d})
+            )
+            .selectAll('.tick text')
+            .attr('y', 12)
+            .attr('x', 0);
 
         var graph = svgCtx.append('g')
             .attr('transform', 'translate(' + xOffset + ',' + (isMobile ? 12 : 0) + ')');
@@ -800,14 +817,26 @@ module.exports =  {
         district.append('text')
             .attr('y', function(d) { return (isMobile ? -16 : 0) + y(d.district) })
             .attr('x', isMobile ? 0 : -6)
-            .attr('class', 'district-name')
+            .attr('class', 'district-name english')
             .text(function(d) { return d.district });
+
+        district.append('text')
+            .attr('y', function(d) { return (isMobile ? -16 : 0) + y(d.district) })
+            .attr('x', isMobile ? 0 : -6)
+            .attr('class', 'district-name spanish')
+            .text(function(d) { return d.spanishDistrict });
 
         district.append('text')
             .attr('y', function(d) { return y(d.district) })
             .attr('x', function(d) { return x(d[dataSet]) - xOffset })
-            .attr('class', 'district-percentage')
+            .attr('class', 'district-percentage english')
             .text(function(d) { return d[dataSet] + ' days' });
+
+        district.append('text')
+            .attr('y', function(d) { return y(d.district) })
+            .attr('x', function(d) { return x(d[dataSet]) - xOffset })
+            .attr('class', 'district-percentage spanish')
+            .text(function(d) { return d[dataSet] + ' dias' });
 
         district.append('rect')
             .attr('y', function(d) { return y(d.district) })

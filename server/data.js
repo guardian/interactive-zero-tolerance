@@ -81,15 +81,17 @@ function addLabels() {
 
     for (var i in data.cases) {
         for (var viz in data.labels) {
-            if (data.labels[viz][data.cases[i][viz]]) {
-                data.labels[viz][data.cases[i][viz]].value++;
-            } else {
-                data.labels[viz][data.cases[i][viz]] = {
-                    value: 1,
-                    id: Object.keys(data.labels[viz]).length,
-                    englishLabel: data.cases[i][viz],
-                    spanishLabel: 'TK TK TK',
-                    parentId: 'cases'
+            if (data.cases[i][viz]) {
+                if (data.labels[viz][data.cases[i][viz]]) {
+                    data.labels[viz][data.cases[i][viz]].value++;
+                } else {
+                    data.labels[viz][data.cases[i][viz]] = {
+                        value: 1,
+                        id: Object.keys(data.labels[viz]).length,
+                        englishLabel: data.cases[i][viz],
+                        spanishLabel: 'TK TK TK',
+                        parentId: 'cases'
+                    }
                 }
             }
         }
@@ -101,8 +103,8 @@ function addLabels() {
 function minifyCases() {
     for (var i in data.cases) {
         for (var key in data.cases[i]) {
-            if (key !== 'id') {
-            data.cases[i][key] = data.labels[key][data.cases[i][key]].id;
+            if (data.cases[i][key] && key !== 'id') {
+                data.cases[i][key] = data.labels[key][data.cases[i][key]].id;
             }
         }
     }

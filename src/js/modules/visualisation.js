@@ -134,8 +134,6 @@ module.exports =  {
             this.animate(root.nodes);
             this.hideMap();
 
-            console.log(root.labels);
-
             for (var i in root.labels) {
                 var d = root.labels[i];
 
@@ -196,7 +194,6 @@ module.exports =  {
 
         for (var i in levels) {
             levels[i].x = x(i);
-            console.log(x(i));
             levels[i].y = chartHeight;
             levels[i].positioned = 0;
             levels[i].row = 0;

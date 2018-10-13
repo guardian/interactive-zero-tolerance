@@ -31,7 +31,7 @@ function cherryPickFields() {
     for (var i in data) {
         newData.cases.push({
             id: parseInt(i) / 10000 + 0.00001,
-            nationality: data[i].nationality.toLowerCase().replace(/ /g, '-'),
+            nationality: data[i].nationality,
             gender: getGender(data[i].gender),
             location: getLocation(data[i]['county,State']),
             previousDeportation: data[i].timeSincePreviousDeportation,

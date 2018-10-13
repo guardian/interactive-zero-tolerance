@@ -126,9 +126,13 @@ module.exports =  {
 
             this.animate(root.nodes);
 
-            root.labels.forEach(function(d) {
-                this.createLabel(d.id, d.value, null, d.x, d.y, 0, sortBy === 'location' || d.id === 'Mexico');
-            }.bind(this));
+            for (var i in root.labels) {
+                var d = root.labels[i];
+
+                if (d.x) {
+                    this.createLabel(d.englishLabel, d.value, null, d.x, d.y, 0, sortBy === 'location' || d.id === 'Mexico');
+                }
+            }
         } else if (sortBy === 'previousDeportation' || sortBy === 'sentenceFelony' || sortBy === 'sentenceMisdemeanor') {
             var root = this.linearPack(sortBy);
             this.animate(root.nodes);
@@ -204,7 +208,6 @@ module.exports =  {
 
         data.cases.forEach(function(dataPoint, i) {
             if (typeof dataPoint[sortBy] == 'number') {
-
                 var level = levels[levelsById[dataPoint[sortBy]]];
 
                 nodes.push({
@@ -251,39 +254,35 @@ module.exports =  {
 
         var nodes = [];
         var scrollTop = $(document).scrollTop();
-        var pointPositions = {};
+        var levels = data.labels[sortBy];
+        var levelsById = Object.keys(levels);
         var pointTarget = sortBy === 'nationality' ? '.country' : '.county';
         var stateValues = {};
 
-        console.log(levels[sortBy]);
+        $(pointTarget).each(function(i, region) {
+            var $region = $(region);
+            var regionName = $region.data('label');
 
-        $(pointTarget).each(function(i, county) {
-            var $county = $(county);
-            var countyName = $county.data('link');
-
-            pointPositions[countyName] = {
-                x: $county.position().left + ($county.width() / 2),
-                y: $county.position().top + ($county.height() / 2) - scrollTop
+            if (regionName === 'Brazil') {
+                levels[regionName].x = $region.position().left + ($region.width() * 0.3)
+                levels[regionName].y = $region.position().top - scrollTop + ($region.height() * 0.1)
+            } else if (levels[regionName]) {
+                levels[regionName].x = $region.position().left + ($region.width() / 2);
+                levels[regionName].y = $region.position().top + ($region.height() / 2) - scrollTop;
             }
         });
 
         var dataSource = sortBy === 'nationality' ? 'nationality' : 'location'; // is this line needed??
 
         data.cases.forEach(function(dataPoint, i) {
+            var level = levels[levelsById[dataPoint[sortBy]]];
+
             nodes.push({
                 id: dataPoint.id,
-                x: pointPositions[dataPoint[dataSource]] ? pointPositions[dataPoint[dataSource]].x : width / 2,
-                y: pointPositions[dataPoint[dataSource]] ? pointPositions[dataPoint[dataSource]].y : -200,
+                x: level ? level.x : width / 2,
+                y: level ? level.y : -200,
                 hide: true
             });
-
-            if (pointPositions[dataPoint[dataSource]]) {
-                if (!pointPositions[dataPoint[dataSource]].value) {
-                    pointPositions[dataPoint[dataSource]].value = 1;
-                } else {
-                    pointPositions[dataPoint[dataSource]].value++;
-                }
-            }
 
             if (sortBy === 'location') {
                 var state = dataPoint.location.split(/[-]+/).pop();
@@ -298,36 +297,14 @@ module.exports =  {
             }
         });
 
-        var labelPositions = [];
-        var labelTarget = sortBy === 'nationality' ? '.country' : '.state';
-
-        $(labelTarget).each(function(i, label) {
-            var $label = $(label);
-
-            if (sortBy === 'nationality') {
-                var value = pointPositions[$label.data('link')].value;
-            } else {
-                if (stateValues[$label.data('link')]) {
-                    var value = stateValues[$label.data('link')].value;
-                }
-            }
-
-            if (value) {
-                labelPositions.push({
-                    id: $label.data('label'),
-                    value: value,
-                    x: $label.data('label') === 'Brazil' ? $label.position().left + ($label.width() * 0.3) : $label.position().left + ($label.width() / 2),
-                    y: $label.data('label') === 'Brazil' ? $label.position().top - scrollTop + ($label.height() * 0.1) : $label.position().top + ($label.height() / 2) - scrollTop,
-                })
-            };
-        });
-
-        this.colourMap(pointPositions);
+        this.colourMap(levels);
         this.showMap();
+
+        console.log(levels);
 
         return  {
             nodes: nodes,
-            labels: labelPositions
+            labels: levels
         }
     },
 
@@ -373,9 +350,6 @@ module.exports =  {
             .attr('data-label', function(d) {
                 return d.properties.GEOUNIT;
             })
-            .attr('data-link', function(d) {
-                return d.properties.GEOUNIT.toLowerCase().replace(/ /g, '-');
-            });
 
         if (sortBy === 'location') {
             svgCtx.append('g')
@@ -387,9 +361,6 @@ module.exports =  {
                 .attr('class', 'state')
                 .attr('data-label', function(d) {
                     return d.properties.NAME;
-                })
-                .attr('data-link', function(d) {
-                    return d.properties.NAME.toLowerCase().replace(/ /g, '-');
                 });
 
             svgCtx.append('g')
@@ -475,14 +446,12 @@ module.exports =  {
         }
     },
 
-    colourMap: function(countiesForMap) {
+    colourMap: function(levels) {
         var dataArray = [];
 
-        for (var county in countiesForMap) {
-            var d = countiesForMap[county];
-
-            if (d.value) {
-                dataArray.push(d.value);
+        for (var i in levels) {
+            if (levels[i].value) {
+                dataArray.push(levels[i].value);
             }
         }
 
@@ -490,11 +459,9 @@ module.exports =  {
         var maxVal = d3.max(dataArray);
         var ramp = d3.scaleLinear().domain([minVal, maxVal]).range(['#ffbac8', '#c70000']);
 
-        for (var county in countiesForMap) {
-            var d = countiesForMap[county]
-
-            if (d.value) {
-                $('[data-link=\'' + county + '\']').attr('style', 'fill: ' + ramp(d.value));
+        for (var i in levels) {
+            if (levels[i].value) {
+                $('[data-label=\'' + levels[i].englishLabel + '\']').attr('style', 'fill: ' + ramp(levels[i].value));
             }
         }
     },

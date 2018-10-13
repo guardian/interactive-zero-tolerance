@@ -33,7 +33,7 @@ function cherryPickFields() {
             id: parseInt(i) / 10000 + 0.00001,
             nationality: data[i].nationality,
             gender: getGender(data[i].gender),
-            location: getLocation(data[i]['county,State']),
+            location: verifyLocation(data[i]['county,State']),
             previousDeportation: data[i].timeSincePreviousDeportation,
             sentenceFelony: data[i].offence === 'Felony re-entry' ? data[i].newSentenceCategories : undefined,
             sentenceMisdemeanor: data[i].offence === 'Misdemeanor illegal entry' ? data[i].newSentenceCategories : undefined,
@@ -47,16 +47,12 @@ function cherryPickFields() {
     return data;
 }
 
-function getLocation(string) {
-    if (string) {
-        string = string.split(', ');
-
-        if (string.length > 1) {
-            return string[0].toLowerCase().replace(/ /g, '-') + '-' + string[1].toLowerCase().replace(/ /g, '-');
-        }
+function verifyLocation(string) {
+    if (string.includes(', ')) {
+        return string;
+    } else {
+        return;
     }
-
-    return 'Unknown'
 }
 
 function getGender(string) {

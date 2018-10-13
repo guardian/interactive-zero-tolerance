@@ -272,8 +272,6 @@ module.exports =  {
             }
         });
 
-        var dataSource = sortBy === 'nationality' ? 'nationality' : 'location'; // is this line needed??
-
         data.cases.forEach(function(dataPoint, i) {
             var level = levels[levelsById[dataPoint[sortBy]]];
 
@@ -283,28 +281,14 @@ module.exports =  {
                 y: level ? level.y : -200,
                 hide: true
             });
-
-            if (sortBy === 'location') {
-                var state = dataPoint.location.split(/[-]+/).pop();
-                    state = state == 'mexico' ? 'new-mexico' : state;
-
-                if (!stateValues[state]) {
-                    stateValues[state] = {};
-                    stateValues[state].value = 1;
-                } else {
-                    stateValues[state].value++;
-                }
-            }
         });
 
         this.colourMap(levels);
         this.showMap();
 
-        console.log(levels);
-
         return  {
             nodes: nodes,
-            labels: levels
+            labels: sortBy === 'location' ? '' : levels
         }
     },
 
@@ -370,8 +354,8 @@ module.exports =  {
                 .enter().append('path')
                 .attr('d', path)
                 .attr('class', 'county')
-                .attr('data-link', function(d) {
-                    return d.properties.NAME.toLowerCase().replace(/ /g, '-') + '-' + this.getState(d.properties.STATEFP);
+                .attr('data-label', function(d) {
+                    return d.properties.NAME + ', ' + this.getState(d.properties.STATEFP);
                 }.bind(this));
 
             svgCtx.append('g')
@@ -477,13 +461,13 @@ module.exports =  {
     getState: function(stateID) {
         switch(stateID) {
             case '06':
-                return 'california'
+                return 'California'
             case '04':
-                return 'arizona'
+                return 'Arizona'
             case '35':
-                return 'new-mexico'
+                return 'New Mexico'
             case '48':
-                return 'texas'
+                return 'Texas'
         }
     },
 

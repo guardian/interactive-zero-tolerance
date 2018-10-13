@@ -163,8 +163,6 @@ module.exports =  {
     linearPack: function(sortBy) {
         var levels = data.labels[sortBy];
 
-        console.log(levels);
-
         var chartHeight = 0;
 
         for (var i in levels) {
@@ -202,12 +200,9 @@ module.exports =  {
             levelsById[levels[i].id] = i;
         }
 
-        console.log(levels);
-
         var nodes = [];
 
         data.cases.forEach(function(dataPoint, i) {
-            console.log(dataPoint[sortBy]);
             if (typeof dataPoint[sortBy] == 'number') {
 
                 var level = levels[levelsById[dataPoint[sortBy]]];
@@ -236,8 +231,8 @@ module.exports =  {
         var totalLabels = [];
 
         for (var i in levels) {
-            levels[i].lx += (nodePadding * 5) + (radius * 4)
-            levels[i].ly += 40;
+            levels[i].lx = levels[i].x + (nodePadding * 5) + (radius * 4)
+            levels[i].ly = levels[i].y + 40;
             levels[i].tx = levels[i].x + (nodePadding * 5) + (radius * 4);
             levels[i].ty = levels[i].y - 30 - ((nodePadding + radius) * (levels[i].value / 10))
         }

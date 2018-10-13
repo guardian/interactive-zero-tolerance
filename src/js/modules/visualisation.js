@@ -600,7 +600,7 @@ module.exports =  {
         // get x position
         var left = Math.floor(x);
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (!number ? ' uit-canvas__label--numberless' : ' ')+ (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + left + 'px; \'><span class=\'uit-canvas__label-descriptor\'><span class=\'uit-canvas__label-descriptor__inner\'><span class=\'english\'>' + englishLabel + '</span><span class=\'spanish\'>' + spanishLabel + '</span></span>' + (number ? '<span class=\'uit-canvas__label-value\'>' + number + '</span>' : '') + '</h3>');
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (!number ? ' uit-canvas__label--numberless' : ' ')+ (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + left + 'px; \'><span class=\'uit-canvas__label-descriptor\'><span class=\'uit-canvas__label-descriptor__inner\'><span class=\'english\'>' + englishLabel + '</span><span class=\'spanish\'>' + spanishLabel + '</span></span></span>' + (number ? '<span class=\'uit-canvas__label-value\'>' + number + '</span>' : '') + '</h3>');
     },
 
     createTotalLabel: function(total, x, y) {

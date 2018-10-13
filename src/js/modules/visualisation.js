@@ -272,15 +272,9 @@ module.exports =  {
             if (regionName === 'Brazil') {
                 levels[regionName].x = $region.position().left + ($region.width() * 0.3)
                 levels[regionName].y = $region.position().top - scrollTop + ($region.height() * 0.1)
-            } else if (regionName === 'El Salvador') {
+            } else if (regionName === 'El Salvador' && regionName === 'Guatemala') {
                 levels[regionName].x = $region.position().left - $region.width();
-                levels[regionName].y = $region.position().top - scrollTop + ($region.height() * 1.5);
-            } else if (regionName === 'Guatemala') {
-                levels[regionName].x = $region.position().left;
-                levels[regionName].y = $region.position().top + ($region.height() / 1.5) - scrollTop;
-            } else if (regionName === 'Nicaragua' || regionName === 'Honduras') {
-                levels[regionName].x = $region.position().left + ($region.width() * 1.1);
-                levels[regionName].y = $region.position().top - scrollTop + ($region.height() * 0.7);
+                levels[regionName].y = $region.position().top - scrollTop - ($region.height());
             } else if (levels[regionName]) {
                 levels[regionName].x = $region.position().left + ($region.width() / 2);
                 levels[regionName].y = $region.position().top + ($region.height() / 2) - scrollTop;
@@ -426,7 +420,8 @@ module.exports =  {
                 {
                     label: 'San Diego',
                     long: -117.1611,
-                    lat: 32.7157
+                    lat: 32.7157,
+                    hideOnMobile: true
                 },
                 {
                     label: 'Tijuana',
@@ -438,7 +433,8 @@ module.exports =  {
                     label: 'Ciudad Juárez',
                     long: -106.4245,
                     lat: 31.6904,
-                    below: true
+                    below: true,
+                    hideOnMobile: true
                 }
             ]
 
@@ -449,7 +445,7 @@ module.exports =  {
                 .enter()
                 .append('g')
                 .attr('transform', function(d) { return 'translate(' + projection([d.long, d.lat]) + ')' })
-                .attr('class', function(d) { return 'label' + (d.below ? ' label--below' : '') });
+                .attr('class', function(d) { return 'label' + (d.below ? ' label--below' : '') + (d.hideOnMobile ? ' label--hide-on-mobile' : '') });
 
             labels.append('circle')
                 .attr('class', 'label__point')
@@ -613,7 +609,7 @@ module.exports =  {
         // get x position
         var left = Math.floor(x);
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (!number ? ' uit-canvas__label--numberless' : ' ')+ (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + left + 'px; \'><span class=\'uit-canvas__label-descriptor\'><span class=\'uit-canvas__label-descriptor__inner\'><span class=\'english\'>' + englishLabel + '</span><span class=\'spanish\'>' + spanishLabel + '</span></span></span>' + (number ? '<span class=\'uit-canvas__label-value\'>' + number + '</span>' : '') + '</h3>');
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (englishLabel === 'Guatemala' || englishLabel === 'El Salvador' ? ' uit-canvas__label--push-left' : ' ') + (englishLabel === 'Nicaragua' || englishLabel === 'Honduras' || englishLabel === 'Belize' ? ' uit-canvas__label--push-right' : ' ') + (!number ? ' uit-canvas__label--numberless' : ' ')+ (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + left + 'px; \'><span class=\'uit-canvas__label-descriptor\'><span class=\'uit-canvas__label-descriptor__inner\'><span class=\'english\'>' + englishLabel + '</span><span class=\'spanish\'>' + spanishLabel + '</span></span></span>' + (number ? '<span class=\'uit-canvas__label-value\'>' + number + '</span>' : '') + '</h3>');
     },
 
     createTotalLabel: function(total, x, y) {

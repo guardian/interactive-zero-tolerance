@@ -41,7 +41,9 @@ function cherryPickFields() {
         });
     }
 
-    return newData;
+    data = newData;
+
+    return data;
 }
 
 function getLocation(string) {
@@ -68,8 +70,50 @@ function getGender(string) {
     return 'Unknown';
 }
 
+function addLabels() {
+    data.labels = {};
+
+    for (var viz in data.cases[0]) {
+        if (viz !== 'id') {
+            data.labels[viz] = {};
+        }
+    }
+
+    for (var i in data.cases) {
+        for (var viz in data.labels) {
+            if (data.labels[viz][data.cases[i][viz]]) {
+                data.labels[viz][data.cases[i][viz]].value++;
+            } else {
+                data.labels[viz][data.cases[i][viz]] = {
+                    value: 1,
+                    id: Object.keys(data.labels[viz]).length,
+                    englishLabel: data.cases[i][viz],
+                    spanishLabel: 'TK TK TK',
+                    parentId: 'cases'
+                }
+            }
+        }
+    }
+
+    return data;
+}
+
+function minifyCases() {
+    for (var i in data.cases) {
+        for (var key in data.cases[i]) {
+            if (key !== 'id') {
+            data.cases[i][key] = data.labels[key][data.cases[i][key]].id;
+            }
+        }
+    }
+
+    return data;
+}
+
 function cleanData(data) {
-    data = cherryPickFields();
+    data = cherryPickFields(data);
+    data = addLabels();
+    data = minifyCases();
 
     fs.writeFileSync('./.data/cleanData.json', JSON.stringify(data));
 

@@ -35,8 +35,9 @@ function cherryPickFields() {
             gender: getGender(data[i].gender),
             location: getLocation(data[i]['county,State']),
             previousDeportation: data[i].timeSincePreviousDeportation,
+            sentenceFelony: data[i].offence === 'Felony re-entry' ? data[i].newSentenceCategories : undefined,
+            sentenceMisdemeanor: data[i].offence === 'Misdemeanor illegal entry' ? data[i].newSentenceCategories : undefined,
             sentenced: data[i].offence,
-            sentence: data[i].newSentenceCategories,
             outcome: data[i].outcome
         });
     }
@@ -76,6 +77,26 @@ function addLabels() {
     for (var viz in data.cases[0]) {
         if (viz !== 'id') {
             data.labels[viz] = {};
+        }
+    }
+
+    var sentence = ['1 (1-2 days)', '2 (3-7 days)', '3 (8-14 days)', '4 (15-30 days)', '5 (1-3 months)', '6 (3-6 months)', '7 (6-12 months)', '8 (>1 year)'];
+    var spanishSentence = ['1-2 dias', '3-7 dias', '3', '4', '5', '6', '7', '8'];
+
+    for (var i in sentence) {
+        data.labels.sentenceFelony[sentence[i]] = {
+            value: 0,
+            id: parseInt(i),
+            englishLabel: sentence[i].match(/\(([^)]+)\)/)[1],
+            spanishLabel: spanishSentence[i],
+            parentId: 'cases'
+        }
+        data.labels.sentenceMisdemeanor[sentence[i]] = {
+            value: 0,
+            id: parseInt(i),
+            englishLabel: sentence[i].match(/\(([^)]+)\)/)[1],
+            spanishLabel: spanishSentence[i],
+            parentId: 'cases'
         }
     }
 

@@ -129,7 +129,7 @@ module.exports =  {
             root.labels.forEach(function(d) {
                 this.createLabel(d.id, d.value, null, d.x, d.y, 0, sortBy === 'location' || d.id === 'Mexico');
             }.bind(this));
-        } else if (sortBy === 'previousDeportation' || sortBy === 'sentence-felony' || sortBy === 'sentence-misdemeanor') {
+        } else if (sortBy === 'previousDeportation' || sortBy === 'sentenceFelony' || sortBy === 'sentenceMisdemeanor') {
             var root = this.linearPack(sortBy);
             this.animate(root.nodes);
             this.hideMap();
@@ -137,7 +137,7 @@ module.exports =  {
             for (var i in root.labels) {
                 var d = root.labels[i];
 
-                this.createLabel(d.englishLabel, null, null, d.x, d.y, 0, null, true);
+                this.createLabel(d.englishLabel, null, null, d.lx, d.ly, 0, null, true);
                 this.createTotalLabel(d.value, d.tx, d.ty);
             }
 
@@ -161,8 +161,9 @@ module.exports =  {
     },
 
     linearPack: function(sortBy) {
-        var key = sortBy.includes('sentence') ? 'sentence' : sortBy;
-        var levels = data.labels[key];
+        var levels = data.labels[sortBy];
+
+        console.log(levels);
 
         var chartHeight = 0;
 
@@ -201,12 +202,15 @@ module.exports =  {
             levelsById[levels[i].id] = i;
         }
 
+        console.log(levels);
+
         var nodes = [];
 
         data.cases.forEach(function(dataPoint, i) {
-            if (typeof dataPoint[key] == 'number') {
+            console.log(dataPoint[sortBy]);
+            if (typeof dataPoint[sortBy] == 'number') {
 
-                var level = levels[levelsById[dataPoint[key]]];
+                var level = levels[levelsById[dataPoint[sortBy]]];
 
                 nodes.push({
                     id: dataPoint.id,
@@ -232,8 +236,8 @@ module.exports =  {
         var totalLabels = [];
 
         for (var i in levels) {
-            levels[i].x += (nodePadding * 5) + (radius * 4)
-            levels[i].y += 40;
+            levels[i].lx += (nodePadding * 5) + (radius * 4)
+            levels[i].ly += 40;
             levels[i].tx = levels[i].x + (nodePadding * 5) + (radius * 4);
             levels[i].ty = levels[i].y - 30 - ((nodePadding + radius) * (levels[i].value / 10))
         }
@@ -647,10 +651,10 @@ module.exports =  {
             case 'previousDeportation':
                 label = { english: 'Time since previous deportation', spanish: 'TK TK TK' }
                 break;
-            case 'sentence-misdemeanor':
+            case 'sentenceMisdemeanor':
                 label = { english: 'Length of sentences for misdemeanor illegal entry', spanish: 'TK TK TK' }
                 break;
-            case 'sentence-felony':
+            case 'sentenceFelony':
                 label = { english: 'Length of sentences for felony illegal re-entry', spanish: 'TK TK TK' }
                 break;
             case 'sentence-average-misdemeanour':

@@ -130,7 +130,7 @@ module.exports =  {
                 var d = root.labels[i];
 
                 if (d.x) {
-                    this.createLabel(d.englishLabel, d.value, null, d.x, d.y, 0, sortBy === 'location' || d.id === 'Mexico');
+                    this.createLabel(d.englishLabel, d.spanishLabel, d.value, null, d.x, d.y, 0, sortBy === 'location' || d.id === 'Mexico');
                 }
             }
         } else if (sortBy === 'previousDeportation' || sortBy === 'sentenceFelony' || sortBy === 'sentenceMisdemeanor') {
@@ -141,7 +141,7 @@ module.exports =  {
             for (var i in root.labels) {
                 var d = root.labels[i];
 
-                this.createLabel(d.englishLabel, null, null, d.lx, d.ly, 0, null, true);
+                this.createLabel(d.englishLabel, d.spanishLabel, null, null, d.lx, d.ly, 0, null, true);
                 this.createTotalLabel(d.value, d.tx, d.ty);
             }
 
@@ -159,7 +159,7 @@ module.exports =  {
 
             labels.forEach(function(d) {
                 var total = sortBy === 'outcome' ? null : root.leaves().length;
-                this.createLabel(d.data.englishLabel, d.value, total, d.x, d.y, d.r, d.value > 80);
+                this.createLabel(d.data.englishLabel, d.data.spanishLabel, d.value, total, d.x, d.y, d.r, d.value > 80);
             }.bind(this));
         }
     },
@@ -571,7 +571,7 @@ module.exports =  {
         $('.uit-canvas__labels').empty();
     },
 
-    createLabel: function(title, value, total, x, y, r, large = false, alwaysStack = false) { 
+    createLabel: function(englishLabel, spanishLabel, value, total, x, y, r, large = false, alwaysStack = false) { 
         // get number
         var number;
 
@@ -585,11 +585,11 @@ module.exports =  {
 
         // get y position
         var top;
-        if (title === 'Nicaragua') {
+        if (englishLabel === 'Nicaragua') {
             top = y + (height / 100 * 2);
-        } else if (title === 'Belize' || title === 'Guatemala' || title === 'Honduras' ) {
+        } else if (englishLabel === 'Belize' || englishLabel === 'Guatemala' || englishLabel === 'Honduras' ) {
             top = y - (height / 100);
-        } else if (large || title === 'Dominican Republic' || title === 'El Salvador') {
+        } else if (large || englishLabel === 'Dominican Republic' || englishLabel === 'El Salvador') {
             top = y;
         } else if (number && y > height * 0.55) {
             top = y + r + 14
@@ -600,7 +600,7 @@ module.exports =  {
         // get x position
         var left = Math.floor(x);
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (!number ? ' uit-canvas__label--numberless' : ' ')+ (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + left + 'px; \'><span class=\'uit-canvas__label-descriptor\'><span class=\'uit-canvas__label-descriptor__inner\'>' + title + '</span></span>' + (number ? '<span class=\'uit-canvas__label-value\'>' + number + '</span>' : '') + '</h3>');
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (!number ? ' uit-canvas__label--numberless' : ' ')+ (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + left + 'px; \'><span class=\'uit-canvas__label-descriptor\'><span class=\'uit-canvas__label-descriptor__inner\'><span class=\'english\'>' + englishLabel + '</span><span class=\'spanish\'>' + spanishLabel + '</span></span>' + (number ? '<span class=\'uit-canvas__label-value\'>' + number + '</span>' : '') + '</h3>');
     },
 
     createTotalLabel: function(total, x, y) {

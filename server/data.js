@@ -120,7 +120,7 @@ function addLabels() {
                         value: 1,
                         id: Object.keys(data.labels[viz]).length,
                         englishLabel: data.cases[i][viz],
-                        spanishLabel: 'TK TK TK',
+                        spanishLabel: convertToSpanish(data.cases[i][viz]),
                         parentId: 'cases'
                     }
                 }
@@ -129,6 +129,18 @@ function addLabels() {
     }
 
     return data;
+}
+
+function convertToSpanish(english) {
+    var babel = {
+        'Other misdemeanor' : 'Test Spanish Label'
+    };
+
+    if (babel[english]) {
+        return babel[english];
+    } else {
+        return 'TK TK TK';
+    }
 }
 
 function minifyCases() {

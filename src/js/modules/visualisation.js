@@ -196,11 +196,9 @@ module.exports =  {
         var levelsById = {};
 
         for (var i in levels) {
-            console.log(levels[i].value);
             if (levels[i].value < 10) {
                 var offset = 10 - levels[i].value;
                 levels[i].positioned = offset / 2;
-                console.log(levels[i].positioned);
             } else {
                 levels[i].positioned = 0;
             }
@@ -274,6 +272,15 @@ module.exports =  {
             if (regionName === 'Brazil') {
                 levels[regionName].x = $region.position().left + ($region.width() * 0.3)
                 levels[regionName].y = $region.position().top - scrollTop + ($region.height() * 0.1)
+            } else if (regionName === 'El Salvador') {
+                levels[regionName].x = $region.position().left - $region.width();
+                levels[regionName].y = $region.position().top - scrollTop + ($region.height() * 1.5);
+            } else if (regionName === 'Guatemala') {
+                levels[regionName].x = $region.position().left;
+                levels[regionName].y = $region.position().top + ($region.height() / 1.5) - scrollTop;
+            } else if (regionName === 'Nicaragua' || regionName === 'Honduras') {
+                levels[regionName].x = $region.position().left + ($region.width() * 1.1);
+                levels[regionName].y = $region.position().top - scrollTop + ($region.height() * 0.7);
             } else if (levels[regionName]) {
                 levels[regionName].x = $region.position().left + ($region.width() / 2);
                 levels[regionName].y = $region.position().top + ($region.height() / 2) - scrollTop;
@@ -295,18 +302,14 @@ module.exports =  {
         this.showMap();
 
         if (sortBy === 'location') {
-            console.log(data);
             levels = data.stateLabels;
 
             for (var i in levels) {
                 $region = $('[data-label=\'' + i + '\']')
-                console.log(i);
                 levels[i].x = $region.position().left + ($region.width() / 2);
-                levels[i].y = $region.position().top + ($region.height() / 2) - scrollTop;
+                levels[i].y = i === 'New Mexico' ? $region.position().top + ($region.height() / 4) - scrollTop : $region.position().top + ($region.height() / 2) - scrollTop;
             }
         }
-
-        console.log(levels);
 
         return  {
             nodes: nodes,
@@ -332,7 +335,9 @@ module.exports =  {
                         && d.properties.GEOUNIT != 'United States of America'
                         && d.properties.GEOUNIT != 'Chile'
                         && d.properties.GEOUNIT != 'Uruguay'
+                        && d.properties.GEOUNIT != 'Suriname'
                         && d.properties.GEOUNIT != 'Brazil'
+                        && d.properties.GEOUNIT != 'Guyana'
                         && d.properties.GEOUNIT != 'Peru'
                         && d.properties.GEOUNIT != 'Paraguay'
                         && d.properties.GEOUNIT != 'Bolivia'
@@ -340,7 +345,11 @@ module.exports =  {
                 })
             });
 
-            var projection = d3.geoMercator().fitExtent([[width * 0.05, 0], [width * 0.95, height]], cropArea);
+            if (width > 768) {
+                var projection = d3.geoMercator().fitExtent([[width * 0.05, 0], [width * 0.95, height]], cropArea);
+            } else {
+                var projection = d3.geoMercator().fitExtent([[width * -0.2, 0], [width * 1.2, height]], cropArea);
+            }
         } else {
             var projection = d3.geoMercator().fitExtent([[width * 0.05, 0], [width * 0.95, height]], counties);
         }
@@ -593,11 +602,7 @@ module.exports =  {
 
         // get y position
         var top;
-        if (englishLabel === 'Nicaragua') {
-            top = y + (height / 100 * 2);
-        } else if (englishLabel === 'Belize' || englishLabel === 'Guatemala' || englishLabel === 'Honduras' ) {
-            top = y - (height / 100);
-        } else if (large || englishLabel === 'Dominican Republic' || englishLabel === 'El Salvador') {
+        if (large) {
             top = y;
         } else if (number && y > height * 0.55) {
             top = y + r + 14

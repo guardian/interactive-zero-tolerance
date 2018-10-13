@@ -172,13 +172,31 @@ function addExtraLabels() {
     return data;
 }
 
+function calcLocationTotalsByState() {
+    data.stateLabels = {};
+
+    for (var i in data.labels.location) {
+        var state = i.split(', ')[1];
+
+        if (data.stateLabels[state]) {
+            data.stateLabels[state].value += data.labels.location[i].value;
+        } else {
+            data.stateLabels[state] = {};
+            data.stateLabels[state].value = data.labels.location[i].value;
+            data.stateLabels[state].englishLabel = state;
+            data.stateLabels[state].spanishLabel = 'TK TK';
+        }
+    }
+
+    return data;
+}
+
 function cleanData(data) {
     data = cherryPickFields(data);
     data = addLabels();
     data = minifyCases();
     data = addExtraLabels();
-
-    console.log(data.labels);
+    data = calcLocationTotalsByState();
 
     fs.writeFileSync('./.data/cleanData.json', JSON.stringify(data));
 

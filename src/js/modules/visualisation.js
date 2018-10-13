@@ -286,9 +286,23 @@ module.exports =  {
         this.colourMap(levels);
         this.showMap();
 
+        if (sortBy === 'location') {
+            console.log(data);
+            levels = data.stateLabels;
+
+            for (var i in levels) {
+                $region = $('[data-label=\'' + i + '\']')
+                console.log(i);
+                levels[i].x = $region.position().left + ($region.width() / 2);
+                levels[i].y = $region.position().top + ($region.height() / 2) - scrollTop;
+            }
+        }
+
+        console.log(levels);
+
         return  {
             nodes: nodes,
-            labels: sortBy === 'location' ? '' : levels
+            labels: levels
         }
     },
 

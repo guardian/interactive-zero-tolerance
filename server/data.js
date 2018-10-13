@@ -100,6 +100,20 @@ function addLabels() {
         }
     }
 
+    var previousDeportation = ['1 (≤1 week)', '2 (1-4 weeks)', '3 (1-6 months)', '4 (6-12 months)', '6 (>1 year)'];
+    var spanishPreviousDeportation = ['TK TK TK', 'TK 2 (1-4 weeks)', '3 (1-6 months)', '4 (6-12 months)', '6 (>1 year)'];
+
+    for (var i in previousDeportation) {
+        data.labels.previousDeportation[previousDeportation[i]] = {
+            value: 0,
+            id: parseInt(i),
+            englishLabel: previousDeportation[i].match(/\(([^)]+)\)/)[1],
+            spanishLabel: spanishPreviousDeportation[i],
+            parentId: 'cases'
+        }
+    }
+
+
     for (var i in data.cases) {
         for (var viz in data.labels) {
             if (data.cases[i][viz]) {

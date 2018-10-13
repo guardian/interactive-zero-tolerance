@@ -255,6 +255,8 @@ module.exports =  {
         var pointTarget = sortBy === 'nationality' ? '.country' : '.county';
         var stateValues = {};
 
+        console.log(levels[sortBy]);
+
         $(pointTarget).each(function(i, county) {
             var $county = $(county);
             var countyName = $county.data('link');

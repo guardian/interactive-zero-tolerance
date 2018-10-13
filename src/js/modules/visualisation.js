@@ -196,9 +196,17 @@ module.exports =  {
         var levelsById = {};
 
         for (var i in levels) {
+            console.log(levels[i].value);
+            if (levels[i].value < 10) {
+                var offset = 10 - levels[i].value;
+                levels[i].positioned = offset / 2;
+                console.log(levels[i].positioned);
+            } else {
+                levels[i].positioned = 0;
+            }
+
             levels[i].x = x(i);
             levels[i].y = chartHeight;
-            levels[i].positioned = 0;
             levels[i].row = 0;
 
             levelsById[levels[i].id] = i;
@@ -235,7 +243,7 @@ module.exports =  {
 
         for (var i in levels) {
             levels[i].lx = levels[i].x + (nodePadding * 5) + (radius * 4)
-            levels[i].ly = levels[i].y + 40;
+            levels[i].ly = levels[i].y + 45;
             levels[i].tx = levels[i].x + (nodePadding * 5) + (radius * 4);
             levels[i].ty = levels[i].y - 30 - ((nodePadding + radius) * (levels[i].value / 10))
         }
@@ -244,7 +252,7 @@ module.exports =  {
             nodes: nodes,
             labels: levels,
             x: levels[Object.keys(levels)[0]].x,
-            y: levels[Object.keys(levels)[0]].y + 50,
+            y: levels[Object.keys(levels)[0]].y + 55,
             width: totalWidth - groupPadding
         }
     },

@@ -84,9 +84,9 @@ module.exports =  {
 
     setSizing: function() {
         if (width < 768) {
-            radius = 1.2;
-            nodePadding = 1.8;
-            groupPadding = 15;
+            radius = 1;
+            nodePadding = 1.7;
+            groupPadding = 12;
         } else if (height < 768) {
             radius = 1.8;
             nodePadding = 3.5;
@@ -141,7 +141,7 @@ module.exports =  {
             for (var i in root.labels) {
                 var d = root.labels[i];
 
-                this.createLabel(d.englishLabel, d.spanishLabel, null, null, d.lx, d.ly, 0, null, true);
+                this.createLabel(d.englishLabel, d.spanishLabel, null, null, d.lx, d.ly, 0, null, true, d.englishLabelMobile, d.spanishLabelMobile);
                 this.createTotalLabel(d.value, d.tx, d.ty);
             }
 
@@ -585,7 +585,7 @@ module.exports =  {
         $('.uit-canvas__labels').empty();
     },
 
-    createLabel: function(englishLabel, spanishLabel, value, total, x, y, r, large = false, alwaysStack = false) { 
+    createLabel: function(englishLabel, spanishLabel, value, total, x, y, r, large = false, alwaysStack = false, englishLabelMobile = false, spanishLabelMobile = false) { 
         // get number
         var number;
 
@@ -610,7 +610,7 @@ module.exports =  {
         // get x position
         var left = Math.floor(x);
 
-        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (englishLabel === 'Guatemala' || englishLabel === 'El Salvador' ? ' uit-canvas__label--push-left' : ' ') + (englishLabel === 'Nicaragua' || englishLabel === 'Honduras' || englishLabel === 'Belize' ? ' uit-canvas__label--push-right' : ' ') + (!number ? ' uit-canvas__label--numberless' : ' ')+ (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + left + 'px; \'><span class=\'uit-canvas__label-descriptor\'><span class=\'uit-canvas__label-descriptor__inner\'><span class=\'english\'>' + englishLabel + '</span><span class=\'spanish\'>' + spanishLabel + '</span></span></span>' + (number ? '<span class=\'uit-canvas__label-value\'>' + number + '</span>' : '') + '</h3>');
+        $('.uit-canvas__labels').append('<h3 class=\'uit-canvas__label' + (alwaysStack ? ' uit-canvas__label--stacked' : ' ') + (englishLabel === 'Guatemala' || englishLabel === 'El Salvador' ? ' uit-canvas__label--push-left' : ' ') + (englishLabel === 'Nicaragua' || englishLabel === 'Honduras' || englishLabel === 'Belize' ? ' uit-canvas__label--push-right' : ' ') + (!number ? ' uit-canvas__label--numberless' : ' ')+ (large ? ' uit-canvas__label--large' : ' ') + '\' style=\'top: ' + top + 'px; left: ' + left + 'px; \'><span class=\'uit-canvas__label-descriptor\'><span class=\'uit-canvas__label-descriptor__inner\'><span class=\'english\'>' + (englishLabelMobile && width < 480 ? englishLabelMobile : englishLabel) + '</span><span class=\'spanish\'>' + (spanishLabelMobile && width < 480 ? spanishLabelMobile : spanishLabel) + '</span></span></span>' + (number ? '<span class=\'uit-canvas__label-value\'>' + number + '</span>' : '') + '</h3>');
     },
 
     createTotalLabel: function(total, x, y) {
@@ -621,19 +621,19 @@ module.exports =  {
         var label;
         switch(sortBy) {
             case 'previousDeportation':
-                label = { english: 'Time since previous deportation', spanish: 'TK TK TK' }
+                label = { english: 'Time since previous deportation', spanish: 'Tiempo pasado desde última deportación' }
                 break;
             case 'sentenceMisdemeanor':
-                label = { english: 'Length of sentences for misdemeanor illegal entry', spanish: 'TK TK TK' }
+                label = { english: 'Length of sentences for misdemeanor illegal entry', spanish: 'Largo de sentencia por entrada ilegal de nivel menor' }
                 break;
             case 'sentenceFelony':
-                label = { english: 'Length of sentences for felony illegal re-entry', spanish: 'TK TK TK' }
+                label = { english: 'Length of sentences for felony illegal re-entry', spanish: 'Largo de sentencia por reingreso de nivel grave' }
                 break;
             case 'sentence-average-misdemeanour':
-                label = { english: 'Median sentence length for misdemeanor illegal entry', spanish: 'TK TK TK' }
+                label = { english: 'Median sentence length for misdemeanor illegal entry', spanish: 'Sentencia mediana por entrada ilegal de nivel menor' }
                 break;
             case 'sentence-average-felony':
-                label = { english: 'Median sentence length for felony illegal re-entry', spanish: 'TK TK TK' }
+                label = { english: 'Median sentence length for felony illegal re-entry', spanish: 'Sentencia mediana por reingreso de nivel grave' }
                 break;
         };
 
@@ -648,31 +648,31 @@ module.exports =  {
         var barData = [
             {
                 district: 'California southern',
-                spanishDistrict: 'TK TK TK',
+                spanishDistrict: 'Sur de California',
                 felony: 60,
                 misdemeanor: 16
             },
             {
                 district: 'Arizona',
-                spanishDistrict: 'TK TK TK',
+                spanishDistrict: 'Arizona',
                 felony: 60,
                 misdemeanor: 2
             },
             {
                 district: 'New Mexico',
-                spanishDistrict: 'TK TK TK',
+                spanishDistrict: 'Nuevo México',
                 felony: 43,
                 misdemeanor: 8
             },
             {
                 district: 'Texas western',
-                spanishDistrict: 'TK TK TK',
+                spanishDistrict: 'Oeste de Texas',
                 felony: 105,
                 misdemeanor: 10
             },
             {
                 district: 'Texas southern',
-                spanishDistrict: 'TK TK TK',
+                spanishDistrict: 'Sur de Texas',
                 felony: 130,
                 misdemeanor: 3
             }

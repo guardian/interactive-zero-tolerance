@@ -304,7 +304,7 @@ module.exports =  {
                 var regionBounds = $region[0].getBoundingClientRect();
     
                 levels[i].x = regionBounds.left + (regionBounds.width / 2);
-                levels[i].y = i === 'New Mexico' ? regionBounds.top + (regionBounds.height / 4) - scrollTop : regionBounds.top + (regionBounds.height / 2);
+                levels[i].y = i === 'New Mexico' ? regionBounds.top + (regionBounds.height / 4) : regionBounds.top + (regionBounds.height / 2);
             }
         }
 
@@ -603,7 +603,7 @@ module.exports =  {
         var top;
         if (large) {
             top = y;
-        } else if (number && y > height * 0.55) {
+        } else if (englishLabel === 'Misuse of documents ' || englishLabel === 'Unknown') {
             top = y + r + 14
         } else {
             top = Math.floor(y - r - 14);

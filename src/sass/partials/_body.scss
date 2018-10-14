@@ -166,6 +166,8 @@ img.uit-illo {
 
 .uit-break-block {
     margin: 80vh 0;
+    position: relative;
+    z-index: 3000;
 
     p {
         @include bodyCopy();

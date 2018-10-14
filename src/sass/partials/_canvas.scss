@@ -159,6 +159,7 @@
         line-height: 1.3;
         padding-right: 4px;
         font-family: 'Guardian Sans Web';
+        font-weight: normal;
 
         &__inner {
             padding-top: 2px;
@@ -193,6 +194,7 @@
     position: absolute;
     text-align: center;
     font-family: 'Guardian Sans Web';
+    font-weight: normal;
     font-size: 14px;
     color: $c-black;
     animation: fadeIn 0.8s ease-in;

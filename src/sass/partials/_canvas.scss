@@ -122,13 +122,15 @@
     }
 
     &--large {
+        text-align: center;
+
+        .uit-canvas__label-descriptor {
+            display: block;
+        }
+
         @include mq(tablet) {
             font-size: 20px;
             text-align: center;
-
-            .uit-canvas__label-descriptor {
-                display: block;
-            }
 
             .uit-canvas__label-value {
                 font-size: 28px;

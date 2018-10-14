@@ -300,9 +300,11 @@ module.exports =  {
             levels = data.stateLabels;
 
             for (var i in levels) {
-                $region = $('[data-label=\'' + i + '\']');
-                levels[i].x = $region.position().left + ($region.width() / 2);
-                levels[i].y = i === 'New Mexico' ? $region.position().top + ($region.height() / 4) - scrollTop : $region.position().top + ($region.height() / 2) - scrollTop;
+                var $region = $('[data-label=\'' + i + '\']');
+                var regionBounds = $region[0].getBoundingClientRect();
+    
+                levels[i].x = regionBounds.left + (regionBounds.width / 2);
+                levels[i].y = i === 'New Mexico' ? regionBounds.top + (regionBounds.height / 4) - scrollTop : regionBounds.top + (regionBounds.height / 2);
             }
         }
 

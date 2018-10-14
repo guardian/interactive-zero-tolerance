@@ -268,16 +268,17 @@ module.exports =  {
         $(pointTarget).each(function(i, region) {
             var $region = $(region);
             var regionName = $region.data('label');
+            var regionBounds = $region[0].getBoundingClientRect();
 
             if (regionName === 'Brazil') {
-                levels[regionName].x = $region.position().left + ($region.width() * 0.3)
-                levels[regionName].y = $region.position().top - scrollTop + ($region.height() * 0.1)
+                levels[regionName].x = regionBounds.left + (regionBounds.width * 0.3)
+                levels[regionName].y = regionBounds.top + (regionBounds.height * 0.1)
             } else if (regionName === 'El Salvador' && regionName === 'Guatemala') {
-                levels[regionName].x = $region.position().left - $region.width();
-                levels[regionName].y = $region.position().top - scrollTop - ($region.height());
+                levels[regionName].x = regionBounds.left - regionBounds.width;
+                levels[regionName].y = regionBounds.top - regionBounds.height;
             } else if (levels[regionName]) {
-                levels[regionName].x = $region.position().left + ($region.width() / 2);
-                levels[regionName].y = $region.position().top + ($region.height() / 2) - scrollTop;
+                levels[regionName].x = regionBounds.left + (regionBounds.width / 2);
+                levels[regionName].y = regionBounds.top + (regionBounds.height / 2);
             }
         });
 
@@ -299,7 +300,7 @@ module.exports =  {
             levels = data.stateLabels;
 
             for (var i in levels) {
-                $region = $('[data-label=\'' + i + '\']')
+                $region = $('[data-label=\'' + i + '\']');
                 levels[i].x = $region.position().left + ($region.width() / 2);
                 levels[i].y = i === 'New Mexico' ? $region.position().top + ($region.height() / 4) - scrollTop : $region.position().top + ($region.height() / 2) - scrollTop;
             }
